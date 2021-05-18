@@ -32,6 +32,10 @@ export const ComponentsNav = [
         label: 'Accessory',
         content: [
             {
+                label: 'Repository',
+                to: '#/elements/buttons-standard',
+            },
+            {
                 label: 'Receipt',
                 to: '#/elements/buttons-standard',
             },
