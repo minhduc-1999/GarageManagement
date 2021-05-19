@@ -13,6 +13,9 @@ const Components = lazy(() => import('../../DemoPages/Components'));
 const Charts = lazy(() => import('../../DemoPages/Charts'));
 const Forms = lazy(() => import('../../DemoPages/Forms'));
 const Tables = lazy(() => import('../../DemoPages/Tables'));
+const Employee = lazy(() => import('../../DemoPages/Employee'));
+const Customer = lazy(() => import('../../DemoPages/Customer'));
+const Report = lazy(() => import('../../DemoPages/Report'));
 
 const AppMain = () => {
 
@@ -122,6 +125,51 @@ const AppMain = () => {
                 </div>
             }>
                 <Route path="/dashboards" component={Dashboards}/>
+            </Suspense>
+
+            {/* Employee */}
+
+            <Suspense fallback={
+                <div className="loader-container">
+                    <div className="loader-container-inner">
+                        <h6 className="mt-3">
+                            Please wait while we load all the Employee examples
+                            <small>Because this is a demonstration, we load at once all the Dashboards examples. This wouldn't happen in a real live app!</small>
+                        </h6>
+                    </div>
+                </div>
+            }>
+                <Route path="/employee" component={Employee}/>
+            </Suspense>
+
+            {/* Customer */}
+
+            <Suspense fallback={
+                <div className="loader-container">
+                    <div className="loader-container-inner">
+                        <h6 className="mt-3">
+                            Please wait while we load all the Customer examples
+                            <small>Because this is a demonstration, we load at once all the Dashboards examples. This wouldn't happen in a real live app!</small>
+                        </h6>
+                    </div>
+                </div>
+            }>
+                <Route path="/customer" component={Customer}/>
+            </Suspense>
+
+            {/* Report */}
+
+            <Suspense fallback={
+                <div className="loader-container">
+                    <div className="loader-container-inner">
+                        <h6 className="mt-3">
+                            Please wait while we load all the Employee examples
+                            <small>Because this is a demonstration, we load at once all the Dashboards examples. This wouldn't happen in a real live app!</small>
+                        </h6>
+                    </div>
+                </div>
+            }>
+                <Route path="/report" component={Report}/>
             </Suspense>
 
             <Route exact path="/" render={() => (

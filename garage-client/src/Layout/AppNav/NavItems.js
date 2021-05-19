@@ -9,8 +9,8 @@ export const ComponentsNav = [
   
     {
         icon: 'pe-7s-graph3',
-        label: 'Report',
-        to: '#/tables/regular-tables',
+        label: 'Báo cáo',
+        to: '#/report',
     },
     {
         icon: 'pe-7s-car',
@@ -19,13 +19,13 @@ export const ComponentsNav = [
     },
     {
         icon: 'pe-7s-news-paper',
-        label: 'Invoice',
+        label: 'Hóa đơn',
         to: '#/tables/regular-tables',
     },
     {
         icon: 'pe-7s-users',
-        label: 'Customer',
-        to: '#/tables/regular-tables',
+        label: 'Khách hàng',
+        to: '#/customer',
     },
     {
         icon: 'pe-7s-tools',
@@ -72,8 +72,8 @@ export const ComponentsNav = [
     },
     {
         icon: 'pe-7s-id',
-        label: 'Employee',
-        to: '#/tables/regular-tables',
+        label: 'Nhân viên',
+        to: '#/employee',
     },
     // {
     //     icon: 'pe-7s-car',
@@ -130,12 +130,12 @@ export const ComponentsNav = [
 export const WidgetsNav = [
     {
         icon: 'pe-7s-comment',
-        label: 'Repair Request',
+        label: 'Đặt lịch sửa chữa',
         to: '#/widgets/dashboard-boxes',
     },
     {
         icon: 'pe-7s-info',
-        label: 'Car Status',
+        label: 'Tình trạng xe',
         to: '#/widgets/dashboard-boxes',
     },
 ];
