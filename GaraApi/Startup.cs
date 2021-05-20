@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GaraApi.Models;
 using GaraApi.Services;
+using GaraApi.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -35,7 +36,9 @@ namespace GaraApi
             services.AddSingleton<IGaraDatabaseSettings>(sp =>
                 sp.GetRequiredService<IOptions<GaraDatabaseSettings>>().Value);
 
+            //database service
             services.AddSingleton<CustomerService>();
+            services.AddDatabaseService();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
