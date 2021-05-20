@@ -43,7 +43,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpPut("{id:length(24)}")]
-        public IActionResult Update(string id, Accessory customerIn)
+        public IActionResult Update(string id, Accessory accessoryIn)
         {
             var accessory = _accessoryService.Get(id);
 
@@ -52,7 +52,7 @@ namespace GaraApi.Controllers
                 return NotFound();
             }
 
-            _accessoryService.Update(id, customerIn);
+            _accessoryService.Update(id, accessoryIn);
 
             return NoContent();
         }

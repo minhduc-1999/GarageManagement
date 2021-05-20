@@ -5,7 +5,6 @@ namespace GaraApi.Models.Form
 {
     public class RepairedRequest : Form
     {
-        [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string CarId { get; set; }
         [BsonRepresentation(BsonType.ObjectId)]
