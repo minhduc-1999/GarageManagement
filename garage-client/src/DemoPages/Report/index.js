@@ -79,7 +79,7 @@ const Report = () => {
                 <PageTitle
                   heading="Báo cáo"
                   subheading="Báo cáo doanh thu và báo cáo sử dụng phụ tùng"
-                  icon="pe-7s-car icon-gradient bg-happy-itmeo"
+                  icon="pe-7s-graph3 icon-gradient bg-happy-itmeo"
                 />
                 <Row>
                   <Col>

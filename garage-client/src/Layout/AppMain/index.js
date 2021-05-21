@@ -16,6 +16,7 @@ const Tables = lazy(() => import('../../DemoPages/Tables'));
 const Employee = lazy(() => import('../../DemoPages/Employee'));
 const Customer = lazy(() => import('../../DemoPages/Customer'));
 const Report = lazy(() => import('../../DemoPages/Report'));
+const Bill = lazy(() => import('../../DemoPages/Bill'));
 
 const AppMain = () => {
 
@@ -133,8 +134,8 @@ const AppMain = () => {
                 <div className="loader-container">
                     <div className="loader-container-inner">
                         <h6 className="mt-3">
-                            Please wait while we load all the Employee examples
-                            <small>Because this is a demonstration, we load at once all the Dashboards examples. This wouldn't happen in a real live app!</small>
+                            Vui lòng chờ trong lúc chúng tôi tải dữ liệu cho bảng Nhân viên
+                            <small>Quá trình này chỉ diễn ra trong giây lát</small>
                         </h6>
                     </div>
                 </div>
@@ -148,8 +149,8 @@ const AppMain = () => {
                 <div className="loader-container">
                     <div className="loader-container-inner">
                         <h6 className="mt-3">
-                            Please wait while we load all the Customer examples
-                            <small>Because this is a demonstration, we load at once all the Dashboards examples. This wouldn't happen in a real live app!</small>
+                            Vui lòng chờ trong lúc chúng tôi tải dữ liệu cho bảng Khách hàng
+                            <small>Quá trình này chỉ diễn ra trong giây lát</small>
                         </h6>
                     </div>
                 </div>
@@ -163,13 +164,28 @@ const AppMain = () => {
                 <div className="loader-container">
                     <div className="loader-container-inner">
                         <h6 className="mt-3">
-                            Please wait while we load all the Employee examples
-                            <small>Because this is a demonstration, we load at once all the Dashboards examples. This wouldn't happen in a real live app!</small>
+                            Vui lòng chờ trong lúc chúng tôi tải dữ liệu cho bảng Báo cáo
+                            <small>Quá trình này chỉ diễn ra trong giây lát</small>
                         </h6>
                     </div>
                 </div>
             }>
                 <Route path="/report" component={Report}/>
+            </Suspense>
+
+            {/* Bill */}
+            
+            <Suspense fallback={
+                <div className="loader-container">
+                    <div className="loader-container-inner">
+                        <h6 className="mt-3">
+                            Vui lòng chờ trong lúc chúng tôi tải dữ liệu cho bảng Hóa đơn
+                            <small>Quá trình này chỉ diễn ra trong giây lát</small>
+                        </h6>
+                    </div>
+                </div>
+            }>
+                <Route path="/bill" component={Bill}/>
             </Suspense>
 
             <Route exact path="/" render={() => (

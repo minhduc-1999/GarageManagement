@@ -20,7 +20,7 @@ export const ComponentsNav = [
     {
         icon: 'pe-7s-news-paper',
         label: 'Hóa đơn',
-        to: '#/tables/regular-tables',
+        to: '#/bill',
     },
     {
         icon: 'pe-7s-users',
