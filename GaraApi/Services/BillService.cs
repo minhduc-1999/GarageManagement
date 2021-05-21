@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using GaraApi.Models;
-using GaraApi.Models.Form;
+using GaraApi.Entities;
+using GaraApi.Entities.Form;
 using MongoDB.Driver;
 
 namespace GaraApi.Services

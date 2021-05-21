@@ -1,4 +1,4 @@
-namespace GaraApi.Models
+namespace GaraApi.Entities
 {
     public class GaraDatabaseSettings : IGaraDatabaseSettings
     {

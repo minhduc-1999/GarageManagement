@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using GaraApi.Models.Form;
+using GaraApi.Entities.Form;
 using GaraApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,11 +7,11 @@ namespace GaraApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccessoryIssueController : ControllerBase
+    public class AccessoryIssuesController : ControllerBase
     {
         private readonly AccessoryIssueService _accIssueService;
 
-        public AccessoryIssueController(AccessoryIssueService accIssueService)
+        public AccessoryIssuesController(AccessoryIssueService accIssueService)
         {
             _accIssueService = accIssueService;
         }

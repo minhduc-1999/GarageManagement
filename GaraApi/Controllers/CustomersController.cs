@@ -1,4 +1,4 @@
-using GaraApi.Models;
+using GaraApi.Entities;
 using GaraApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -7,11 +7,11 @@ namespace GaraApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CustomerController : ControllerBase
+    public class CustomersController : ControllerBase
     {
         private readonly CustomerService _customerService;
 
-        public CustomerController(CustomerService customerService)
+        public CustomersController(CustomerService customerService)
         {
             _customerService = customerService;
         }

@@ -1,6 +1,6 @@
 
 using System.Collections.Generic;
-using GaraApi.Models.Form;
+using GaraApi.Entities.Form;
 using GaraApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,11 +8,11 @@ namespace GaraApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class QuotationController : ControllerBase
+    public class QuotationsController : ControllerBase
     {
         private readonly QuotationService _quotationService;
 
-        public QuotationController(QuotationService quotationService)
+        public QuotationsController(QuotationService quotationService)
         {
             _quotationService = quotationService;
         }

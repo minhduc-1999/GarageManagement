@@ -1,6 +1,6 @@
 
 using System.Collections.Generic;
-using GaraApi.Models;
+using GaraApi.Entities;
 using GaraApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,11 +8,11 @@ namespace GaraApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccessoryController : ControllerBase
+    public class AccessoriesController : ControllerBase
     {
         private readonly AccessoryService _accessoryService;
 
-        public AccessoryController(AccessoryService accessoryService)
+        public AccessoriesController(AccessoryService accessoryService)
         {
             _accessoryService = accessoryService;
         }

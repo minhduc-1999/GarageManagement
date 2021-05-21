@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GaraApi.Models;
+using GaraApi.Entities;
 using GaraApi.Services;
 using GaraApi.Utils;
 using Microsoft.AspNetCore.Builder;

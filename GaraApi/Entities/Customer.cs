@@ -1,7 +1,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace GaraApi.Models
+namespace GaraApi.Entities
 {
     public class Customer
     {

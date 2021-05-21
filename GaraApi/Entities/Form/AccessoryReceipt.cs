@@ -1,4 +1,4 @@
-namespace GaraApi.Models.Form
+namespace GaraApi.Entities.Form
 {
     public class AccessoryReceipt : Form
     {

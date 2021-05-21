@@ -1,7 +1,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace GaraApi.Models.Form
+namespace GaraApi.Entities.Form
 {
     public class RepairedRequest : Form
     {

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using GaraApi.Models.Form;
+using GaraApi.Entities.Form;
 using GaraApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,11 +7,11 @@ namespace GaraApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccessoryReceiptController : ControllerBase
+    public class AccessoryReceiptsController : ControllerBase
     {
         private readonly AccessoryReceiptService _accReceiptService;
 
-        public AccessoryReceiptController(AccessoryReceiptService accReceiptService)
+        public AccessoryReceiptsController(AccessoryReceiptService accReceiptService)
         {
             _accReceiptService = accReceiptService;
         }

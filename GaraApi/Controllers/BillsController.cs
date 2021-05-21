@@ -1,6 +1,6 @@
 
 using System.Collections.Generic;
-using GaraApi.Models.Form;
+using GaraApi.Entities.Form;
 using GaraApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,11 +8,11 @@ namespace GaraApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BillController : ControllerBase
+    public class BillsController : ControllerBase
     {
         private readonly BillService _billService;
 
-        public BillController(BillService billService)
+        public BillsController(BillService billService)
         {
             _billService = billService;
         }

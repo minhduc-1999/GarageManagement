@@ -1,6 +1,6 @@
 
 using System.Collections.Generic;
-using GaraApi.Models.Form;
+using GaraApi.Entities.Form;
 using GaraApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,11 +8,11 @@ namespace GaraApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RepairedRequestController : ControllerBase
+    public class RepairedRequestsController : ControllerBase
     {
         private readonly RepairedRequestService _repReqService;
 
-        public RepairedRequestController(RepairedRequestService repReqService)
+        public RepairedRequestsController(RepairedRequestService repReqService)
         {
             _repReqService = repReqService;
         }

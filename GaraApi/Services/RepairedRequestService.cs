@@ -1,5 +1,5 @@
-using GaraApi.Models;
-using GaraApi.Models.Form;
+using GaraApi.Entities;
+using GaraApi.Entities.Form;
 using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Linq;
