@@ -11,6 +11,7 @@ namespace GaraApi.Entities.Form
         public string Id { get; set; }
 
         [BsonRepresentation(BsonType.DateTime)]
+        [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
         public DateTime CreatedDate
         { get; set; }
 

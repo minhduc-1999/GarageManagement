@@ -1,4 +1,5 @@
 using GaraApi.Services;
+using GaraApi.Services.Identity;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GaraApi.Utils
@@ -14,6 +15,8 @@ namespace GaraApi.Utils
             services.AddSingleton<AccessoryReceiptService>();
             services.AddSingleton<RepairedRequestService>();
 
+            services.AddSingleton<UserService>();
+            services.AddSingleton<UserRoleService>();
             return services;
         }
     }

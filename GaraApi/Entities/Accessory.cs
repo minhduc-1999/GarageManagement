@@ -20,6 +20,7 @@ namespace GaraApi.Entities
         public double ReceipPrice { get; set; }
         public double IssuePrice { get; set; }
         [BsonRepresentation(BsonType.DateTime)]
+        [BsonDateTimeOptions(DateOnly = true)]
         public DateTime ExpiredDate { get; set; }
         [BsonRepresentation(BsonType.ObjectId)]
         public string ProviderId { get; set; }

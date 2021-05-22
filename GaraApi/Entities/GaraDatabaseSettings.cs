@@ -11,6 +11,8 @@ namespace GaraApi.Entities
         public string AccessoryReceiptCollectionName { get; set; }
         public string BillCollectionName { get; set; }
         public string RepairedRequestCollectionName { get; set; }
+        public string UserCollectionName { get; set; }
+        public string UserRoleCollectionName { get; set; }
     }
 
     public interface IGaraDatabaseSettings
@@ -24,5 +26,7 @@ namespace GaraApi.Entities
         string AccessoryReceiptCollectionName { get; set; }
         string BillCollectionName { get; set; }
         string RepairedRequestCollectionName { get; set; }
+        string UserCollectionName { get; set; }
+        string UserRoleCollectionName { get; set; }
     }
 }
