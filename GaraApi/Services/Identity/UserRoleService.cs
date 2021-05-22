@@ -19,5 +19,8 @@ namespace GaraApi.Services.Identity
         public List<UserRole> Get() =>
             _role.Find(role => true).ToList();
 
+        public string Get(string id) =>
+            _role.Find(role => role.Id == id).FirstOrDefault().RoleName;
+
     }
 }

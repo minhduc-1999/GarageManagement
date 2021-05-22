@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GaraApi.Entities;
+using GaraApi.Middlewares;
 using GaraApi.Services;
 using GaraApi.Utils;
 using Microsoft.AspNetCore.Builder;
@@ -30,14 +31,10 @@ namespace GaraApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<GaraDatabaseSettings>(
-            Configuration.GetSection(nameof(GaraDatabaseSettings)));
-
-            services.AddSingleton<IGaraDatabaseSettings>(sp =>
-                sp.GetRequiredService<IOptions<GaraDatabaseSettings>>().Value);
+            //Add option
+            services.AddConfigOptions(Configuration);
 
             //database service
-            services.AddSingleton<CustomerService>();
             services.AddDatabaseService();
 
             services.AddControllers();
@@ -61,7 +58,7 @@ namespace GaraApi
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseMiddleware<JwtMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

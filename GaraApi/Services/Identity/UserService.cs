@@ -22,6 +22,11 @@ namespace GaraApi.Services.Identity
         public User Get(string id) =>
             _user.Find<User>(user => user.Id == id).FirstOrDefault();
 
+        public User GetUserByUsername(string username)
+        {
+            return _user.Find<User>(user => user.Username == username).FirstOrDefault();
+        }
+
         public User Create(User user)
         {
             _user.InsertOne(user);

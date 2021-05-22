@@ -15,6 +15,13 @@ namespace GaraApi.Entities.Identity
         [BsonIgnoreIfDefault]
         public DateTime? DateOB { get; set; }
 
+        [BsonIgnoreIfNull]
+        public string FirstName { get; set; }
+        [BsonIgnoreIfNull]
+        public string LastName { get; set; }
+
+        [BsonIgnoreIfNull]
+        public string AvatarUrl { get; set; }
 
     }
 }

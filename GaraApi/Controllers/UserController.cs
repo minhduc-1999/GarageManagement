@@ -7,12 +7,14 @@ using GaraApi.Entities.Identity;
 using GaraApi.Models;
 using GaraApi.Services;
 using GaraApi.Services.Identity;
+using GaraApi.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GaraApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize("admin")]
     public class UsersController : ControllerBase
     {
         private readonly UserService _userService;
@@ -43,7 +45,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpPost]
-        public ActionResult<User> Create([FromForm] AccountRequest account)
+        public ActionResult<User> Create([FromForm] AccountModel account)
         {
             var md5 = new MD5CryptoServiceProvider();
             var passHash = md5.ComputeHash(Encoding.ASCII.GetBytes(account.Password));
@@ -57,7 +59,9 @@ namespace GaraApi.Controllers
                 {
                     Email = account.Email,
                     PhoneNumber = account.PhoneNumber,
-                    DateOB = account.DateOB
+                    DateOB = account.DateOB,
+                    FirstName = account.FirstName,
+                    LastName = account.LastName
                 }
             };
             _userService.Create(user);
