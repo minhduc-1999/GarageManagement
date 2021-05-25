@@ -1,25 +1,3 @@
-/*!
-
-=========================================================
-* Black Dashboard React v1.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/black-dashboard-react
-* Copyright 2020 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/black-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-// ##############################
-// // // Chart variables
-// #############################
-
-// chartExample1 and chartExample2 options
 let chart1_2_options = {
   maintainAspectRatio: false,
   legend: {
@@ -85,22 +63,22 @@ let chartExample1 = {
 
     return {
       labels: [
-        "JAN",
-        "FEB",
-        "MAR",
-        "APR",
-        "MAY",
-        "JUN",
-        "JUL",
-        "AUG",
-        "SEP",
-        "OCT",
-        "NOV",
-        "DEC",
+        "THÁNG 1",
+        "THÁNG 2",
+        "THÁNG 3",
+        "THÁNG 4",
+        "THÁNG 5",
+        "THÁNG 6",
+        "THÁNG 7",
+        "THÁNG 8",
+        "THÁNG 9",
+        "THÁNG 10",
+        "THÁNG 11",
+        "THÁNG 12",
       ],
       datasets: [
         {
-          label: "My First dataset",
+          label: "Doanh thu",
           fill: true,
           backgroundColor: gradientStroke,
           borderColor: "#1f8ef1",
@@ -130,22 +108,22 @@ let chartExample1 = {
 
     return {
       labels: [
-        "JAN",
-        "FEB",
-        "MAR",
-        "APR",
-        "MAY",
-        "JUN",
-        "JUL",
-        "AUG",
-        "SEP",
-        "OCT",
-        "NOV",
-        "DEC",
+        "THÁNG 1",
+        "THÁNG 2",
+        "THÁNG 3",
+        "THÁNG 4",
+        "THÁNG 5",
+        "THÁNG 6",
+        "THÁNG 7",
+        "THÁNG 8",
+        "THÁNG 9",
+        "THÁNG 10",
+        "THÁNG 11",
+        "THÁNG 12",
       ],
       datasets: [
         {
-          label: "My First dataset",
+          label: "Số khách hàng mới",
           fill: true,
           backgroundColor: gradientStroke,
           borderColor: "#1f8ef1",

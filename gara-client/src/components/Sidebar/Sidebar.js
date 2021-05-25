@@ -76,7 +76,7 @@ function Sidebar(props) {
           onClick={props.toggleSidebar}
         >
           <div className="logo-img">
-            <img src={logo.imgSrc} alt="react-logo" />
+            <img src={logo.imgSrc} alt="app-logo" />
           </div>
         </Link>
       );
@@ -107,9 +107,7 @@ function Sidebar(props) {
                 if (prop.redirect) return null;
                 return (
                   <li
-                    className={
-                      activeRoute(prop.path) + (prop.pro ? " active-pro" : "")
-                    }
+                    className={activeRoute(prop.path)}
                     key={key}
                   >
                     <NavLink
@@ -119,17 +117,11 @@ function Sidebar(props) {
                       onClick={props.toggleSidebar}
                     >
                       <i className={prop.icon} />
-                      <p>{rtlActive ? prop.rtlName : prop.name}</p>
+                      <p>{prop.name}</p>
                     </NavLink>
                   </li>
                 );
               })}
-              {/* <li className="active-pro">
-                <ReactstrapNavLink href="https://www.creative-tim.com/product/black-dashboard-pro-react?ref=bdr-user-archive-sidebar-upgrade-pro">
-                  <i className="tim-icons icon-spaceship" />
-                  <p>Upgrade to PRO</p>
-                </ReactstrapNavLink>
-              </li> */}
             </Nav>
           </div>
         </div>
