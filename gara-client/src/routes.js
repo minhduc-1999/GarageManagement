@@ -9,6 +9,7 @@ import Customer from "views/Customer.js";
 import Employee from "views/Employee.js";
 import Bill from "views/Bill.js";
 import Report from "views/Report.js";
+import RepairedRequestList from "views/RepairedRequestList.js";
 
 var routes = [
   {
@@ -58,6 +59,13 @@ var routes = [
     name: "Typography",
     icon: "tim-icons icon-align-center",
     component: Typography,
+    layout: "/admin",
+  },
+  {
+    path: "/repairrequestlist",
+    name: "Danh sách tiếp nhận xe",
+    icon: "tim-icons icon-single-copy-04",
+    component: RepairedRequestList,
     layout: "/admin",
   },
   {
