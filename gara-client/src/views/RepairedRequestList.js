@@ -121,22 +121,23 @@ function RepairedRequestList() {
                     <ModalBody>
                         <Form>
                         <Row>
-                            <Col className="pr-md-1" md="4">
+                            <Col className="pr-md-1">
                             <FormGroup>
                                 <label>Họ và Tên</label>
-                                <Input
-                                placeholder="Họ"
-                                type="text"
-                                />
-                            </FormGroup>
-                            </Col>
-                            <Col className="pr-md-1" md="8">
-                            <FormGroup>
-                                <label>Họ</label>
-                                <Input
-                                placeholder="Tên"
-                                type="text"
-                                />
+                                <Row>
+                                    <Col className="pr-md-1" md="4">
+                                        <Input
+                                        placeholder="Họ"
+                                        type="text"
+                                        />
+                                    </Col>
+                                    <Col className="pr-md-1" md="8">
+                                        <Input
+                                        placeholder="Tên"
+                                        type="text"
+                                        />
+                                    </Col>
+                                </Row>
                             </FormGroup>
                             </Col>
                             {/* <Col md="auto" style={{alignItems: "flex-end", display: "flex"}}>
