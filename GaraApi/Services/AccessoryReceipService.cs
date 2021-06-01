@@ -39,5 +39,8 @@ namespace GaraApi.Services
 
         public void Remove(string id) =>
             _accessoryReceipt.DeleteOne(accessoryReceipt => accessoryReceipt.Id == id);
+
+        public List<AccessoryReceiptDetail> GetDetails(string id) =>
+            _accessoryReceipt.Find(accReceipt => accReceipt.Id == id).FirstOrDefault().Details;
     }
 }

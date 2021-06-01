@@ -14,7 +14,6 @@ namespace GaraApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize("admin")]
     public class UsersController : ControllerBase
     {
         private readonly UserService _userService;
@@ -28,10 +27,12 @@ namespace GaraApi.Controllers
         }
 
         [HttpGet]
+        [Authorize("admin")]
         public ActionResult<List<User>> Get() =>
             _userService.Get();
 
         [HttpGet("{id:length(24)}", Name = "GetUser")]
+        [Authorize("admin")]
         public ActionResult<User> Get(string id)
         {
             var user = _userService.Get(id);
@@ -45,6 +46,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpPost]
+        [Authorize("admin")]
         public ActionResult<User> Create([FromForm] AccountModel account)
         {
             var md5 = new MD5CryptoServiceProvider();
@@ -70,6 +72,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpPut("{id:length(24)}")]
+        [Authorize("admin")]
         public IActionResult Update(string id, User userIn)
         {
             var user = _userService.Get(id);
@@ -85,6 +88,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpDelete("{id:length(24)}")]
+        [Authorize("admin")]
         public IActionResult Delete(string id)
         {
             var user = _userService.Get(id);
@@ -100,6 +104,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpGet("roles")]
+        [Authorize("admin")]
         public ActionResult<List<UserRole>> GetRoles() =>
             _roleService.Get();
     }

@@ -22,6 +22,11 @@ namespace GaraApi.Utils
             services.AddSingleton<AccessoryReceiptService>();
             services.AddSingleton<RepairedRequestService>();
             services.AddSingleton<CustomerService>();
+            services.AddSingleton<CarService>();
+            services.AddSingleton<AccessoryTypeService>();
+            services.AddSingleton<LaborCostService>();
+            services.AddSingleton<ProviderService>();
+            services.AddSingleton<ReferenceService>();
 
             services.AddSingleton<UserService>();
             services.AddSingleton<UserRoleService>();

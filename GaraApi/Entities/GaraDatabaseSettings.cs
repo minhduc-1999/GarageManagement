@@ -13,12 +13,10 @@ namespace GaraApi.Entities
         public string RepairedRequestCollectionName { get; set; }
         public string UserCollectionName { get; set; }
         public string UserRoleCollectionName { get; set; }
-        public string CarCollectionName {get; set;}
-        public string AccessoryReceiptDetailCollectionName { get; set; }
+        public string CarCollectionName { get; set; }
         public string AccessoryTypeCollectionName { get; set; }
         public string LaborCostCollectionName { get; set; }
         public string ProviderCollectionName { get; set; }
-        public string QuotationDetailCollectionName { get; set; }
         public string ReferenceCollectionName { get; set; }
     }
 
@@ -35,12 +33,10 @@ namespace GaraApi.Entities
         string RepairedRequestCollectionName { get; set; }
         string UserCollectionName { get; set; }
         string UserRoleCollectionName { get; set; }
-        string CarCollectionName {get; set;}
-        string AccessoryReceiptDetailCollectionName { get; set; }
+        string CarCollectionName { get; set; }
         string AccessoryTypeCollectionName { get; set; }
         string LaborCostCollectionName { get; set; }
         string ProviderCollectionName { get; set; }
-        string QuotationDetailCollectionName { get; set; }
         string ReferenceCollectionName { get; set; }
     }
 }

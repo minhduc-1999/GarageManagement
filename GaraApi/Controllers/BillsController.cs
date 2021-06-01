@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using GaraApi.Entities.Form;
 using GaraApi.Services;
+using GaraApi.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GaraApi.Controllers
@@ -18,10 +19,12 @@ namespace GaraApi.Controllers
         }
 
         [HttpGet]
+        [Authorize("admin, manager, receptionist")]
         public ActionResult<List<Bill>> Get() =>
             _billService.Get();
 
         [HttpGet("{id:length(24)}", Name = "GetBill")]
+        [Authorize("admin, manager, receptionist")]
         public ActionResult<Bill> Get(string id)
         {
             var bill = _billService.Get(id);
@@ -35,6 +38,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpPost]
+        [Authorize("admin, manager, receptionist")]
         public ActionResult<Bill> Create([FromForm] Bill bill)
         {
             _billService.Create(bill);
@@ -43,6 +47,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpPut("{id:length(24)}")]
+        [Authorize("admin")]
         public IActionResult Update(string id, Bill billIn)
         {
             var bill = _billService.Get(id);
@@ -58,6 +63,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpDelete("{id:length(24)}")]
+        [Authorize("admin")]
         public IActionResult Delete(string id)
         {
             var bill = _billService.Get(id);

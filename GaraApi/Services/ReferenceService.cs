@@ -23,19 +23,19 @@ namespace GaraApi.Services
         public Reference Get(string id) =>
             _reference.Find<Reference>(Reference => Reference.Id == id).FirstOrDefault();
 
-        public Reference Create(Reference Reference)
-        {
-            _reference.InsertOne(Reference);
-            return Reference;
-        }
+        // public Reference Create(Reference Reference)
+        // {
+        //     _reference.InsertOne(Reference);
+        //     return Reference;
+        // }
 
         public void Update(string id, Reference ReferenceIn) =>
             _reference.ReplaceOne(Reference => Reference.Id == id, ReferenceIn);
 
-        public void Remove(Reference ReferenceIn) =>
-            _reference.DeleteOne(Reference => Reference.Id == ReferenceIn.Id);
+        // public void Remove(Reference ReferenceIn) =>
+        //     _reference.DeleteOne(Reference => Reference.Id == ReferenceIn.Id);
 
-        public void Remove(string id) =>
-            _reference.DeleteOne(Reference => Reference.Id == id);
+        // public void Remove(string id) =>
+        //     _reference.DeleteOne(Reference => Reference.Id == id);
     }
 }
