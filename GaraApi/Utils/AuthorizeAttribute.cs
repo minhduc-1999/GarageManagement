@@ -30,6 +30,7 @@ namespace GaraApi.Utils
             if (user == null || string.IsNullOrEmpty(role))
             {
                 context.Result = new JsonResult(new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
+                return;
             }
 
             if (!Roles.Exists(str => str == role))

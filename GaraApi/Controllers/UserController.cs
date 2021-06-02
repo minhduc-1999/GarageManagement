@@ -49,6 +49,9 @@ namespace GaraApi.Controllers
         [Authorize("admin")]
         public ActionResult<User> Create([FromForm] AccountModel account)
         {
+            var curUser = _userService.GetUserByUsername(account.Username);
+            if (curUser != null)
+                return BadRequest(new { message = "Username has been used" });
             var md5 = new MD5CryptoServiceProvider();
             var passHash = md5.ComputeHash(Encoding.ASCII.GetBytes(account.Password));
             User user = new User()
