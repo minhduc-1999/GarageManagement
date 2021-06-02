@@ -37,7 +37,7 @@ namespace GaraApi.Services.Identity
 
         private string generateJwtToken(User user)
         {
-            // generate token that is valid for 7 days
+            // generate token that is valid for 1 days
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
             var role = _userRoleService.Get(user.Role);

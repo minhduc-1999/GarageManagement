@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using GaraApi.Entities.Form;
 using GaraApi.Services;
+using GaraApi.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GaraApi.Controllers
@@ -17,10 +18,12 @@ namespace GaraApi.Controllers
         }
 
         [HttpGet]
+        [Authorize("admin, manager, storekeeper")]
         public ActionResult<List<AccessoryReceipt>> Get() =>
             _accReceiptService.Get();
 
         [HttpGet("{id:length(24)}", Name = "GetAccessoryReceipt")]
+        [Authorize("admin, manager, storekeeper")]
         public ActionResult<AccessoryReceipt> Get(string id)
         {
             var accReceipt = _accReceiptService.Get(id);
@@ -34,6 +37,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpPost]
+        [Authorize("admin, manager, storekeeper")]
         public ActionResult<AccessoryReceipt> Create([FromForm] AccessoryReceipt accReceipt)
         {
             _accReceiptService.Create(accReceipt);
@@ -42,6 +46,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpPut("{id:length(24)}")]
+        [Authorize("admin")]
         public IActionResult Update(string id, AccessoryReceipt accReceiptIn)
         {
             var accReceipt = _accReceiptService.Get(id);
@@ -57,6 +62,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpDelete("{id:length(24)}")]
+        [Authorize("admin")]
         public IActionResult Delete(string id)
         {
             var accReceipt = _accReceiptService.Get(id);

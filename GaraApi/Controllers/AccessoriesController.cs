@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using GaraApi.Entities;
 using GaraApi.Services;
+using GaraApi.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GaraApi.Controllers
@@ -18,10 +19,12 @@ namespace GaraApi.Controllers
         }
 
         [HttpGet]
+        [Authorize("admin, manager, storekeeper, employee, receptionist")]
         public ActionResult<List<Accessory>> Get() =>
             _accessoryService.Get();
 
         [HttpGet("{id:length(24)}", Name = "GetAccessory")]
+        [Authorize("admin, manager, storekeeper, employee, receptionist")]
         public ActionResult<Accessory> Get(string id)
         {
             var accessory = _accessoryService.Get(id);
@@ -35,6 +38,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpPost]
+        [Authorize("admin, manager, storekeeper")]
         public ActionResult<Accessory> Create([FromForm] Accessory accessory)
         {
             _accessoryService.Create(accessory);
@@ -43,6 +47,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpPut("{id:length(24)}")]
+        [Authorize("admin")]
         public IActionResult Update(string id, Accessory accessoryIn)
         {
             var accessory = _accessoryService.Get(id);
@@ -58,6 +63,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpDelete("{id:length(24)}")]
+        [Authorize("admin, manager, storekeeper")]
         public IActionResult Delete(string id)
         {
             var accessory = _accessoryService.Get(id);
