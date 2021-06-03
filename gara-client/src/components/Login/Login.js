@@ -19,16 +19,16 @@ function Login() {
     <div className='login-container'>
       <Form onSubmit={handleSubmit}>
         <FormGroup>
-          <Label for="exampleEmail">User</Label>
-          <Input type="text" name="user" id="user" placeholder="User name"
+          <Label for="exampleEmail">Tài khoản</Label>
+          <Input type="text" name="user" id="user" placeholder="Tên tài khoản"
             onChange={e => setUsername(e.target.value)} />
         </FormGroup>
         <FormGroup>
-          <Label for="examplePassword">Password</Label>
-          <Input type="password" name="password" id="password" placeholder="Password"
+          <Label for="examplePassword">Mật khẩu</Label>
+          <Input type="password" name="password" id="password" placeholder="Mật khẩu"
             onChange={e => setPassword(e.target.value)} />
         </FormGroup>
-        <Button>Submit</Button>
+        <Button className='login-button'>Đăng nhập</Button>
       </Form>
     </div>
   );

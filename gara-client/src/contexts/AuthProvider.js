@@ -13,7 +13,7 @@ const AuthProvider = ({children}) => {
         setUserAcc,
         login: async (username, password) => {
           try {
-            console.log(username + password);
+            console.log('username: ' + username + ', password: ' + password);
             var loginFormData = new FormData();
             loginFormData.append('Username', username);
             loginFormData.append('Password', password);
@@ -28,6 +28,13 @@ const AuthProvider = ({children}) => {
             console.error(error);
           }
         },
+        logout: async () => {
+          try {
+            await setUserAcc(null);
+          } catch (error) {
+            console.log(error);
+          }
+        }
       }} >
       {children}
     </AuthContext.Provider>
