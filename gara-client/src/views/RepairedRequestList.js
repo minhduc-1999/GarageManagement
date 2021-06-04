@@ -23,6 +23,27 @@ import {
 } from "@material-ui/core"
 
 function RepairedRequestList() {
+    const ColoredLine = ({ color }) => (
+        <hr
+            style={{
+                color: color,
+                backgroundColor: color,
+                height: 1
+            }}
+        />
+    );
+
+    const [openInvoice, setOpenInvoice] = React.useState(false);
+  
+    const handleClickOpenInvoice = () => {
+        setOpenInvoice(true);
+    };
+  
+    const handleCloseInvoice = () => {
+        setOpenInvoice(false);
+    };
+
+
     const [open, setOpenModal] = React.useState(false);
   
     const handleClickOpen = () => {
@@ -46,6 +67,86 @@ function RepairedRequestList() {
     return (
             <>
             <div className="content">
+                <Modal isOpen={openInvoice} size="lg">
+                    <ModalHeader style={{margin:25, justifyContent:"center"}}>
+                        <h3 className="title">Hóa đơn</h3>
+                    </ModalHeader>
+                    <ModalBody>
+                        <ColoredLine color="gray"/>
+                        <Row>
+                            <Card>
+                                <CardHeader>
+                                    <Row>
+                                        <Col>
+                                            <CardTitle tag="h4">Danh sách sử dụng phụ tùng</CardTitle>
+                                        </Col>
+                                    </Row>
+                                </CardHeader>
+                                <CardBody>
+                                <Table className="tablesorter" responsive>
+                                    <thead className="text-primary">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Phụ tùng</th>
+                                        <th>Số lượng</th>
+                                        <th>Đơn giá</th>
+                                        <th>Tổng tiền</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <th scope="row">1</th>
+                                        <td>abc</td>
+                                        <td>50</td>
+                                        <td>10000 VNĐ</td>
+                                        <td>5000000 VNĐ</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">1</th>
+                                        <td>xyz</td>
+                                        <td>50</td>
+                                        <td>10000 VNĐ</td>
+                                        <td>5000000 VNĐ</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">1</th>
+                                        <td>binh</td>
+                                        <td>50</td>
+                                        <td>10000 VNĐ</td>
+                                        <td>5000000 VNĐ</td>
+                                    </tr>
+                                    </tbody>
+                                </Table>
+                                </CardBody>
+                            </Card>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <h4 className="title">Phí sửa chữa</h4>
+                            </Col>
+                            <Col md="auto">
+                                <h5 className="title">100000 VNĐ</h5>
+                            </Col>
+                        </Row>
+                        <ColoredLine color="gray"/>
+                        <Row>
+                            <Col>
+                                <h4 className="title">Thành tiền</h4>
+                            </Col>
+                            <Col md="auto">
+                                <h4 className="title">1000000 VNĐ</h4>
+                            </Col>
+                        </Row>
+                    </ModalBody>
+                    <ModalFooter style={{margin:25, justifyContent:"flex-end"}}>
+                        <Button onClick={handleCloseInvoice} className="btn-fill" color="primary" type="submit" style={{marginRight:25}}>
+                        In hóa đơn
+                        </Button>
+                        <Button onClick={handleCloseInvoice} className="btn-fill" color="primary" type="submit">
+                        OK
+                        </Button>
+                    </ModalFooter>
+                </Modal>
                 <Modal isOpen={open} size="sm">
                     <ModalHeader >
                         <h4 className="title">Phiếu tiếp nhận xe</h4>
@@ -108,6 +209,9 @@ function RepairedRequestList() {
                     <ModalFooter style={{margin:25, justifyContent:"flex-end"}}>
                         <Button onClick={handleClose} className="btn-fill" color="primary" type="submit" style={{marginRight:25}}>
                         Hủy
+                        </Button>
+                        <Button onClick={handleClickOpenInvoice} className="btn-fill" color="primary" type="submit" style={{marginRight:25}}>
+                        Hóa đơn
                         </Button>
                         <Button onClick={handleClose} className="btn-fill" color="primary" type="submit">
                         Thêm
