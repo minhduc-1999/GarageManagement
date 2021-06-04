@@ -14,16 +14,18 @@ const AuthProvider = ({children}) => {
         login: async (username, password) => {
           try {
             console.log('username: ' + username + ', password: ' + password);
-            var loginFormData = new FormData();
+            let loginFormData = new FormData();
             loginFormData.append('Username', username);
             loginFormData.append('Password', password);
-            var res = await axios.post('http://localhost:5000/api/login', loginFormData)
-                .then(response => {
+            axios.post('http://localhost:5000/api/login', loginFormData)
+              .then(response => {
+                console.log(response);
                 return response.data;
-              }).catch(error => {
+              }).then(
+                data => setUserAcc(data)
+              ).catch(error => {
                 console.log(error.response.data);
               });
-            setUserAcc(res);
           } catch (error) {
             console.error(error);
           }
