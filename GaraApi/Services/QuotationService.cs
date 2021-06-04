@@ -37,5 +37,8 @@ namespace GaraApi.Services
 
         public void Remove(string id) =>
             _quotation.DeleteOne(quotation => quotation.Id == id);
+
+        public List<QuotationDetail> GetDetails(string id) =>
+            _quotation.Find(quotation => quotation.Id == id).FirstOrDefault().Details;
     }
 }

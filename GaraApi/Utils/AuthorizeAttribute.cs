@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace GaraApi.Utils
 {
+    [AttributeUsage(AttributeTargets.Method)]
     public class AuthorizeAttribute : Attribute, IAuthorizationFilter
     {
         public List<string> Roles { get; set; }
@@ -17,12 +18,19 @@ namespace GaraApi.Utils
         }
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            var user = (User)context.HttpContext.Items["User"];
-            var role = context.HttpContext.Items["UserRole"].ToString();
+            if (Roles.Count == 0)
+                return;
+            User user = null;
+            String role = null;
+            if (context.HttpContext.Items.ContainsKey("User"))
+                user = (User)context.HttpContext.Items["User"];
+            if (context.HttpContext.Items.ContainsKey("UserRole"))
+                role = context.HttpContext.Items["UserRole"].ToString();
 
             if (user == null || string.IsNullOrEmpty(role))
             {
                 context.Result = new JsonResult(new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
+                return;
             }
 
             if (!Roles.Exists(str => str == role))

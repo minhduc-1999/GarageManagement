@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using GaraApi.Entities.Form;
 using GaraApi.Services;
+using GaraApi.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GaraApi.Controllers
@@ -18,10 +19,12 @@ namespace GaraApi.Controllers
         }
 
         [HttpGet]
+        [Authorize("admin, manager, storekeeper, receptionist")]
         public ActionResult<List<Quotation>> Get() =>
             _quotationService.Get();
 
         [HttpGet("{id:length(24)}", Name = "GetQuotation")]
+        [Authorize("admin, manager, storekeeper, receptionist")]
         public ActionResult<Quotation> Get(string id)
         {
             var quotation = _quotationService.Get(id);
@@ -35,6 +38,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpPost]
+        [Authorize("admin, manager, receptionist")]
         public ActionResult<Quotation> Create([FromForm] Quotation quotation)
         {
             _quotationService.Create(quotation);
@@ -43,6 +47,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpPut("{id:length(24)}")]
+        [Authorize("admin, manager, receptionist")]
         public IActionResult Update(string id, Quotation quotationIn)
         {
             var quotation = _quotationService.Get(id);
@@ -58,6 +63,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpDelete("{id:length(24)}")]
+        [Authorize("admin, manager")]
         public IActionResult Delete(string id)
         {
             var quotation = _quotationService.Get(id);
