@@ -21,9 +21,10 @@ const AuthProvider = ({children}) => {
               .then(response => {
                 console.log(response);
                 return response.data;
-              }).then(
-                data => setUserAcc(data)
-              ).catch(error => {
+              }).then(data => {
+                setUserAcc(data);
+                localStorage.setItem('LoginToken', data.token);
+              }).catch(error => {
                 console.log(error.response.data);
               });
           } catch (error) {
@@ -33,6 +34,7 @@ const AuthProvider = ({children}) => {
         logout: async () => {
           try {
             await setUserAcc(null);
+            localStorage.removeItem('LoginToken');
           } catch (error) {
             console.log(error);
           }
