@@ -1,7 +1,6 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 using GaraApi.Entities.Identity;
 using GaraApi.Interfaces;
@@ -24,17 +23,28 @@ namespace GaraApi.Services.Identity
             _appSettings = appSettings.Value;
             _userRoleService = userRoleService;
         }
-        public AuthenticateResponse Authenticate(AuthenticateRequest model)
+        public Tuple<bool, object> Authenticate(AuthenticateRequest model)
         {
             var user = _userService.GetUserByUsername(model.Username);
             if (user == null)
-                return null;
-            var md5 = new MD5CryptoServiceProvider();
-            var passHash = Encoding.ASCII.GetString(md5.ComputeHash(Encoding.ASCII.GetBytes(model.Password)));
+                return new Tuple<bool, object>(false, "Username không chính xác");
+            if (user.IsLock)
+            {
+                return new Tuple<bool, object>(false, "Tài khoản đã bị khoá");
+            }
+            var passHash = Helpers.Md5Hash(model.Password);
+            // var md5 = new MD5CryptoServiceProvider();
+            // var passHash = Encoding.ASCII.GetString(md5.ComputeHash(Encoding.ASCII.GetBytes(model.Password)));
             if (!user.PasswordHash.Equals(passHash))
-                return null;
+            {
+                if (_userService.Lock(user.Id))
+                    return new Tuple<bool, object>(false, "Sai mật khẩu 5 lần. Tài khoản bị tạm khoá");
+                return new Tuple<bool, object>(false, "Mật khẩu không chính xác");
+            }
+
             var token = generateJwtToken(user);
-            return new AuthenticateResponse(user, token);
+            _userService.Update(user.Id, "AccessFailCount", 0);
+            return new Tuple<bool, object>(true, new AuthenticateResponse(user, token));
         }
 
         private string generateJwtToken(User user)
@@ -49,7 +59,7 @@ namespace GaraApi.Services.Identity
                     new Claim("id", user.Id.ToString()),
                     new Claim("role", role)
                 }),
-                // Expires = DateTime.UtcNow.AddHours(24),
+                Expires = DateTime.UtcNow.AddDays(24),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);

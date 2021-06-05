@@ -66,7 +66,8 @@ namespace GaraApi.Controllers
                     PhoneNumber = account.PhoneNumber,
                     DateOB = account.DateOB,
                     FirstName = account.FirstName,
-                    LastName = account.LastName
+                    LastName = account.LastName,
+                    Address = account.Address
                 }
             };
             _userService.Create(user);
@@ -110,5 +111,26 @@ namespace GaraApi.Controllers
         [Authorize("admin")]
         public ActionResult<List<UserRole>> GetRoles() =>
             _roleService.Get();
+
+        [HttpPost("unlock")]
+        [Authorize("admin")]
+        public ActionResult Unlock([FromQuery] string id)
+        {
+            var res = _userService.UnLock(id);
+            if (res)
+                return Ok(new { message = "Mở khoá tài khoản thành công" });
+            return StatusCode(501);
+        }
+
+        [HttpPost("reset")]
+        [Authorize("admin")]
+        public ActionResult ResetPassword([FromForm] string id, [FromForm] string newPassword)
+        {
+            var res = _userService.ResetPass(id, newPassword);
+            if (res)
+                return Ok(new { message = "Đặt lại mật khẩu thành công" });
+            return StatusCode(501);
+        }
+
     }
 }

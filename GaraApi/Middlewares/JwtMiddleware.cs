@@ -54,9 +54,9 @@ namespace GaraApi.Middlewares
                 context.Items.Add("User", userService.Get(userId));
                 context.Items.Add("UserRole", role);
             }
-            catch
+            catch (SecurityTokenExpiredException e)
             {
-
+                Console.WriteLine(e.Message);
             }
         }
     }

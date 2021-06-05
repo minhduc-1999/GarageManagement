@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using GaraApi.Entities;
 using GaraApi.Entities.Identity;
+using GaraApi.Utils;
 using MongoDB.Driver;
 
 namespace GaraApi.Services.Identity
@@ -41,5 +42,50 @@ namespace GaraApi.Services.Identity
 
         public void Remove(string id) =>
             _user.DeleteOne(user => user.Id == id);
+
+        public bool ResetPass(string id, string newPass)
+        {
+            // var update = Builders<User>.Update.Set("PasswordHash", Helpers.Md5Hash(newPass));
+            // var res = _user.UpdateOne(user => user.Id == id, update);
+            // if (res.ModifiedCount == 1)
+            // {
+            //     return true;
+            // }
+            // return false;
+            var isLock = _user.Find(user => user.Id == id).Project(user => user.IsLock).FirstOrDefault();
+            if (isLock)
+                return false;
+            return Update(id, "PasswordHash", Helpers.Md5Hash(newPass));
+        }
+
+        public bool UnLock(string id)
+        {
+            if (Update(id, "AccessFailCount", 0))
+            {
+                return Update(id, "IsLock", false);
+            }
+            return false;
+        }
+        public bool Lock(string id)
+        {
+            var accFailed = _user.Find(user => user.Id == id).Project(user => user.AccessFailCount).FirstOrDefault();
+            if (Update(id, "AccessFailCount", accFailed + 1))
+            {
+                if (accFailed + 1 == 5)
+                    return Update(id, "IsLock", true);
+            }
+            return false;
+        }
+
+        public bool Update(string id, string field, object value)
+        {
+            var update = Builders<User>.Update.Set(field, value);
+            var res = _user.UpdateOne(user => user.Id == id, update);
+            if (res.ModifiedCount == 1)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

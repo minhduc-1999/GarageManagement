@@ -32,6 +32,7 @@ namespace GaraApi.Utils
             services.AddSingleton<UserRoleService>();
 
             services.AddScoped<IAuthentication, AuthenticateService>();
+            services.AddScoped<IAccountService, AccountService>();
             return services;
         }
 
