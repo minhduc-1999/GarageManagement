@@ -66,7 +66,8 @@ namespace GaraApi.Controllers
                     PhoneNumber = account.PhoneNumber,
                     DateOB = account.DateOB,
                     FirstName = account.FirstName,
-                    LastName = account.LastName
+                    LastName = account.LastName,
+                    Address = account.Address
                 }
             };
             _userService.Create(user);

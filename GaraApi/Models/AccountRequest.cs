@@ -23,6 +23,7 @@ namespace GaraApi.Models
         public string FirstName { get; set; }
         [StringLength(50)]
         public string LastName { get; set; }
+        public string Address { get; set; }
 
     }
 }

@@ -1,5 +1,6 @@
 
 using System;
+using GaraApi.Entities.Identity;
 using GaraApi.Interfaces;
 using GaraApi.Models;
 using GaraApi.Utils;
@@ -30,6 +31,14 @@ namespace GaraApi.Services.Identity
                 return res;
             }
             return new Tuple<bool, string>(false, "Mật khẩu cũ không chính xác");
+        }
+
+        public Tuple<bool, string> UpdateProfile(string id, UserClaim claim)
+        {
+            var res = _userService.Update(id, "UserClaims", claim);
+            if (res)
+                return new Tuple<bool, string>(true, "Cập nhật thông tin cá nhân thành công");
+            return new Tuple<bool, string>(false, "Cập nhật thất bại");
         }
     }
 }

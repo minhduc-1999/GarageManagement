@@ -28,6 +28,9 @@ namespace GaraApi.Entities.Identity
         [BsonIgnoreIfNull]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string AvatarUrl { get; set; }
+        [BsonIgnoreIfNull]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string Address { get; set; }
 
     }
 }
