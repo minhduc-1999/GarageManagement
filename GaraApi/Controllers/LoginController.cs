@@ -26,9 +26,9 @@ namespace GaraApi.Controllers
         {
             var response = _authService.Authenticate(model);
 
-            if (response == null)
-                return BadRequest(new { message = "Tài khoản hoặc mật khẩu không chính xác" });
-            return Ok(response);
+            if (!response.Item1)
+                return BadRequest(new { message = response.Item2.ToString() });
+            return Ok(response.Item2);
         }
 
         [HttpPost("account/password")]

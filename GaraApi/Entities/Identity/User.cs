@@ -18,6 +18,8 @@ namespace GaraApi.Entities.Identity
         public string PasswordHash { get; set; }
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
         public int AccessFailCount { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
+        public bool IsLock { get; set; }
         [BsonRepresentation(BsonType.ObjectId)]
         [BsonRequired]
         public string Role { get; set; }
