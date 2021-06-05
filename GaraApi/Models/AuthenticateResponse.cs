@@ -1,5 +1,6 @@
 using System;
 using GaraApi.Entities.Identity;
+using System.Text.Json.Serialization;
 
 namespace GaraApi.Models
 {
@@ -7,7 +8,9 @@ namespace GaraApi.Models
     {
         public string Id { get; set; }
         public string Username { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string FirstName { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string LastName { get; set; }
         public string Token { get; set; }
 

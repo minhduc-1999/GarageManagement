@@ -1,7 +1,6 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 using GaraApi.Entities.Identity;
 using GaraApi.Interfaces;
@@ -29,8 +28,9 @@ namespace GaraApi.Services.Identity
             var user = _userService.GetUserByUsername(model.Username);
             if (user == null)
                 return null;
-            var md5 = new MD5CryptoServiceProvider();
-            var passHash = Encoding.ASCII.GetString(md5.ComputeHash(Encoding.ASCII.GetBytes(model.Password)));
+            var passHash = Helpers.Md5Hash(model.Password);
+            // var md5 = new MD5CryptoServiceProvider();
+            // var passHash = Encoding.ASCII.GetString(md5.ComputeHash(Encoding.ASCII.GetBytes(model.Password)));
             if (!user.PasswordHash.Equals(passHash))
                 return null;
             var token = generateJwtToken(user);
@@ -49,7 +49,7 @@ namespace GaraApi.Services.Identity
                     new Claim("id", user.Id.ToString()),
                     new Claim("role", role)
                 }),
-                // Expires = DateTime.UtcNow.AddHours(24),
+                Expires = DateTime.UtcNow.AddDays(24),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using GaraApi.Entities;
 using GaraApi.Entities.Identity;
+using GaraApi.Utils;
 using MongoDB.Driver;
 
 namespace GaraApi.Services.Identity
@@ -41,5 +42,16 @@ namespace GaraApi.Services.Identity
 
         public void Remove(string id) =>
             _user.DeleteOne(user => user.Id == id);
+
+        public bool ResetPass(string id, string newPass)
+        {
+            var update = Builders<User>.Update.Set("PasswordHash", Helpers.Md5Hash(newPass));
+            var res = _user.UpdateOne(user => user.Id == id, update);
+            if (res.ModifiedCount == 1)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }
