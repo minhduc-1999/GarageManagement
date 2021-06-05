@@ -37,10 +37,10 @@ const App = props => {
       }
     }).then(response => {
       setUserAcc(response.data);
-      setInitializing(false);
     }).catch(error => {
       console.log(error.response.data);
     })
+    setInitializing(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
