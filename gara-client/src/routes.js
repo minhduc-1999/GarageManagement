@@ -10,6 +10,8 @@ import Employee from "views/Employee.js";
 import Bill from "views/Bill.js";
 import Report from "views/Report.js";
 import RepairedRequestList from "views/RepairedRequestList.js";
+import Accessories from "views/Accessories.js";
+import StorageHistory from "views/StorageHistory.js"
 
 var routes = [
   {
@@ -73,6 +75,20 @@ var routes = [
     name: "Khách hàng",
     icon: "tim-icons icon-single-02",
     component: Customer,
+    layout: "/admin",
+  },
+  {
+    path: "/accessories",
+    name: "Quản lý phụ tùng",
+    icon: "tim-icons icon-app",
+    component: Accessories,
+    layout: "/admin",
+  },
+  {
+    path: "/storagehistory",
+    name: "Lịch sử nhập xuất kho",
+    icon: "tim-icons icon-single-copy-04",
+    component: StorageHistory,
     layout: "/admin",
   },
   {
