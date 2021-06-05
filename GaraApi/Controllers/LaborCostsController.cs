@@ -40,6 +40,9 @@ namespace GaraApi.Controllers
         [Authorize("admin, manager")]
         public ActionResult<LaborCost> Create([FromForm] LaborCost laborCost)
         {
+            var curLaborCost = _laborCostService.Get(laborCost.Id);
+            if (curLaborCost != null)
+                return BadRequest(new { message = "Labor Cost has been used" });
             _laborCostService.Create(laborCost);
 
             return CreatedAtRoute("GetLaborCost", new { id = laborCost.Id.ToString() }, laborCost);

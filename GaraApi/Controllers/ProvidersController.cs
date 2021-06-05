@@ -40,6 +40,10 @@ namespace GaraApi.Controllers
         [Authorize("admin, manager, storekeeper, receptionist")]
         public ActionResult<Provider> Create([FromForm] Provider provider)
         {
+            var curProvider = _providerService.Get(provider.Id);
+            if (curProvider != null)
+                return BadRequest(new { message = "Provider has been used" });
+            
             _providerService.Create(provider);
 
             return CreatedAtRoute("GetProvider", new { id = provider.Id.ToString() }, provider);

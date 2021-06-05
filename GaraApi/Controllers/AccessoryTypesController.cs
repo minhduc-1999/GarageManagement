@@ -40,6 +40,9 @@ namespace GaraApi.Controllers
         [Authorize("admin, manager, storekeeper")]
         public ActionResult<AccessoryType> Create([FromForm] AccessoryType accessoryType)
         {
+            var curAccessoryType = _accessoryTypeService.Get(accessoryType.Id);
+            if (curAccessoryType != null)
+                return BadRequest(new { message = "Accessory Type has been used" });
             _accessoryTypeService.Create(accessoryType);
 
             return CreatedAtRoute("GetAccessoryType", new { id = accessoryType.Id.ToString() }, accessoryType);
