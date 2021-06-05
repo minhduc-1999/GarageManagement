@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {
   Card,
   CardHeader,
@@ -8,11 +8,34 @@ import {
   Row,
   Col,
 } from "reactstrap";
+const axios = require('axios');
 
 function Employee() {
+  const [users, setUsers] = useState(null);
+
+  useEffect(() => {
+    async function fetchUserData() {
+      let loginToken = localStorage.getItem('LoginToken');
+      axios.get('http://localhost:5000/api/users', {
+        headers: {
+          Authorization: 'Bearer ' + loginToken
+        }
+      }).then(response => {
+        console.log(response.data)
+        return response.data;
+      }).then(data => {
+        setUsers(data);
+      }).catch(error => console.log(error));
+    }
+    fetchUserData();
+  }, []);
+
   return (
     <>
       <div className="content">
+        {users === null ? (
+          <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
+        ) : (
         <Row>
           <Col md="12">
             <Card>
@@ -35,45 +58,26 @@ function Employee() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <th scope="row">1</th>
-                      <td>Nguyen Van A</td>
-                      <td>01/01/2000</td>
-                      <td>TP.HCM</td>
-                      <td>abc@gmail.com</td>
-                      <td>0123182687</td>
-                      <td>employê1</td>
-                      <td>Nhân viên tiếp nhận</td>
-                      <td>02/11/2019</td>
-                    </tr>
-                    <tr>
-                      <th scope="row">2</th>
-                      <td>Pham Van B</td>
-                      <td>01/01/2000</td>
-                      <td>TP.HCM</td>
-                      <td>abc@gmail.com</td>
-                      <td>0123182687</td>
-                      <td>employê1</td>
-                      <td>Nhân viên tiếp nhận</td>
-                      <td>02/11/2019</td>
-                    </tr>
-                    <tr>
-                      <th scope="row">3</th>
-                      <td>Le Van C</td>
-                      <td>01/01/2000</td>
-                      <td>TP.HCM</td>
-                      <td>abc@gmail.com</td>
-                      <td>0123182687</td>
-                      <td>employê1</td>
-                      <td>Nhân viên tiếp nhận</td>
-                      <td>02/11/2019</td>
-                    </tr>
+                    {users.map((user, index) => (
+                      <tr key={index}>
+                        <th scope="row">{index + 1}</th>
+                        <td>{user.userClaims.firstName} {user.userClaims.lastName}</td>
+                        <td>01/01/2000</td>
+                        <td>TP.HCM</td>
+                        <td>abc@gmail.com</td>
+                        <td>{user.userClaims.phoneNumber}</td>
+                        <td>{user.username}</td>
+                        <td>Nhân viên tiếp nhận</td>
+                        <td>02/11/2019</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </Table>
               </CardBody>
             </Card>
           </Col>
         </Row>
+        )}
       </div>
     </>
   );

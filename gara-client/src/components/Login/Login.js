@@ -12,8 +12,7 @@ function Login() {
 
   const handleSubmit = e => {
     e.preventDefault();
-    login(username, password);
-    checkError();
+    login(username, password).then(function() { checkError(); });
   }
 
   function checkError() {
