@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 
 import AdminLayout from "layouts/Admin/Admin.js";
@@ -15,29 +15,50 @@ import BackgroundColorWrapper from "./components/BackgroundColorWrapper/Backgrou
 import Login from './components/Login/Login';
 import {AuthContext} from './contexts/AuthProvider';
 
-const App= props => {
-  const {userAcc} = useContext(AuthContext);
+const axios = require('axios');
 
-  if (!userAcc) {
-    return (
-      <ThemeContextWrapper>
-        <BackgroundColorWrapper>
-          <Login />
-        </BackgroundColorWrapper>
-      </ThemeContextWrapper>
-    )
-  }
+const App = props => {
+  const {userAcc, setUserAcc} = useContext(AuthContext);
+  const [initializing, setInitializing] = useState(true);
+  
+  useEffect(() => {
+    const userId = localStorage.getItem('UserId');
+    const token = localStorage.getItem('LoginToken');
+    if (!token || !userId) {
+      setInitializing(false);
+      return;
+    }
+    axios.get('http://localhost:5000/api/users', {
+      params: {
+        id: userId
+      },
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    }).then(response => {
+      setUserAcc(response.data);
+    }).catch(error => {
+      console.log(error.response.data);
+    })
+    setInitializing(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  return(
+  return (
     <ThemeContextWrapper>
       <BackgroundColorWrapper>
-        <BrowserRouter>
-          <Switch>
-            <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
-            <Route path="/rtl" render={(props) => <RTLLayout {...props} />} />
-            <Redirect from="/" to="/admin/dashboard" />
-          </Switch>
-        </BrowserRouter>
+        {initializing ? 
+          <p>Loading...</p> :
+        !userAcc ? 
+          <Login /> :
+          <BrowserRouter>
+            <Switch>
+              <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
+              <Route path="/rtl" render={(props) => <RTLLayout {...props} />} />
+              <Redirect from="/" to="/admin/dashboard" />
+            </Switch>
+          </BrowserRouter>
+        }
       </BackgroundColorWrapper>
     </ThemeContextWrapper>
   );
