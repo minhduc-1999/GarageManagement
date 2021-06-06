@@ -16,6 +16,7 @@ import {
   FormGroup,
   Label,
   Input,
+  Alert,
 } from "reactstrap";
 const axios = require('axios');
 const dateFormat = require("dateformat");
@@ -33,7 +34,9 @@ function Employee() {
   const [email, setEmail] = useState(null);
   const [phoneNum, setPhoneNum] = useState(null);
   const [dateOB, setDateOB] = useState(null);
-  const [onChange, setOnchange] = useState(false)
+  const [address, setAddress] = useState(null);
+  const [alertVisible, setAlertVisible] = useState(false)
+  const [onChange, setOnchange] = useState(false);
 
   const translateRoles = {
     admin: 'admin',
@@ -71,18 +74,8 @@ function Employee() {
     fetchUserRoles();
   }, [onChange]);
 
-  function setRoleIdByName(roleName) {
-    userRoles.forEach(element => {
-      if(element.roleName === role) {
-        setRoleId(element.id);
-        console.log(roleId);
-      }
-    });
-  }
-
   const addNewUser = () => {
-    setRoleIdByName(userRoles, role);
-    if (!roleId || !username || !password || !firstName || !lastName || !(dateOB instanceof Date)) {
+    if (!roleId || !username || !password) {
       console.log('Thiếu thông tin tạo tài khoản');
       return;
     }
@@ -96,6 +89,7 @@ function Employee() {
     createUser.append('email', email);
     createUser.append('phoneNumber', phoneNum);
     createUser.append('dateOB', dateOB);
+    createUser.append('address', address);
     axios.post('http://localhost:5000/api/users', createUser, {
       headers: {
         Authorization: 'Bearer ' + loginToken
@@ -106,10 +100,12 @@ function Employee() {
       setOnAddNewUser(!onAddNewUser)
     }).catch(error => {
       console.log(error);
+      setAlertVisible(!alertVisible);
     })
   }
 
   const handleOpenDialog = () => setOnAddNewUser(!onAddNewUser);
+  const onDismiss = () => setAlertVisible(!alertVisible);
 
   return (
     <>
@@ -120,7 +116,7 @@ function Employee() {
         <div>
           <Modal scrollable={false} isOpen={onAddNewUser}>
             <ModalHeader style={{justifyContent:"center"}}>
-              <h3 className="title">Thêm nhân viên mới</h3>
+              <p className="title">Thêm nhân viên mới</p>
             </ModalHeader>
             <ModalBody>
               <Form style={{marginLeft: 30, marginRight: 30}}>
@@ -137,12 +133,10 @@ function Employee() {
                 <FormGroup row>
                   <Label>Chức vụ</Label>
                   <Input type="select" name="select" id="exampleSelect" 
-                    onChange={e => setRole(e.target.value)} >
-                    <option value={'admin'}>Admin</option>
-                    <option value={'manager'}>Quản lý</option>
-                    <option value={'storekeeper'}>Thủ kho</option>
-                    <option value={'receptionist'}>Nhân viên tiếp nhận</option>
-                    <option value={'employee'}>Nhân viên sửa chữa</option>
+                    onChange={e => setRoleId(e.target.value)} >
+                    {userRoles.map(item => (
+                      <option key={item.id} value={item.id}>{item.roleName}</option>
+                    ))}
                   </Input>
                 </FormGroup>
                 <FormGroup row>
@@ -170,6 +164,14 @@ function Employee() {
                   <Input type="text" name="user" id="dateOB" placeholder="Ngày sinh"
                     onChange={e => setDateOB(e.target.value)} />
                 </FormGroup>
+                <FormGroup row>
+                  <Label for="exampleEmail">Địa chỉ</Label>
+                  <Input type="text" name="user" id="address" placeholder="Địa chỉ"
+                    onChange={e => setAddress(e.target.value)} />
+                </FormGroup>
+                <Alert className="alert-error" color="warning" isOpen={alertVisible} toggle={onDismiss}>
+                  Tên tài khoản đã được sử dụng.
+                </Alert>
               </Form>
             </ModalBody>
             <ModalFooter style={{margin: 25, justifyContent:"flex-end"}}>
@@ -186,6 +188,7 @@ function Employee() {
               </Button>
             </ModalFooter>
           </Modal>
+
           <Row>
             <Col md="12">
               <Card>
@@ -202,7 +205,7 @@ function Employee() {
                   </Row>
                 </CardHeader>
                 <CardBody>
-                  <Table className="tablesorter" responsive>
+                  <Table className="tablesorter" hover>
                     <thead className="text-primary">
                       <tr>
                         <th>ID</th>
@@ -218,13 +221,13 @@ function Employee() {
                     </thead>
                     <tbody>
                       {users.map((user, index) => (
-                        <tr key={index}>
+                        <tr key={index} >
                           <th scope="row">{index + 1}</th>
                           <td>{user.userClaims.lastName} {user.userClaims.firstName} </td>
                           <td>{(user.userClaims.dateOB ? dateFormat(user.userClaims.dateOB, 'dd/mm/yyyy') : '-')}</td>
-                          <td>{user.userClaims.address}</td>
-                          <td>{user.userClaims.email}</td>
-                          <td>{user.userClaims.phoneNumber}</td>
+                          <td>{(user.userClaims.address ? user.userClaims.address : '-')}</td>
+                          <td>{(user.userClaims.email ? user.userClaims.email : '-')}</td>
+                          <td>{(user.userClaims.phoneNumber ? user.userClaims.phoneNumber : '-')}</td>
                           <td>{user.username}</td>
                           <td>{translateRoles.['employee']}</td>
                           <td>02/11/2019</td>
