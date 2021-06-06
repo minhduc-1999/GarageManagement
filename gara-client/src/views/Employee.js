@@ -27,7 +27,6 @@ function Employee() {
   const [onAddNewUser, setOnAddNewUser] = useState(false);
   const [username, setUsername] = useState(null);
   const [password, setPassword] = useState(null);
-  const [role, setRole] = useState('admin');
   const [roleId, setRoleId] = useState(null);
   const [firstName, setFirstName] = useState(null);
   const [lastName, setLastName] = useState(null)
@@ -110,7 +109,7 @@ function Employee() {
   return (
     <>
       <div className="content">
-        {users === null ? (
+        {(users === null || userRoles === null) ? (
           <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
         ) : (
         <div>
@@ -132,10 +131,11 @@ function Employee() {
                 </FormGroup>
                 <FormGroup row>
                   <Label>Chức vụ</Label>
-                  <Input type="select" name="select" id="exampleSelect" 
+                  <Input defaultValue={'DEFAULT'} type="select" name="select" id="exampleSelect" 
                     onChange={e => setRoleId(e.target.value)} >
+                        <option value='DEFAULT' disabled>Chọn chức vụ</option>
                     {userRoles.map(item => (
-                      <option key={item.id} value={item.id}>{item.roleName}</option>
+                        <option key={item.id} value={item.id}>{item.roleName}</option>
                     ))}
                   </Input>
                 </FormGroup>
@@ -161,7 +161,7 @@ function Employee() {
                 </FormGroup>
                 <FormGroup row>
                   <Label for="exampleEmail">Ngày sinh</Label>
-                  <Input type="text" name="user" id="dateOB" placeholder="Ngày sinh"
+                  <Input type="date" name="user" id="dateOB" placeholder="Ngày sinh"
                     onChange={e => setDateOB(e.target.value)} />
                 </FormGroup>
                 <FormGroup row>
