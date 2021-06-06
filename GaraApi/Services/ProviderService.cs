@@ -23,10 +23,10 @@ namespace GaraApi.Services
         public Provider Get(string id) =>
             _provider.Find<Provider>(Provider => Provider.Id == id).FirstOrDefault();
 
-        public Provider Create(Provider Provider)
+        public Provider Create(Provider provider)
         {
-            _provider.InsertOne(Provider);
-            return Provider;
+            _provider.InsertOne(provider);
+            return provider;
         }
 
         public void Update(string id, Provider ProviderIn) =>
