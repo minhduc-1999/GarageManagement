@@ -40,23 +40,25 @@ namespace GaraApi.Controllers
         [Authorize("admin, manager, receptionist")]
         public ActionResult<Car> Create([FromForm] Car car)
         {
+            var curCar = _carService.GetCarByNumberPlate(car.NumberPlate);
+            if (curCar != null)
+                return BadRequest(new { message = "Car has been used" });
             _carService.Create(car);
-
             return CreatedAtRoute("GetCar", new { id = car.Id.ToString() }, car);
         }
 
-        [HttpPut("{id:length(24)}")]
+        [HttpPut]
         [Authorize("admin, manager, receptionist")]
-        public IActionResult Update(string id, Car carIn)
+        public IActionResult Update([FromBody] Car carIn)
         {
-            var car = _carService.Get(id);
+            var car = _carService.Get(carIn.Id);
 
             if (car == null)
             {
                 return NotFound();
             }
 
-            _carService.Update(id, carIn);
+            _carService.Update(carIn.Id, carIn);
 
             return NoContent();
         }
