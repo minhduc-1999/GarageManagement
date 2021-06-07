@@ -28,6 +28,10 @@ namespace GaraApi.Services
             _provider.InsertOne(provider);
             return provider;
         }
+         public Provider GetProviderByName(string providerName)
+        {
+            return _provider.Find<Provider>(Provider => Provider.Name == providerName).FirstOrDefault();
+        }
 
         public void Update(string id, Provider ProviderIn) =>
             _provider.ReplaceOne(Provider => Provider.Id == id, ProviderIn);

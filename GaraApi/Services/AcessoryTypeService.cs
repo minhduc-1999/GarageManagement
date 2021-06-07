@@ -28,6 +28,11 @@ namespace GaraApi.Services
             _accessoryType.InsertOne(AccessoryType);
             return AccessoryType;
         }
+        public AccessoryType GetAccessoryTypeByName(string accessoryTypeName)
+        {
+            return _accessoryType.Find<AccessoryType>(AccessoryType => AccessoryType.Name == accessoryTypeName).FirstOrDefault();
+        }
+
 
         public void Update(string id, AccessoryType AccessoryTypeIn) =>
             _accessoryType.ReplaceOne(AccessoryType => AccessoryType.Id == id, AccessoryTypeIn);
