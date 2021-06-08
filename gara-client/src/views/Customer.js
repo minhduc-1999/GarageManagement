@@ -12,10 +12,6 @@ const axios = require("axios");
 
 function Customer() {
   const [customers, setCustomers] = useState(null);
-  const [name, setName] = useState(null);
-  const [address, setAddress] = useState(null);
-  const [phoneNum, setPhoneNum] = useState(null);
-  const [email, setEmail] = useState(null);
 
   useEffect(() => {
     let loginToken = localStorage.getItem("LoginToken");
@@ -64,8 +60,8 @@ function Customer() {
                             <th key={index}>{index + 1}</th>
                             <td>{cus.name}</td>
                             <td>{cus.address}</td>
-                            <td>{cus.phoneNumber}</td>
                             <td>{cus.email}</td>
+                            <td>{cus.phoneNumber}</td>
                           </tr>
                         ))}
                       </tbody>

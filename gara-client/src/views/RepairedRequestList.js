@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardHeader,
@@ -23,6 +23,12 @@ import {
 } from "@material-ui/core"
 
 function RepairedRequestList() {
+
+    const [name, setName] = useState(null);
+    const [address, setAddress] = useState(null);
+    const [phoneNum, setPhoneNum] = useState(null);
+    const [email, setEmail] = useState(null);
+
     const ColoredLine = ({ color }) => (
         <hr
             style={{
@@ -69,7 +75,7 @@ function RepairedRequestList() {
             <div className="content">
                 <Modal isOpen={openInvoice} size="lg">
                     <ModalHeader style={{margin:25, justifyContent:"center"}}>
-                        <h3 className="title">Hóa đơn</h3>
+                        <p style={{fontSize: 25}} className="title">Hóa đơn</p>
                     </ModalHeader>
                     <ModalBody>
                         <ColoredLine color="gray"/>
@@ -149,7 +155,7 @@ function RepairedRequestList() {
                 </Modal>
                 <Modal isOpen={open} size="sm">
                     <ModalHeader >
-                        <h4 className="title">Phiếu tiếp nhận xe</h4>
+                        <p style={{fontSize: 22}} className="title">Phiếu tiếp nhận xe</p>
                     </ModalHeader>
                     <ModalBody>
                         <Form>
@@ -220,22 +226,21 @@ function RepairedRequestList() {
                 </Modal>
                 <Modal isOpen={openNewCustomer} size="sm">
                     <ModalHeader >
-                        <h4 className="title">Thông tin khách hàng mới</h4>
+                        <p style={{fontSize: 22}} className="title">Thông tin khách hàng mới</p>
                     </ModalHeader>
                     <ModalBody>
-                        <Form>
+                        <Form style={{marginLeft: 10, marginRight: 10}}>
                         <Row>
-                            <Col className="pr-md-1">
                             <FormGroup>
                                 <label>Họ và Tên</label>
                                 <Row>
-                                    <Col className="pr-md-1" md="4">
+                                    <Col md="6">
                                         <Input
                                         placeholder="Họ"
                                         type="text"
                                         />
                                     </Col>
-                                    <Col className="pr-md-1" md="8">
+                                    <Col md="6">
                                         <Input
                                         placeholder="Tên"
                                         type="text"
@@ -243,81 +248,25 @@ function RepairedRequestList() {
                                     </Col>
                                 </Row>
                             </FormGroup>
-                            </Col>
-                            {/* <Col md="auto" style={{alignItems: "flex-end", display: "flex"}}>
-                                    <Button color="link" type="button" style={{marginBottom: 10}}>
-                                        <i className="tim-icons icon-simple-add"></i>
-                                    </Button>
-                            </Col>
-                            <Col className="px-md-1" md="3">
-                            <FormGroup>
-                                <label>Username</label>
-                                <Input
-                                defaultValue="michael23"
-                                placeholder="Username"
-                                type="text"
-                                />
-                            </FormGroup>
-                            </Col>
-                            <Col className="pl-md-1" md="4">
-                            <FormGroup>
+                        </Row>
+                            <FormGroup row>
                                 <label htmlFor="exampleInputEmail1">
-                                Email address
+                                Địa chỉ Email
                                 </label>
-                                <Input placeholder="mike@email.com" type="email" />
+                                <Input placeholder="Email" type="email" />
                             </FormGroup>
-                            </Col> */}
-                        </Row>
-                        <Row>
-                            <Col className="pr-md-1">
-                            <FormGroup>
+                            <FormGroup row>
                                 <label>Số điện thoại</label>
-                                <Input
+                                <Input placeholder="Số điện thoại"
                                 type="text"
                                 />
                             </FormGroup>
-                            </Col>
-                            {/* <Col className="pl-md-1" md="6">
-                            <FormGroup>
-                                <label>Last Name</label>
-                                <Input
-                                defaultValue="Andrew"
-                                placeholder="Last Name"
-                                type="text"
-                                />
-                            </FormGroup>
-                            </Col> */}
-                        </Row>
-                        <Row>
-                            <Col className="pr-md-1">
-                            <FormGroup>
+                            <FormGroup row>
                                 <label>Địa chỉ</label>
-                                <Input
+                                <Input placeholder="Địa chỉ"
                                 type="text"
                                 />
                             </FormGroup>
-                            </Col>
-                            {/* <Col className="pl-md-1" md="6">
-                            <FormGroup>
-                                <label>Last Name</label>
-                                <Input
-                                defaultValue="Andrew"
-                                placeholder="Last Name"
-                                type="text"
-                                />
-                            </FormGroup>
-                            </Col> */}
-                        </Row>
-                        <Row>
-                            <Col className="pr-md-1">
-                                <FormGroup>
-                                    <label htmlFor="exampleInputEmail1">
-                                    Địa chỉ Email
-                                    </label>
-                                    <Input type="email" />
-                                </FormGroup>
-                            </Col>
-                        </Row>
                         </Form>
                     </ModalBody>
                     <ModalFooter style={{margin:25, justifyContent:"flex-end"}}>
