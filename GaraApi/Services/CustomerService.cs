@@ -37,5 +37,21 @@ namespace GaraApi.Services
 
         public void Remove(string id) =>
             _customer.DeleteOne(customer => customer.Id == id);
+
+        public bool IsExisted(string name, string phoneNumber)
+        {
+            var customer = _customer.Find(cus => cus.PhoneNumber == phoneNumber).CountDocuments();
+            if (customer == 0)
+                return false;
+            return true;
+        }
+
+        public bool IsExisted(string id)
+        {
+            var customer = _customer.Find(cus => cus.Id == id).CountDocuments();
+            if (customer == 0)
+                return false;
+            return true;
+        }
     }
 }

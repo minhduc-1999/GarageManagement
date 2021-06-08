@@ -30,7 +30,7 @@ namespace GaraApi.Controllers
 
             if (customer == null)
             {
-                return NotFound();
+                return NotFound(new { message = "Không tìm thấy thông tin khách hàng" });
             }
 
             return customer;
@@ -40,6 +40,9 @@ namespace GaraApi.Controllers
         [Authorize("admin, manager, receptionist")]
         public ActionResult<Customer> Create([FromForm] Customer customer)
         {
+            var isExist = _customerService.IsExisted(customer.Name, customer.PhoneNumber);
+            if (isExist)
+                return BadRequest(new { message = "Thông tin khách hàng đã tồn tại" });
             _customerService.Create(customer);
 
             return CreatedAtRoute("GetCustomer", new { id = customer.Id.ToString() }, customer);
@@ -47,15 +50,15 @@ namespace GaraApi.Controllers
 
         [HttpPut("{id:length(24)}")]
         [Authorize("admin, manager, receptionist")]
-        public IActionResult Update(string id, Customer customerIn)
+        public IActionResult Update(string id, [FromForm] Customer customerIn)
         {
-            var customer = _customerService.Get(id);
+            var isExist = _customerService.IsExisted(id);
 
-            if (customer == null)
+            if (!isExist)
             {
-                return NotFound();
+                return NotFound(new { message = "Không tìm thấy thông tin khách hàng cần cập nhật" });
             }
-
+            customerIn.Id = id;
             _customerService.Update(id, customerIn);
 
             return NoContent();
@@ -65,14 +68,14 @@ namespace GaraApi.Controllers
         [Authorize("admin")]
         public IActionResult Delete(string id)
         {
-            var customer = _customerService.Get(id);
+            var isExist = _customerService.IsExisted(id);
 
-            if (customer == null)
+            if (!isExist)
             {
-                return NotFound();
+                return NotFound(new { message = "Không tìm thấy thông tin khách hàng cần xoá" });
             }
 
-            _customerService.Remove(customer.Id);
+            _customerService.Remove(id);
 
             return NoContent();
         }
