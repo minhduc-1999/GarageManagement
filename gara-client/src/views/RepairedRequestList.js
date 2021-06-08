@@ -15,12 +15,14 @@ import {
   Input,
   FormGroup,
   Form,
+  Alert,
 } from "reactstrap";
 
 import {
     Tooltip,
     Fab,
 } from "@material-ui/core"
+const axios = require("axios");
 
 function RepairedRequestList() {
 
@@ -28,6 +30,35 @@ function RepairedRequestList() {
     const [address, setAddress] = useState(null);
     const [phoneNum, setPhoneNum] = useState(null);
     const [email, setEmail] = useState(null);
+    const [alertVisible, setAlertVisible] = useState(false);
+    const [emptyFieldAlert, setEmptyFieldAlert] = useState(false);
+
+    const AddNewCustomer = () => {
+        if (!name || !address || !phoneNum || !email) {
+            setEmptyFieldAlert(true);
+            return;
+        }
+        let loginToken = localStorage.getItem("LoginToken");
+        let createCustomer = new FormData();
+        createCustomer.append("Name", name);
+        createCustomer.append("Address", address);
+        createCustomer.append("PhoneNumber", phoneNum);
+        createCustomer.append("Email", email);
+        axios.post("http://localhost:5000/api/customers", createCustomer, {
+            headers: {
+                Authorization: "Bearer " + loginToken,
+            },
+        }).then(response => {
+            console.log("thanh cong");
+            setOpenNewCustomer(!openNewCustomer);
+        }).catch(error => {
+            console.log(error);
+            setAlertVisible(true);
+        })
+    }
+
+    const onDismiss = () => setAlertVisible(!alertVisible);
+    const onDismissEmpty = () => setEmptyFieldAlert(!emptyFieldAlert);
 
     const ColoredLine = ({ color }) => (
         <hr
@@ -68,6 +99,8 @@ function RepairedRequestList() {
   
     const handleCloseNewCustomer = () => {
         setOpenNewCustomer(false);
+        setAlertVisible(false);
+        setEmptyFieldAlert(false);
     };
 
     return (
@@ -230,51 +263,58 @@ function RepairedRequestList() {
                     </ModalHeader>
                     <ModalBody>
                         <Form style={{marginLeft: 10, marginRight: 10}}>
-                        <Row>
                             <FormGroup>
                                 <label>Họ và Tên</label>
-                                <Row>
-                                    <Col md="6">
-                                        <Input
-                                        placeholder="Họ"
-                                        type="text"
-                                        />
-                                    </Col>
-                                    <Col md="6">
-                                        <Input
-                                        placeholder="Tên"
-                                        type="text"
-                                        />
-                                    </Col>
-                                </Row>
+                                <Input
+                                placeholder="Họ và tên"
+                                type="text"
+                                onChange={(e) => {setName(e.target.value); setEmptyFieldAlert(false);}}
+                                />
                             </FormGroup>
-                        </Row>
-                            <FormGroup row>
+                            <FormGroup>
                                 <label htmlFor="exampleInputEmail1">
                                 Địa chỉ Email
                                 </label>
-                                <Input placeholder="Email" type="email" />
+                                <Input placeholder="Email" type="email"
+                                onChange={(e) => {setEmail(e.target.value); setEmptyFieldAlert(false);}} />
                             </FormGroup>
-                            <FormGroup row>
+                            <FormGroup>
                                 <label>Số điện thoại</label>
                                 <Input placeholder="Số điện thoại"
                                 type="text"
-                                />
+                                onChange={(e) => {setPhoneNum(e.target.value); setEmptyFieldAlert(false);}} />
                             </FormGroup>
-                            <FormGroup row>
+                            <FormGroup>
                                 <label>Địa chỉ</label>
                                 <Input placeholder="Địa chỉ"
                                 type="text"
-                                />
+                                onChange={(e) => {setAddress(e.target.value); setEmptyFieldAlert(false);}} />
                             </FormGroup>
                         </Form>
+                        <Alert
+                            className="alert-error"
+                            color="warning"
+                            isOpen={alertVisible}
+                            toggle={onDismiss}
+                        >
+                            Tên tài khoản đã được sử dụng.
+                        </Alert>
+                        <Alert
+                        style={{width: 330}}
+                            className="alert-error"
+                            color="warning"
+                            isOpen={emptyFieldAlert}
+                            toggle={onDismissEmpty}
+                        >
+                            Thiếu thông tin khách hàng.
+                        </Alert>
                     </ModalBody>
                     <ModalFooter style={{margin:25, justifyContent:"flex-end"}}>
-                        <Button onClick={handleCloseNewCustomer} className="btn-fill" color="primary" type="submit" style={{marginRight:25}}>
-                        Hủy
+                        <Button onClick={AddNewCustomer} className="btn-fill" color="primary" type="submit" style={{marginRight:25}}>
+                        Thêm
                         </Button>
                         <Button onClick={handleCloseNewCustomer} className="btn-fill" color="primary" type="submit">
-                        Thêm
+                        Hủy
                         </Button>
                     </ModalFooter>
                 </Modal>

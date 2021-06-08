@@ -35,6 +35,7 @@ function Employee() {
   const [dateOB, setDateOB] = useState(null);
   const [address, setAddress] = useState(null);
   const [alertVisible, setAlertVisible] = useState(false);
+  const [emptyFiledAlert, setEmptyFieldAlert] = useState(false);
   const [onChange, setOnchange] = useState(false);
 
   const translateRoles = {
@@ -78,6 +79,7 @@ function Employee() {
   const addNewUser = () => {
     if (!roleId || !username || !password) {
       console.log("Thiếu thông tin tạo tài khoản");
+      setEmptyFieldAlert(true);
       return;
     }
     let loginToken = localStorage.getItem("LoginToken");
@@ -104,12 +106,17 @@ function Employee() {
       })
       .catch((error) => {
         console.log(error);
-        setAlertVisible(!alertVisible);
+        setAlertVisible(true);
       });
   };
 
-  const handleOpenDialog = () => setOnAddNewUser(!onAddNewUser);
+  const handleOpenDialog = () => {
+   setOnAddNewUser(!onAddNewUser);
+   setAlertVisible(false);
+   setEmptyFieldAlert(false);
+  }
   const onDismiss = () => setAlertVisible(!alertVisible);
+  const onDismissEmpty = () => setEmptyFieldAlert(!emptyFiledAlert);
 
   return (
     <>
@@ -135,7 +142,7 @@ function Employee() {
                           name="user"
                           id="user"
                           placeholder="Tài khoản"
-                          onChange={(e) => setUsername(e.target.value)}
+                          onChange={(e) => {setUsername(e.target.value); setEmptyFieldAlert(false);}}
                         />
                       </FormGroup>
                     </Col>
@@ -147,7 +154,7 @@ function Employee() {
                           name="password"
                           id="password"
                           placeholder="Mật khẩu"
-                          onChange={(e) => setPassword(e.target.value)}
+                          onChange={(e) => {setPassword(e.target.value); setEmptyFieldAlert(false);}}
                         />
                       </FormGroup>
                     </Col>
@@ -256,6 +263,15 @@ function Employee() {
                     toggle={onDismiss}
                   >
                     Tên tài khoản đã được sử dụng.
+                  </Alert>
+                  <Alert
+                    style={{margin: 0}}
+                    className="alert-error"
+                    color="warning"
+                    isOpen={emptyFiledAlert}
+                    toggle={onDismissEmpty}
+                  >
+                    Tên tài khoản và mật khẩu không được để trống.
                   </Alert>
                 </Form>
               </ModalBody>
