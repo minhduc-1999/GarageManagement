@@ -21,13 +21,25 @@ namespace GaraApi.Controllers
         [Authorize("admin, manager, storekeeper, employee, receptionist")]
         public ActionResult<List<Car>> Get() =>
             _carService.Get();
-
-        [HttpGet("{id:length(24)}", Name = "GetCar")]
+        [HttpGet("search/", Name = "GetCar")]
         [Authorize("admin, manager, storekeeper, employee, receptionist")]
-        public ActionResult<Car> Get(string id)
+        public ActionResult<Car> Get([FromQuery] string type , [FromQuery] string value)
         {
-            var car = _carService.Get(id);
-
+            var car = new Car();
+            car = null;
+            switch(type){
+                case "id":
+                    car = _carService.GetById(value); 
+                    break;
+                case "numberplate":
+                    car = _carService.GetByNumberPlate(value); 
+                    break;
+                case "vin":
+                    car = _carService.GetByVIN(value); 
+                    break;
+                default:
+                    break;
+            }
             if (car == null)
             {
                 return NotFound();
@@ -35,6 +47,7 @@ namespace GaraApi.Controllers
 
             return car;
         }
+        
 
         [HttpPost]
         [Authorize("admin, manager, receptionist")]
@@ -44,14 +57,14 @@ namespace GaraApi.Controllers
             if (curCar != null)
                 return BadRequest(new { message = "Car has been used" });
             _carService.Create(car);
-            return CreatedAtRoute("GetCar", new { id = car.Id.ToString() }, car);
+            return CreatedAtRoute("GetCarByNumberPlate", new { id = car.Id.ToString() }, car);
         }
 
         [HttpPut]
         [Authorize("admin, manager, receptionist")]
         public IActionResult Update([FromBody] Car carIn)
         {
-            var car = _carService.Get(carIn.Id);
+            var car = _carService.GetById(carIn.Id);
 
             if (car == null)
             {
@@ -67,7 +80,7 @@ namespace GaraApi.Controllers
         [Authorize("admin, manager, receptionist")]
         public IActionResult Delete(string id)
         {
-            var car = _carService.Get(id);
+            var car = _carService.GetById(id);
 
             if (car == null)
             {
