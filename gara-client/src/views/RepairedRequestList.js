@@ -36,6 +36,34 @@ function RepairedRequestList() {
   const [alertVisible, setAlertVisible] = useState(false);
   const [emptyFieldAlert, setEmptyFieldAlert] = useState(false);
 
+  const [brand, setBrand] = useState(null);
+  const [numberPlate, setNumberPlate] = useState(null);
+  const [VIN, setVIN] = useState(null);
+  const [distanceTravelled, setDistanceTravelled] = useState(null);
+  const [registerId, setRegisterId] = useState(null);
+  const [owner, setOwner] = useState(null);
+  const [color, setColor] = useState(null);
+  const [model, setModel] = useState(null);
+  const [emptyFieldCarAlert, setEmptyFieldCarAlert] = useState(false);
+
+  const AddNewCar = () => {
+    if (
+      !brand ||
+      !numberPlate ||
+      !VIN ||
+      !distanceTravelled ||
+      !registerId ||
+      !owner ||
+      !color ||
+      !model
+    ) {
+      setEmptyFieldCarAlert(true);
+      return;
+    }
+  };
+
+  const onDismissCarEmpty = () => setEmptyFieldAlert(!emptyFieldCarAlert);
+
   const AddNewCustomer = () => {
     if (!name || !address || !phoneNum || !email) {
       setEmptyFieldAlert(true);
@@ -106,6 +134,17 @@ function RepairedRequestList() {
     setOpenNewCustomer(false);
     setAlertVisible(false);
     setEmptyFieldAlert(false);
+  };
+
+  const [openNewCar, setOpenNewCar] = React.useState(false);
+
+  const handleClickOpenNewCar = () => {
+    setOpenNewCar(true);
+  };
+
+  const handleCloseNewCar = () => {
+    setOpenNewCar(false);
+    setEmptyFieldCarAlert(false);
   };
 
   const [openInvoice, setOpenInvoice] = React.useState(false);
@@ -575,15 +614,29 @@ function RepairedRequestList() {
                   <Row>
                     <Col className="pr-md-1">
                       <FormGroup>
-                        <label>Hiệu xe</label>
-                        <Input type="text" />
+                        <label>Thêm xe</label>
+                        <Input name="select" id="exampleSelect" type="select">
+                          <option>1</option>
+                          <option>2</option>
+                          <option>3</option>
+                          <option>4</option>
+                          <option>5</option>
+                        </Input>
                       </FormGroup>
                     </Col>
-                    <Col className="pl-md-1">
-                      <FormGroup>
-                        <label>Biển số</label>
-                        <Input type="text" />
-                      </FormGroup>
+                    <Col
+                      md="auto"
+                      style={{ alignItems: "flex-end", display: "flex" }}
+                    >
+                      <Tooltip title="Thêm xe mới">
+                        <Fab
+                          onClick={handleClickOpenNewCar}
+                          size="small"
+                          style={{ marginBottom: 10 }}
+                        >
+                          <i className="tim-icons icon-simple-add"></i>
+                        </Fab>
+                      </Tooltip>
                     </Col>
                   </Row>
                   <Row>
@@ -711,6 +764,125 @@ function RepairedRequestList() {
                 </Button>
                 <Button
                   onClick={handleCloseNewCustomer}
+                  className="btn-fill"
+                  color="primary"
+                  type="submit"
+                >
+                  Hủy
+                </Button>
+              </ModalFooter>
+            </Modal>
+            <Modal isOpen={openNewCar} size="sm">
+              <ModalHeader>
+                <p style={{ fontSize: 22 }} className="title">
+                  Thông tin xe mới
+                </p>
+              </ModalHeader>
+              <ModalBody>
+                <Form style={{ marginLeft: 10, marginRight: 10 }}>
+                  <FormGroup>
+                    <label>Biển số</label>
+                    <Input
+                      type="text"
+                      onChange={(e) => {
+                        setNumberPlate(e.target.value);
+                        setEmptyFieldCarAlert(false);
+                      }}
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <label>Hãng xe</label>
+                    <Input
+                      type="text"
+                      onChange={(e) => {
+                        setBrand(e.target.value);
+                        setEmptyFieldCarAlert(false);
+                      }}
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <label>Model</label>
+                    <Input
+                      type="text"
+                      onChange={(e) => {
+                        setModel(e.target.value);
+                        setEmptyFieldCarAlert(false);
+                      }}
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <label>Màu sắc</label>
+                    <Input
+                      type="text"
+                      onChange={(e) => {
+                        setColor(e.target.value);
+                        setEmptyFieldCarAlert(false);
+                      }}
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <label>VIN</label>
+                    <Input
+                      type="text"
+                      onChange={(e) => {
+                        setVIN(e.target.value);
+                        setEmptyFieldCarAlert(false);
+                      }}
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <label>Chủ xe</label>
+                    <Input
+                      type="text"
+                      onChange={(e) => {
+                        setOwner(e.target.value);
+                        setEmptyFieldCarAlert(false);
+                      }}
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <label>Mã đăng kiểm</label>
+                    <Input
+                      type="text"
+                      onChange={(e) => {
+                        setRegisterId(e.target.value);
+                        setEmptyFieldCarAlert(false);
+                      }}
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <label>Khoảng cách di chuyển</label>
+                    <Input
+                      type="text"
+                      onChange={(e) => {
+                        setDistanceTravelled(e.target.value);
+                        setEmptyFieldCarAlert(false);
+                      }}
+                    />
+                  </FormGroup>
+                </Form>
+                <Alert
+                  style={{ width: 330 }}
+                  className="alert-error"
+                  color="warning"
+                  isOpen={emptyFieldCarAlert}
+                  toggle={onDismissCarEmpty}
+                >
+                  Thiếu thông tin xe.
+                </Alert>
+              </ModalBody>
+              <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
+                <Button
+                  onClick={AddNewCar}
+                  className="btn-fill"
+                  color="primary"
+                  type="submit"
+                  style={{ marginRight: 25 }}
+                >
+                  Thêm
+                </Button>
+                <Button
+                  onClick={handleCloseNewCar}
                   className="btn-fill"
                   color="primary"
                   type="submit"

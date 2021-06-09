@@ -6,7 +6,8 @@ import Report from "views/Report.js";
 import RepairedRequestList from "views/RepairedRequestList.js";
 import Accessories from "views/Accessories.js";
 import StorageHistory from "views/StorageHistory.js";
-import Quotations from "views/Quotations";
+import Quotations from "views/Quotations.js";
+import Car from "views/Car.js";
 
 var routes = [
   {
@@ -28,6 +29,13 @@ var routes = [
     name: "Khách hàng",
     icon: "tim-icons icon-single-02",
     component: Customer,
+    layout: "/admin",
+  },
+  {
+    path: "/car",
+    name: "Quản lý xe",
+    icon: "tim-icons icon-single-02",
+    component: Car,
     layout: "/admin",
   },
   {
