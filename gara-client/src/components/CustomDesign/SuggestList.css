@@ -1,5 +1,5 @@
 .sugList {
-    width: 275px;
+    width: 260px;
     display: flex;
     flex-direction: column;
     z-index: 999;
@@ -11,4 +11,8 @@
 .sugItem {
     margin-left: 20px;
     text-decoration: none;
+    cursor: pointer;
+}
+.sugItem:hover {
+    color: red;
 }
