@@ -62,7 +62,10 @@ function Car() {
                           <th>Chủ xe</th>
                           <th>Hãng</th>
                           <th>Model</th>
-                          <th>Tình trạng</th>
+                          <th>Khoảng cách di chuyển</th>
+                          <th>Mã đăng kiểm</th>
+                          <th>VIN</th>
+                          <th>Màu xe</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -73,7 +76,10 @@ function Car() {
                             <td>{car.owner}</td>
                             <td>{car.brand}</td>
                             <td>{car.model}</td>
-                            <td>Đang sửa chữa</td>
+                            <td>{car.distanceTravelled} KM</td>
+                            <td>{car.registerId}</td>
+                            <td>{car.vin}</td>
+                            <td>{car.color}</td>
                           </tr>
                         ))}
                       </tbody>
