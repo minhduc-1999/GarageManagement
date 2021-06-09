@@ -1,6 +1,7 @@
 
 using System.Collections.Generic;
 using GaraApi.Entities;
+using GaraApi.Models;
 using GaraApi.Services;
 using GaraApi.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -47,8 +48,8 @@ namespace GaraApi.Controllers
         }
 
         [HttpPut("{id:length(24)}")]
-        [Authorize("admin")]
-        public IActionResult Update(string id, Accessory accessoryIn)
+        [Authorize("admin, manager, storekeeper")]
+        public IActionResult Update(string id, [FromForm] AccessoryUpdateModel accessoryIn)
         {
             var accessory = _accessoryService.Get(id);
 
@@ -57,7 +58,13 @@ namespace GaraApi.Controllers
                 return NotFound();
             }
 
-            _accessoryService.Update(id, accessoryIn);
+            accessory.Name = accessoryIn.Name;
+            accessory.IssuePrice = accessoryIn.IssuePrice;
+            accessory.AccessoryTypeId = accessoryIn.AccessoryTypeId;
+            accessory.Description = accessoryIn.Description;
+
+
+            _accessoryService.Update(id, accessory);
 
             return NoContent();
         }
@@ -66,14 +73,14 @@ namespace GaraApi.Controllers
         [Authorize("admin, manager, storekeeper")]
         public IActionResult Delete(string id)
         {
-            var accessory = _accessoryService.Get(id);
+            var exist = _accessoryService.isExisted(id);
 
-            if (accessory == null)
+            if (!exist)
             {
                 return NotFound();
             }
 
-            _accessoryService.Remove(accessory.Id);
+            _accessoryService.Remove(id);
 
             return NoContent();
         }

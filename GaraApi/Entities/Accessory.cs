@@ -14,12 +14,12 @@ namespace GaraApi.Entities
         [BsonRequired]
         [Required]
         public string Name { get; set; }
-        public int Quantity { get; set; }
+        public int Quantity { get; set; } = 0;
         [BsonRequired]
         [Required]
         public string Unit { get; set; }
-        public double ReceiptPrice { get; set; }
-        public double IssuePrice { get; set; }
+        public double ReceiptPrice { get; set; } = 0;
+        public double IssuePrice { get; set; } = 0;
         [BsonRepresentation(BsonType.DateTime)]
         [BsonDateTimeOptions(DateOnly = true)]
         [BsonIgnoreIfNull]

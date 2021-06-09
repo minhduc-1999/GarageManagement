@@ -38,5 +38,13 @@ namespace GaraApi.Services
 
         public void Remove(string id) =>
             _accessory.DeleteOne(accessory => accessory.Id == id);
+
+        public bool isExisted(string id)
+        {
+            var num = _accessory.CountDocuments(acc => acc.Id == id);
+            if (num == 0)
+                return false;
+            return true;
+        }
     }
 }
