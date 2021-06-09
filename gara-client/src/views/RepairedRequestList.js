@@ -39,6 +39,7 @@ function RepairedRequestList() {
   const [listName, setListName] = useState(null);
   const [search, setSearch] = useState(null);
   const [list, setList] = useState([])
+  const [display, setDisplay] = useState(false)
 
   const [brand, setBrand] = useState(null);
   const [numberPlate, setNumberPlate] = useState(null);
@@ -621,9 +622,9 @@ function RepairedRequestList() {
                   <Row>
                     <Col>
                       <FormGroup>
-                        <Input name="select" id="exampleSelect" type="text" value={search}
+                        <Input name="select" id="exampleSelect" type="text" value={search} onFocus={() => setDisplay(true)} onBlur={() => setDisplay(false)}
                         onChange={e => onChangeHandler(e)} />
-                        {renderSuggestions()}
+                        {display && renderSuggestions()}
                       </FormGroup>
                     </Col>
                     <Col md="auto">

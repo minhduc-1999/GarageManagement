@@ -1,23 +1,5 @@
-/*!
+import React, { useContext } from "react";
 
-=========================================================
-* Black Dashboard React v1.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/black-dashboard-react
-* Copyright 2020 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/black-dashboard-react/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-import React from "react";
-
-// reactstrap components
 import {
   Button,
   Card,
@@ -31,8 +13,11 @@ import {
   Row,
   Col,
 } from "reactstrap";
+import {AuthContext} from "../contexts/AuthProvider";
 
 function UserProfile() {
+  const {userAcc} = useContext(AuthContext);
+
   return (
     <>
       <div className="content">
@@ -45,28 +30,41 @@ function UserProfile() {
               <CardBody>
                 <Form>
                   <Row>
-                    <Col className="pr-md-1" md="5">
+                    <Col className="pr-md-1" md="6">
                       <FormGroup>
-                        <label>Company (disabled)</label>
+                        <label>Công ty quản lý</label>
                         <Input
-                          defaultValue="Creative Code Inc."
+                          defaultValue="GARA Cor."
                           disabled
                           placeholder="Company"
                           type="text"
                         />
                       </FormGroup>
                     </Col>
-                    <Col className="px-md-1" md="3">
+                    <Col className="pl-md-1" md="6">
                       <FormGroup>
                         <label>Username</label>
                         <Input
-                          defaultValue="michael23"
+                          defaultValue="QuocAn"
                           placeholder="Username"
                           type="text"
                         />
                       </FormGroup>
                     </Col>
-                    <Col className="pl-md-1" md="4">
+                  </Row>
+                    <Row>
+                    <Col className="pr-md-1" md="6">
+                      <FormGroup>
+                        <label>Chức vụ</label>
+                        <Input
+                          defaultValue="GARA Cor."
+                          disabled
+                          placeholder="Company"
+                          type="text"
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col className="pl-md-1" md="6">
                       <FormGroup>
                         <label htmlFor="exampleInputEmail1">
                           Email address
@@ -74,7 +72,7 @@ function UserProfile() {
                         <Input placeholder="mike@email.com" type="email" />
                       </FormGroup>
                     </Col>
-                  </Row>
+                    </Row>
                   <Row>
                     <Col className="pr-md-1" md="6">
                       <FormGroup>
@@ -100,63 +98,37 @@ function UserProfile() {
                   <Row>
                     <Col md="12">
                       <FormGroup>
-                        <label>Address</label>
+                        <label>Địa chỉ</label>
                         <Input
-                          defaultValue="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09"
-                          placeholder="Home Address"
+                          placeholder="Địa chỉ thường trú"
                           type="text"
                         />
                       </FormGroup>
                     </Col>
                   </Row>
                   <Row>
-                    <Col className="pr-md-1" md="4">
+                    <Col className="pr-md-1" md="6">
                       <FormGroup>
-                        <label>City</label>
+                        <label>Ngày sinh</label>
                         <Input
-                          defaultValue="Mike"
-                          placeholder="City"
+                          defaultValue="12/6/2020"
+                          placeholder="Ngày sinh"
                           type="text"
                         />
                       </FormGroup>
                     </Col>
-                    <Col className="px-md-1" md="4">
+                    <Col className="pl-md-1" md="6">
                       <FormGroup>
-                        <label>Country</label>
-                        <Input
-                          defaultValue="Andrew"
-                          placeholder="Country"
-                          type="text"
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col className="pl-md-1" md="4">
-                      <FormGroup>
-                        <label>Postal Code</label>
-                        <Input placeholder="ZIP Code" type="number" />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col md="8">
-                      <FormGroup>
-                        <label>About Me</label>
-                        <Input
-                          cols="80"
-                          defaultValue="Lamborghini Mercy, Your chick she so thirsty, I'm in
-                            that two seat Lambo."
-                          placeholder="Here can be your description"
-                          rows="4"
-                          type="textarea"
-                        />
+                        <label>Số điện thoại</label>
+                        <Input placeholder="Số điện thoại" type="number" />
                       </FormGroup>
                     </Col>
                   </Row>
                 </Form>
               </CardBody>
               <CardFooter>
-                <Button className="btn-fill" color="primary" type="submit">
-                  Save
+                <Button disabled className="btn-fill" color="primary" type="submit">
+                  Cập nhật
                 </Button>
               </CardFooter>
             </Card>

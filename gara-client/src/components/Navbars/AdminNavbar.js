@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { Link } from "react-router-dom";
 // nodejs library that concatenates classes
 import classNames from "classnames";
 
@@ -147,7 +148,9 @@ function AdminNavbar(props) {
                 </DropdownToggle>
                 <DropdownMenu className="dropdown-navbar" right tag="ul">
                   <NavLink tag="li">
-                    <DropdownItem className="nav-item">Hồ sơ</DropdownItem>
+                    <DropdownItem className="nav-item">
+                      <Link to="/admin/user-profile">Hồ sơ</Link>
+                    </DropdownItem>
                   </NavLink>
                   <NavLink tag="li">
                     <DropdownItem className="nav-item">Thiết lập</DropdownItem>
