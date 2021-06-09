@@ -39,12 +39,18 @@ namespace GaraApi.Controllers
 
         [HttpPost]
         [Authorize("admin, manager, receptionist")]
-        public ActionResult<Quotation> Create([FromForm] Quotation quotation)
+        public ActionResult<Quotation> Create([FromBody] Quotation quotation)
         {
             _quotationService.Create(quotation);
 
             return CreatedAtRoute("GetQuotation", new { id = quotation.Id.ToString() }, quotation);
         }
+        //     public async Task<IActionResult> Create([FromBody] Quotation quotation)
+        // {
+        //     await _quotationService.Create(quotation);
+
+        //     return CreatedAtAction("GetQuotation", new { id = quotation.Id.ToString() }, quotation);
+        // }
 
         [HttpPut("{id:length(24)}")]
         [Authorize("admin, manager, receptionist")]

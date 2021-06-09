@@ -7,10 +7,10 @@ namespace GaraApi.Entities.Form
     {
         [BsonRequired]
         public double TotalAmount { get; set; }
-        
+
         public string State { get; set; }
         //[BsonRepresentation(MongoDB.Bson.BsonType.Array)]
-        [BsonRequired]
-        public List<QuotationDetail> Details { get; set; }
+        
+        public List<Dictionary<string,QuotationDetail>> Details { get; set; }
     }
 }

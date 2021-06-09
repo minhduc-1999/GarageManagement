@@ -10,7 +10,7 @@ namespace GaraApi.Entities.Form
         [BsonIgnoreIfNull]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string IssueName { get; set; }
-        [BsonRequired]
+        //[BsonRequired]
         public string AccessoryId { get; set; }
         [BsonRequired]
         public int Quantity { get; set; }
