@@ -1,2 +1,34 @@
+// get all
 GET http://localhost:5000/api/cars/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTg5MDcwMjAxZDJkZDg0NWI0ZGNiYiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjg3NjMwMywiZXhwIjoxNjI0OTQ5OTAzLCJpYXQiOjE2MjI4NzYzMDN9.mHKSKMO9cQkg2xQ20B9PUciqMqekijdtJRfjivWs3jE
+
+// create 
+POST http://localhost:5000/api/cars/
+Content-Type: application/x-www-form-urlencoded
+
+numberplate=75x-77777
+&vin=1234221332322
+&registerid=d123c12424124
+&owner=Thieu Quang
+
+// get by id
+GET http://localhost:5000/api/cars/search?type=id&value=60bdfcf2bf67fb6dfa3850e2
+
+// get by numberplate
+GET http://localhost:5000/api/cars/search?type=numberplate&value=75x-77777
+
+// get by vin
+GET http://localhost:5000/api/cars/search?type=vin&value=1234221332322
+
+// delete
+DELETE http://localhost:5000/api/cars/60bdfcf2bf67fb6dfa3850e2
+
+// update car
+PUT http://localhost:5000/api/cars/
+Content-Type: application/raw
+{
+    "id": "60bdfcf2bf67fb6dfa3850e2",
+    "numberPlate": "75x-99999",
+    "vin": "12342345123777777",
+    "registerId": "bcdq12421414",
+    "owner": "Pham Nhat Vuong"
+}
