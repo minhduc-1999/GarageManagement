@@ -11,7 +11,8 @@ import Bill from "views/Bill.js";
 import Report from "views/Report.js";
 import RepairedRequestList from "views/RepairedRequestList.js";
 import Accessories from "views/Accessories.js";
-import StorageHistory from "views/StorageHistory.js"
+import StorageHistory from "views/StorageHistory.js";
+import Quotations from "views/Quotations";
 
 var routes = [
   {
@@ -19,6 +20,13 @@ var routes = [
     name: "Danh sách tiếp nhận xe",
     icon: "tim-icons icon-single-copy-04",
     component: RepairedRequestList,
+    layout: "/admin",
+  },
+  {
+    path: "/quotations",
+    name: "Danh sách báo giá",
+    icon: "tim-icons icon-single-copy-04",
+    component: Quotations,
     layout: "/admin",
   },
   {
