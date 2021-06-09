@@ -20,9 +20,15 @@ namespace GaraApi.Services
         public List<Car> Get() =>
             _car.Find(Car => true).ToList();
 
-        public Car Get(string id) =>
+        public Car GetById(string id) =>
             _car.Find<Car>(Car => Car.Id == id).FirstOrDefault();
 
+        public Car GetByNumberPlate(string numberplate) =>
+            _car.Find<Car>(Car => Car.NumberPlate == numberplate).FirstOrDefault();
+        
+        public Car GetByVIN(string vin) =>
+            _car.Find<Car>(Car => Car.VIN == vin).FirstOrDefault();
+        
 
         public Car Create(Car Car)
         {
