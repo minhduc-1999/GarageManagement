@@ -29,6 +29,10 @@ namespace GaraApi.Services
             return LaborCost;
         }
 
+        public LaborCost GetLaborCostByName(string laborCostName)
+        {
+            return _laborCost.Find<LaborCost>(LaborCost => LaborCost.Name == laborCostName).FirstOrDefault();
+        }
         public void Update(string id, LaborCost LaborCostIn) =>
             _laborCost.ReplaceOne(LaborCost => LaborCost.Id == id, LaborCostIn);
 

@@ -23,10 +23,14 @@ namespace GaraApi.Services
         public Car Get(string id) =>
             _car.Find<Car>(Car => Car.Id == id).FirstOrDefault();
 
+
         public Car Create(Car Car)
         {
             _car.InsertOne(Car);
             return Car;
+        }
+        public Car GetCarByNumberPlate(string numberplate){
+            return _car.Find<Car>(Car => Car.NumberPlate == numberplate).FirstOrDefault();
         }
 
         public void Update(string id, Car CarIn) =>

@@ -40,23 +40,27 @@ namespace GaraApi.Controllers
         [Authorize("admin, manager, storekeeper, receptionist")]
         public ActionResult<Provider> Create([FromForm] Provider provider)
         {
+            var curProvider = _providerService.GetProviderByName(provider.Name);
+            if (curProvider != null)
+                return BadRequest(new { message = "Provider has been used" });
+            
             _providerService.Create(provider);
 
             return CreatedAtRoute("GetProvider", new { id = provider.Id.ToString() }, provider);
         }
 
-        [HttpPut("{id:length(24)}")]
+        [HttpPut]
         [Authorize("admin, manager, storekeeper, receptionist")]
-        public IActionResult Update(string id, Provider providerIn)
+        public IActionResult Update([FromBody] Provider providerIn)
         {
-            var provider = _providerService.Get(id);
+            var provider = _providerService.Get(providerIn.Id);
 
             if (provider == null)
             {
                 return NotFound();
             }
 
-            _providerService.Update(id, providerIn);
+            _providerService.Update(providerIn.Id, providerIn);
 
             return NoContent();
         }

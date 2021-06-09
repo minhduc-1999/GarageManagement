@@ -15,6 +15,7 @@ import {
   Input,
   FormGroup,
   Form,
+  Alert,
   Label,
 } from "reactstrap";
 
@@ -27,6 +28,53 @@ function RepairedRequestList() {
   const [laborName, setLaborName] = useState(null);
   const [laborValue, setLaborValue] = useState(null);
   const [onChange, setOnchange] = useState(false);
+
+  const [name, setName] = useState(null);
+  const [address, setAddress] = useState(null);
+  const [phoneNum, setPhoneNum] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [emptyFieldAlert, setEmptyFieldAlert] = useState(false);
+
+  const AddNewCustomer = () => {
+    if (!name || !address || !phoneNum || !email) {
+      setEmptyFieldAlert(true);
+      return;
+    }
+    let loginToken = localStorage.getItem("LoginToken");
+    let createCustomer = new FormData();
+    createCustomer.append("Name", name);
+    createCustomer.append("Address", address);
+    createCustomer.append("PhoneNumber", phoneNum);
+    createCustomer.append("Email", email);
+    axios
+      .post("http://localhost:5000/api/customers", createCustomer, {
+        headers: {
+          Authorization: "Bearer " + loginToken,
+        },
+      })
+      .then((response) => {
+        console.log("thanh cong");
+        setOpenNewCustomer(!openNewCustomer);
+      })
+      .catch((error) => {
+        console.log(error);
+        setAlertVisible(true);
+      });
+  };
+
+  const onDismiss = () => setAlertVisible(!alertVisible);
+  const onDismissEmpty = () => setEmptyFieldAlert(!emptyFieldAlert);
+
+  const ColoredLine = ({ color }) => (
+    <hr
+      style={{
+        color: color,
+        backgroundColor: color,
+        height: 1,
+      }}
+    />
+  );
 
   useEffect(() => {
     let loginToken = localStorage.getItem("LoginToken");
@@ -48,15 +96,17 @@ function RepairedRequestList() {
     fetchLaborCostData();
   }, [onChange]);
 
-  const ColoredLine = ({ color }) => (
-    <hr
-      style={{
-        color: color,
-        backgroundColor: color,
-        height: 1,
-      }}
-    />
-  );
+  const [openNewCustomer, setOpenNewCustomer] = React.useState(false);
+
+  const handleClickOpenNewCustomer = () => {
+    setOpenNewCustomer(true);
+  };
+
+  const handleCloseNewCustomer = () => {
+    setOpenNewCustomer(false);
+    setAlertVisible(false);
+    setEmptyFieldAlert(false);
+  };
 
   const [openInvoice, setOpenInvoice] = React.useState(false);
 
@@ -76,16 +126,6 @@ function RepairedRequestList() {
 
   const handleClose = () => {
     setOpenModal(false);
-  };
-
-  const [openNewCustomer, setOpenNewCustomer] = React.useState(false);
-
-  const handleClickOpenNewCustomer = () => {
-    setOpenNewCustomer(true);
-  };
-
-  const handleCloseNewCustomer = () => {
-    setOpenNewCustomer(false);
   };
 
   const [openCreateQuotation, setOpenCQModal] = React.useState(false);
@@ -590,105 +630,84 @@ function RepairedRequestList() {
             </Modal>
             <Modal isOpen={openNewCustomer} size="sm">
               <ModalHeader>
-                <h4 className="title">Thông tin khách hàng mới</h4>
+                <p style={{ fontSize: 22 }} className="title">
+                  Thông tin khách hàng mới
+                </p>
               </ModalHeader>
               <ModalBody>
-                <Form>
-                  <Row>
-                    <Col className="pr-md-1">
-                      <FormGroup>
-                        <label>Họ và Tên</label>
-                        <Row>
-                          <Col className="pr-md-1" md="4">
-                            <Input placeholder="Họ" type="text" />
-                          </Col>
-                          <Col className="pr-md-1" md="8">
-                            <Input placeholder="Tên" type="text" />
-                          </Col>
-                        </Row>
-                      </FormGroup>
-                    </Col>
-                    {/* <Col md="auto" style={{alignItems: "flex-end", display: "flex"}}>
-                                    <Button color="link" type="button" style={{marginBottom: 10}}>
-                                        <i className="tim-icons icon-simple-add"></i>
-                                    </Button>
-                            </Col>
-                            <Col className="px-md-1" md="3">
-                            <FormGroup>
-                                <label>Username</label>
-                                <Input
-                                defaultValue="michael23"
-                                placeholder="Username"
-                                type="text"
-                                />
-                            </FormGroup>
-                            </Col>
-                            <Col className="pl-md-1" md="4">
-                            <FormGroup>
-                                <label htmlFor="exampleInputEmail1">
-                                Email address
-                                </label>
-                                <Input placeholder="mike@email.com" type="email" />
-                            </FormGroup>
-                            </Col> */}
-                  </Row>
-                  <Row>
-                    <Col className="pr-md-1">
-                      <FormGroup>
-                        <label>Số điện thoại</label>
-                        <Input type="text" />
-                      </FormGroup>
-                    </Col>
-                    {/* <Col className="pl-md-1" md="6">
-                            <FormGroup>
-                                <label>Last Name</label>
-                                <Input
-                                defaultValue="Andrew"
-                                placeholder="Last Name"
-                                type="text"
-                                />
-                            </FormGroup>
-                            </Col> */}
-                  </Row>
-                  <Row>
-                    <Col className="pr-md-1">
-                      <FormGroup>
-                        <label>Địa chỉ</label>
-                        <Input type="text" />
-                      </FormGroup>
-                    </Col>
-                    {/* <Col className="pl-md-1" md="6">
-                            <FormGroup>
-                                <label>Last Name</label>
-                                <Input
-                                defaultValue="Andrew"
-                                placeholder="Last Name"
-                                type="text"
-                                />
-                            </FormGroup>
-                            </Col> */}
-                  </Row>
-                  <Row>
-                    <Col className="pr-md-1">
-                      <FormGroup>
-                        <label htmlFor="exampleInputEmail1">
-                          Địa chỉ Email
-                        </label>
-                        <Input type="email" />
-                      </FormGroup>
-                    </Col>
-                  </Row>
+                <Form style={{ marginLeft: 10, marginRight: 10 }}>
+                  <FormGroup>
+                    <label>Họ và Tên</label>
+                    <Input
+                      placeholder="Họ và tên"
+                      type="text"
+                      onChange={(e) => {
+                        setName(e.target.value);
+                        setEmptyFieldAlert(false);
+                      }}
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <label htmlFor="exampleInputEmail1">Địa chỉ Email</label>
+                    <Input
+                      placeholder="Email"
+                      type="email"
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        setEmptyFieldAlert(false);
+                      }}
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <label>Số điện thoại</label>
+                    <Input
+                      placeholder="Số điện thoại"
+                      type="text"
+                      onChange={(e) => {
+                        setPhoneNum(e.target.value);
+                        setEmptyFieldAlert(false);
+                      }}
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <label>Địa chỉ</label>
+                    <Input
+                      placeholder="Địa chỉ"
+                      type="text"
+                      onChange={(e) => {
+                        setAddress(e.target.value);
+                        setEmptyFieldAlert(false);
+                      }}
+                    />
+                  </FormGroup>
                 </Form>
+                <Alert
+                  className="alert-error"
+                  color="warning"
+                  isOpen={alertVisible}
+                  toggle={onDismiss}
+                >
+                  Tên tài khoản đã được sử dụng.
+                </Alert>
+                <Alert
+                  style={{ width: 330 }}
+                  className="alert-error"
+                  color="warning"
+                  isOpen={emptyFieldAlert}
+                  toggle={onDismissEmpty}
+                >
+                  Thiếu thông tin khách hàng.
+                </Alert>
               </ModalBody>
               <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
                 <Button
-                  onClick={handleCloseNewCustomer}
+                  onClick={AddNewCustomer}
                   className="btn-fill"
                   color="primary"
                   type="submit"
                   style={{ marginRight: 25 }}
                 >
-                  Hủy
+                  Thêm
                 </Button>
                 <Button
                   onClick={handleCloseNewCustomer}
@@ -696,7 +715,7 @@ function RepairedRequestList() {
                   color="primary"
                   type="submit"
                 >
-                  Thêm
+                  Hủy
                 </Button>
               </ModalFooter>
             </Modal>

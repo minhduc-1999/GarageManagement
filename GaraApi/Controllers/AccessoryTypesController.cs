@@ -40,23 +40,26 @@ namespace GaraApi.Controllers
         [Authorize("admin, manager, storekeeper")]
         public ActionResult<AccessoryType> Create([FromForm] AccessoryType accessoryType)
         {
+            var curAccessoryType = _accessoryTypeService.GetAccessoryTypeByName(accessoryType.Name);
+            if (curAccessoryType != null)
+                return BadRequest(new { message = "Accessory Type has been used" });
             _accessoryTypeService.Create(accessoryType);
 
             return CreatedAtRoute("GetAccessoryType", new { id = accessoryType.Id.ToString() }, accessoryType);
         }
 
-        [HttpPut("{id:length(24)}")]
+        [HttpPut]
         [Authorize("admin, manager, storekeeper")]
-        public IActionResult Update(string id, AccessoryType accessoryTypeIn)
+        public IActionResult Update([FromBody] AccessoryType accessoryTypeIn)
         {
-            var accessoryType = _accessoryTypeService.Get(id);
+            var accessoryType = _accessoryTypeService.Get(accessoryTypeIn.Id);
 
             if (accessoryType == null)
             {
                 return NotFound();
             }
 
-            _accessoryTypeService.Update(id, accessoryTypeIn);
+            _accessoryTypeService.Update(accessoryTypeIn.Id, accessoryTypeIn);
 
             return NoContent();
         }

@@ -47,7 +47,7 @@ namespace GaraApi.Controllers
             return Ok(new { message = "Thay đổi mật khẩu thành công" });
         }
 
-        [HttpPost("account")]
+        [HttpPut("account")]
         [Authorize("admin, manager, storekeeper, employee, receptionist")]
         public ActionResult UpdateProfile([FromForm] string id, [FromForm] UserClaim claim)
         {

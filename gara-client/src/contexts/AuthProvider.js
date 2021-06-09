@@ -35,6 +35,7 @@ const AuthProvider = ({children}) => {
         logout: async () => {
           try {
             await setUserAcc(null);
+            localStorage.removeItem('UserId');
             localStorage.removeItem('LoginToken');
           } catch (error) {
             console.log(error);

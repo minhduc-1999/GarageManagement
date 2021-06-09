@@ -40,26 +40,38 @@ namespace GaraApi.Controllers
         [Authorize("admin, manager")]
         public ActionResult<LaborCost> Create([FromForm] LaborCost laborCost)
         {
+            var curLaborCost = _laborCostService.GetLaborCostByName(laborCost.Name);
+            if (curLaborCost != null)
+                return BadRequest(new { message = "Labor Cost has been used" });
             _laborCostService.Create(laborCost);
 
             return CreatedAtRoute("GetLaborCost", new { id = laborCost.Id.ToString() }, laborCost);
         }
 
-        [HttpPut("{id:length(24)}")]
+        [HttpPut]
         [Authorize("admin")]
-        public IActionResult Update(string id, LaborCost laborCostIn)
+        public IActionResult Update([FromBody] LaborCost laborCostIn)
         {
-            var laborCost = _laborCostService.Get(id);
+            var laborCost = _laborCostService.Get(laborCostIn.Id);
 
             if (laborCost == null)
             {
                 return NotFound();
             }
 
-            _laborCostService.Update(id, laborCostIn);
+            _laborCostService.Update(laborCostIn.Id, laborCostIn);
 
             return NoContent();
         }
+        // [HttpPut]
+        // [Authorize("admin")]
+        // public async Task<ActionResult> Update(string id, [FromBody] LaborCost laborCost){
+        //     if (id != laborCost.Id){
+        //         return BadRequest();
+        //     }
+        //     await _laborCostService.Update(id,laborCost);
+        //     return NoContent();
+        // }
 
         [HttpDelete("{id:length(24)}")]
         [Authorize("admin")]
