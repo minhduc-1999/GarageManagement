@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardHeader,
@@ -21,17 +21,39 @@ import {
 import {
     Tooltip,
     Fab,
-} from "@material-ui/core"
+} from "@material-ui/core";
+import "../components/CustomDesign/SuggestList.css";
 const axios = require("axios");
 
 function RepairedRequestList() {
-
     const [name, setName] = useState(null);
     const [address, setAddress] = useState(null);
     const [phoneNum, setPhoneNum] = useState(null);
     const [email, setEmail] = useState(null);
     const [alertVisible, setAlertVisible] = useState(false);
     const [emptyFieldAlert, setEmptyFieldAlert] = useState(false);
+    const [listName, setListName] = useState(null);
+    const [list, setList] = useState([]);
+    const [search, setSearch] = useState(null);
+
+    useEffect(() => {
+        let loginToken = localStorage.getItem("LoginToken");
+        async function fetchCustomerData() {
+          axios
+            .get("http://localhost:5000/api/customers", {
+              headers: {
+                Authorization: "Bearer " + loginToken,
+              },
+            })
+            .then((response) => {
+              return response.data
+            }).then(data => {
+              setListName(data.map(dat => dat.name));
+            })
+            .catch((error) => console.log(error));
+        }
+        fetchCustomerData();
+      }, []);
 
     const AddNewCustomer = () => {
         if (!name || !address || !phoneNum || !email) {
@@ -102,6 +124,28 @@ function RepairedRequestList() {
         setAlertVisible(false);
         setEmptyFieldAlert(false);
     };
+
+    const onChangeHandler = e => {
+        const value = e.target.value;
+        setSearch(value);
+        let temp = [];
+        if (value) {
+            const regex = new RegExp(`^${value}`, 'i');
+            temp = listName.sort().filter(v => regex.test(v));
+        }
+        setList(temp);
+    }
+
+    const renderSuggestions = () => {
+        if (list.length === 0) {
+            return null;
+        }
+        return (
+            <div className="sugList">
+                {list.map(l => <span className="sugItem" onClick={() => {setSearch(l); setList([])}}>{l}</span>)}
+            </div>
+        )
+    }
 
     return (
             <>
@@ -196,13 +240,10 @@ function RepairedRequestList() {
                             <Col className="pr-md-1">
                             <FormGroup>
                                 <label>Khách hàng</label>
-                                <Input name="select" id="exampleSelect" type="select">
-                                    <option>1</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                    <option>4</option>
-                                    <option>5</option>
+                                <Input name="select" type="text" value={search}
+                                onChange={e => onChangeHandler(e)} >
                                 </Input>
+                                    {renderSuggestions()}
                             </FormGroup>
                             </Col>
                             <Col md="auto" style={{alignItems: "flex-end", display: "flex"}}>
