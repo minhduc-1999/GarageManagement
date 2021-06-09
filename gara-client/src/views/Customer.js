@@ -28,7 +28,7 @@ function Customer() {
         .catch((error) => console.log(error));
     }
     fetchCustomerData();
-  });
+  }, []);
 
   return (
     <>
@@ -56,8 +56,8 @@ function Customer() {
                       </thead>
                       <tbody>
                         {customers.map((cus, index) => (
-                          <tr>
-                            <th key={index}>{index + 1}</th>
+                          <tr key={index}>
+                            <th scope="row">{index + 1}</th>
                             <td>{cus.name}</td>
                             <td>{cus.address}</td>
                             <td>{cus.email}</td>

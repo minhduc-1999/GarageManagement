@@ -20,6 +20,7 @@ import {
 } from "reactstrap";
 
 import { Tooltip, Fab } from "@material-ui/core";
+import "../components/CustomDesign/SuggestList.css";
 const axios = require("axios");
 
 function RepairedRequestList() {
@@ -35,6 +36,9 @@ function RepairedRequestList() {
   const [email, setEmail] = useState(null);
   const [alertVisible, setAlertVisible] = useState(false);
   const [emptyFieldAlert, setEmptyFieldAlert] = useState(false);
+  const [listName, setListName] = useState(null);
+  const [search, setSearch] = useState(null);
+  const [list, setList] = useState([])
 
   const [brand, setBrand] = useState(null);
   const [numberPlate, setNumberPlate] = useState(null);
@@ -107,6 +111,7 @@ function RepairedRequestList() {
       .then((response) => {
         console.log("thanh cong");
         setOpenNewCustomer(!openNewCustomer);
+        setOnchange(!onChange)
       })
       .catch((error) => {
         console.log(error);
@@ -144,6 +149,21 @@ function RepairedRequestList() {
         })
         .catch((error) => console.log(error));
     }
+    async function fetchCustomerData() {
+      axios
+        .get("http://localhost:5000/api/customers", {
+          headers: {
+            Authorization: "Bearer " + loginToken,
+          },
+        })
+        .then((response) => {
+          return response.data
+        }).then(data => {
+          setListName(data.map(dat => dat.name));
+        })
+        .catch((error) => console.log(error));
+    }
+    fetchCustomerData();
     fetchLaborCostData();
   }, [onChange]);
 
@@ -233,6 +253,29 @@ function RepairedRequestList() {
     }
   };
 
+  
+  const onChangeHandler = e => {
+    const value = e.target.value;
+    setSearch(value);
+    let temp = [];
+    if (value) {
+        const regex = new RegExp(`^${value}`, 'i');
+        temp = listName.sort().filter(v => regex.test(v));
+    }
+    setList(temp);
+  }
+
+  const renderSuggestions = () => {
+    if (list.length === 0) {
+        return null;
+    }
+    return (
+        <div className="sugList">
+            {list.slice(0, 5).map(l => <p className="sugItem" onClick={() => {setSearch(l); setList([])}}>{l}</p>)}
+        </div>
+    )
+  }
+
   return (
     <>
       <div className="content">
@@ -271,18 +314,6 @@ function RepairedRequestList() {
                         <Input type="text" />
                       </FormGroup>
                     </Col>
-                    {/* <Col className="pr-md-1">
-                                <FormGroup>
-                                <label>Phí sửa chữa</label>
-                                <Input name="select" id="exampleSelect" type="select">
-                                    <option>LaborCost 1</option>
-                                    <option>LaborCost 2</option>
-                                    <option>LaborCost 3</option>
-                                    <option>LaborCost 4</option>
-                                    <option>LaborCost 5</option>
-                                </Input>
-                                </FormGroup>
-                            </Col> */}
                     <Col
                       md="auto"
                       style={{ alignItems: "flex-end", display: "flex" }}
@@ -403,30 +434,6 @@ function RepairedRequestList() {
                         </Label>
                       </FormGroup>
                     </Col>
-                    {/* <Col className="pr-md-1">
-                                <FormGroup>
-                                <label>Đơn giá</label>
-                                <Input type="text" />
-                                </FormGroup>
-                            </Col>
-                            <Col className="pl-md-1" style={{ marginLeft: 10}}>
-                                <FormGroup>
-                                <label>Số lượng</label>
-                                <Input type="text" />
-                                </FormGroup>
-                            </Col> */}
-                    {/* <Col className="pr-md-1">
-                                <FormGroup>
-                                <label>Phí sửa chữa</label>
-                                <Input name="select" id="exampleSelect" type="select">
-                                    <option>LaborCost 1</option>
-                                    <option>LaborCost 2</option>
-                                    <option>LaborCost 3</option>
-                                    <option>LaborCost 4</option>
-                                    <option>LaborCost 5</option>
-                                </Input>
-                                </FormGroup>
-                            </Col> */}
                     <Col
                       md="auto"
                       style={{ alignItems: "flex-end", display: "flex" }}
@@ -614,13 +621,9 @@ function RepairedRequestList() {
                   <Row>
                     <Col>
                       <FormGroup>
-                        <Input name="select" id="exampleSelect" type="select">
-                          <option>1</option>
-                          <option>2</option>
-                          <option>3</option>
-                          <option>4</option>
-                          <option>5</option>
-                        </Input>
+                        <Input name="select" id="exampleSelect" type="text" value={search}
+                        onChange={e => onChangeHandler(e)} />
+                        {renderSuggestions()}
                       </FormGroup>
                     </Col>
                     <Col md="auto">
@@ -688,9 +691,6 @@ function RepairedRequestList() {
                 >
                   Thanh toán
                 </Button>
-                {/* <Button onClick={handleClose} className="btn-fill" color="primary" type="submit">
-                        Thêm
-                        </Button> */}
               </ModalFooter>
             </Modal>
             <Modal isOpen={openNewCustomer} size="sm">
