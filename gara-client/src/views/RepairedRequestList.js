@@ -260,8 +260,7 @@ function RepairedRequestList() {
     setSearch(value);
     let temp = [];
     if (value) {
-        const regex = new RegExp(`^${value}`, 'i');
-        temp = listName.sort().filter(v => regex.test(v));
+        temp = listName.filter(name => name.toLowerCase().includes(value.toLowerCase()));
     }
     setList(temp);
   }
@@ -272,7 +271,7 @@ function RepairedRequestList() {
     }
     return (
         <div className="sugList">
-            {list.slice(0, 5).map(l => <p className="sugItem" onClick={() => {setSearch(l); setList([])}}>{l}</p>)}
+            {list.slice(0, 5).map(l => <a className="sugItem" onClick={() => {console.log(l); setSearch(l); setList([])}}>{l}</a>)}
         </div>
     )
   }
@@ -622,9 +621,10 @@ function RepairedRequestList() {
                   <Row>
                     <Col>
                       <FormGroup>
-                        <Input name="select" id="exampleSelect" type="text" value={search} onFocus={() => setDisplay(true)} onBlur={() => setDisplay(false)}
-                        onChange={e => onChangeHandler(e)} />
-                        {display && renderSuggestions()}
+                        <Input name="select" id="exampleSelect" type="search" value={search} 
+                        onChange={e => onChangeHandler(e)}>
+                        </Input>
+                        {renderSuggestions()}
                       </FormGroup>
                     </Col>
                     <Col md="auto">

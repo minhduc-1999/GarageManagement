@@ -9,10 +9,16 @@
     border-radius: 5px;
 }
 .sugItem {
-    margin-left: 20px;
+    color: black;
+    padding-left: 20px;
     text-decoration: none;
     cursor: pointer;
+    text-decoration: none;
 }
 .sugItem:hover {
-    color: red;
+    background-color: lightgray;
+}
+#exampleSelect::-webkit-search-cancel-button {
+    position: relative;
+    font-size: 20px;
 }

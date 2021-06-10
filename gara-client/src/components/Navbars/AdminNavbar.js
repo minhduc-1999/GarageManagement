@@ -157,7 +157,9 @@ function AdminNavbar(props) {
                   </NavLink>
                   <DropdownItem divider tag="li" />
                   <NavLink tag="li">
-                    <DropdownItem onClick={logout} className="nav-item">Đăng xuất</DropdownItem>
+                    <DropdownItem onClick={logout} className="nav-item">
+                      <Link to="/admin/">Đăng xuất</Link>
+                    </DropdownItem>
                   </NavLink>
                 </DropdownMenu>
               </UncontrolledDropdown>
