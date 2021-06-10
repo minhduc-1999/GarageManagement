@@ -77,7 +77,7 @@ function RepairedRequestList() {
     createCar.append("Color", color);
     createCar.append("Model", model);
     axios
-      .post(process.env.REACT_APP_BASE_URL + "cars", createCar, {
+      .post(process.env.REACT_APP_BASE_URL + "api/cars", createCar, {
         headers: {
           Authorization: "Bearer " + loginToken,
         },
@@ -104,7 +104,7 @@ function RepairedRequestList() {
     createCustomer.append("PhoneNumber", phoneNum);
     createCustomer.append("Email", email);
     axios
-      .post(process.env.REACT_APP_BASE_URL + "customers", createCustomer, {
+      .post(process.env.REACT_APP_BASE_URL + "api/customers", createCustomer, {
         headers: {
           Authorization: "Bearer " + loginToken,
         },
@@ -137,7 +137,7 @@ function RepairedRequestList() {
     let loginToken = localStorage.getItem("LoginToken");
     async function fetchLaborCostData() {
       axios
-        .get(process.env.REACT_APP_BASE_URL + "laborcosts", {
+        .get(process.env.REACT_APP_BASE_URL + "api/laborcosts", {
           headers: {
             Authorization: "Bearer " + loginToken,
           },
@@ -152,7 +152,7 @@ function RepairedRequestList() {
     }
     async function fetchCustomerData() {
       axios
-        .get(process.env.REACT_APP_BASE_URL + "customers", {
+        .get(process.env.REACT_APP_BASE_URL + "api/customers", {
           headers: {
             Authorization: "Bearer " + loginToken,
           },

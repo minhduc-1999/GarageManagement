@@ -33,7 +33,7 @@ function UserProfile() {
   useEffect(() => {
     let loginToken = localStorage.getItem('LoginToken');
     let userId = localStorage.getItem('UserId');
-    axios.get(process.env.REACT_APP_BASE_URL + 'users/' + userId, {
+    axios.get(process.env.REACT_APP_BASE_URL + 'api/users/' + userId, {
       headers: {
         Authorization: 'Bearer ' + loginToken
       }
@@ -60,7 +60,7 @@ function UserProfile() {
     updateForm.append("phoneNumber", phoneNum);
     updateForm.append("dateOB", dateOB);
     updateForm.append("address", address);
-    axios.put(process.env.REACT_APP_BASE_URL + 'account', updateForm, {
+    axios.put(process.env.REACT_APP_BASE_URL + 'api/account', updateForm, {
       headers: {
         Authorization: 'Bearer ' + loginToken
       }
@@ -79,7 +79,7 @@ function UserProfile() {
   return (
     <>
       <div className="content">
-        {userAcc === null ? (
+        {userAcc === null || localStorage.getItem('UserId') === null ? (
           <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
         ) : (
         <Row>
@@ -167,10 +167,9 @@ function UserProfile() {
                       <FormGroup>
                         <label>Ngày sinh</label>
                         <Input
-                          onfocus="(this.type='date')" onblur="(this.type='text')"
-                          defaultValue={dateOB}
+                          value={dateOB}
                           placeholder="Ngày sinh"
-                          type="date"
+                          type="text"
                           onChange={e => setDateOB(e.target.value)}
                         />
                       </FormGroup>

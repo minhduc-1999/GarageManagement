@@ -17,7 +17,7 @@ function Customer() {
     let loginToken = localStorage.getItem("LoginToken");
     async function fetchCustomerData() {
       axios
-        .get(process.env.REACT_APP_BASE_URL + "customers", {
+        .get(process.env.REACT_APP_BASE_URL + "api/customers", {
           headers: {
             Authorization: "Bearer " + loginToken,
           },
