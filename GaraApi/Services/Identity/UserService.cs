@@ -87,5 +87,11 @@ namespace GaraApi.Services.Identity
             }
             return false;
         }
+
+        public UserClaim GetClaim(string id)
+        {
+            var claim = _user.Find(user => user.Id == id).Project(user => user.UserClaims).FirstOrDefault();
+            return claim;
+        }
     }
 }
