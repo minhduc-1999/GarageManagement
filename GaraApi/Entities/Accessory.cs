@@ -14,25 +14,26 @@ namespace GaraApi.Entities
         [BsonRequired]
         [Required]
         public string Name { get; set; }
-        public int Quantity { get; set; }
+        [Required]
+        [BsonRequired]
+        public int Quantity { get; set; } = 0;
         [BsonRequired]
         [Required]
         public string Unit { get; set; }
-        public double ReceiptPrice { get; set; }
-        public double IssuePrice { get; set; }
-        [BsonRepresentation(BsonType.DateTime)]
-        [BsonDateTimeOptions(DateOnly = true)]
-        [BsonIgnoreIfNull]
+        [BsonRequired]
+        [Required]
+        public double ReceiptPrice { get; set; } = 0;
         [BsonIgnoreIfDefault]
+        public double IssuePrice { get; set; } = 0;
+        [BsonRepresentation(BsonType.DateTime)]
+        [BsonRequired]
         public DateTime ExpiredDate { get; set; }
-        [BsonRepresentation(BsonType.ObjectId)]
         [BsonRequired]
         [Required]
-        public string ProviderId { get; set; }
-        [BsonRepresentation(BsonType.ObjectId)]
+        public Provider Provider { get; set; }
         [BsonRequired]
         [Required]
-        public string AccessoryTypeId { get; set; }
+        public AccessoryType AccessoryType { get; set; }
         [BsonIgnoreIfNull]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Description { get; set; }
