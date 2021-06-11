@@ -37,9 +37,8 @@ function RepairedRequestList() {
   const [alertVisible, setAlertVisible] = useState(false);
   const [emptyFieldAlert, setEmptyFieldAlert] = useState(false);
   const [listName, setListName] = useState(null);
-  const [search, setSearch] = useState(null);
-  const [list, setList] = useState([])
-  const [display, setDisplay] = useState(false)
+  const [search, setSearch] = useState('');
+  const [list, setList] = useState([]);
 
   const [brand, setBrand] = useState(null);
   const [numberPlate, setNumberPlate] = useState(null);
@@ -271,7 +270,7 @@ function RepairedRequestList() {
     }
     return (
         <div className="sugList">
-            {list.slice(0, 5).map(l => <a className="sugItem" onClick={() => {console.log(l); setSearch(l); setList([])}}>{l}</a>)}
+            {list.slice(0, 5).map((l, index) => <p key={index} className="sugItem" onClick={() => {console.log(l); setSearch(l); setList([])}}>{l}</p>)}
         </div>
     )
   }

@@ -16,7 +16,6 @@ import {
 } from "reactstrap";
 import {AuthContext} from "../contexts/AuthProvider";
 const axios = require('axios');
-const dateFormat = require('dateformat');
 
 function UserProfile() {
   const {userAcc} = useContext(AuthContext);
@@ -42,7 +41,7 @@ function UserProfile() {
       setFirstName(response.data.userClaims.firstName);
       setEmail(response.data.userClaims.email);
       setAddress(response.data.userClaims.address);
-      setDateOB(response.data.userClaims.dateOB);
+      setDateOB(new Date(response.data.userClaims.dateOB).toISOString().split("T")[0]);
       setPhoneNum(response.data.userClaims.phoneNumber);
     })
   }, [onChange]);
@@ -167,9 +166,9 @@ function UserProfile() {
                       <FormGroup>
                         <label>Ngày sinh</label>
                         <Input
-                          value={dateOB}
+                          defaultValue={dateOB}
                           placeholder="Ngày sinh"
-                          type="text"
+                          type="date"
                           onChange={e => setDateOB(e.target.value)}
                         />
                       </FormGroup>
