@@ -38,8 +38,8 @@ function RepairedRequestList() {
   const [emptyFieldAlert, setEmptyFieldAlert] = useState(false);
   const [listName, setListName] = useState(null);
   const [search, setSearch] = useState(null);
-  const [list, setList] = useState([])
-  const [display, setDisplay] = useState(false)
+  const [list, setList] = useState([]);
+  const [display, setDisplay] = useState(false);
 
   const [brand, setBrand] = useState(null);
   const [numberPlate, setNumberPlate] = useState(null);
@@ -84,6 +84,7 @@ function RepairedRequestList() {
       })
       .then((response) => {
         console.log("Add new car oke");
+        clearCarInputModal();
       })
       .catch((error) => {
         console.log(error);
@@ -112,7 +113,7 @@ function RepairedRequestList() {
       .then((response) => {
         console.log("thanh cong");
         setOpenNewCustomer(!openNewCustomer);
-        setOnchange(!onChange)
+        setOnchange(!onChange);
       })
       .catch((error) => {
         console.log(error);
@@ -158,9 +159,10 @@ function RepairedRequestList() {
           },
         })
         .then((response) => {
-          return response.data
-        }).then(data => {
-          setListName(data.map(dat => dat.name));
+          return response.data;
+        })
+        .then((data) => {
+          setListName(data.map((dat) => dat.name));
         })
         .catch((error) => console.log(error));
     }
@@ -183,12 +185,14 @@ function RepairedRequestList() {
   const [openNewCar, setOpenNewCar] = React.useState(false);
 
   const handleClickOpenNewCar = () => {
+    clearCarInputModal();
     setOpenNewCar(true);
   };
 
   const handleCloseNewCar = () => {
     setOpenNewCar(false);
     setEmptyFieldCarAlert(false);
+    clearCarInputModal();
   };
 
   const [openInvoice, setOpenInvoice] = React.useState(false);
@@ -254,28 +258,87 @@ function RepairedRequestList() {
     }
   };
 
-  
-  const onChangeHandler = e => {
+  const onChangeHandler = (e) => {
     const value = e.target.value;
     setSearch(value);
     let temp = [];
     if (value) {
-        const regex = new RegExp(`^${value}`, 'i');
-        temp = listName.sort().filter(v => regex.test(v));
+      const regex = new RegExp(`^${value}`, "i");
+      temp = listName.sort().filter((v) => regex.test(v));
     }
     setList(temp);
-  }
+  };
 
   const renderSuggestions = () => {
     if (list.length === 0) {
-        return null;
+      return null;
     }
     return (
-        <div className="sugList">
-            {list.slice(0, 5).map(l => <p className="sugItem" onClick={() => {setSearch(l); setList([])}}>{l}</p>)}
-        </div>
-    )
-  }
+      <div className="sugList">
+        {list.slice(0, 5).map((l) => (
+          <p
+            className="sugItem"
+            onClick={() => {
+              setSearch(l);
+              setList([]);
+            }}
+          >
+            {l}
+          </p>
+        ))}
+      </div>
+    );
+  };
+
+  const [CarByNumberPlate, setCarByNumberPlate] = useState(null);
+  const [CarNotExist, setCarNotExist] = useState(false);
+  const onDismissCarNotExist = () => setCarNotExist(false);
+
+  const getCarByNumberPlate = () => {
+    if (!numberPlate) {
+      console.log("Chưa nhập biển số");
+      return;
+    }
+    let loginToken = localStorage.getItem("LoginToken");
+    axios
+      .get(
+        process.env.REACT_APP_BASE_URL +
+          "cars/search?type=numberplate&value=" +
+          numberPlate.trim(),
+        {
+          headers: {
+            Authorization: "Bearer " + loginToken,
+          },
+        }
+      )
+      .then((response) => {
+        setCarByNumberPlate(response.data);
+        console.log(CarByNumberPlate);
+        setBrand(CarByNumberPlate.brand);
+        setModel(CarByNumberPlate.model);
+        setColor(CarByNumberPlate.color);
+        setOwner(CarByNumberPlate.owner);
+        setRegisterId(CarByNumberPlate.registerId);
+        setDistanceTravelled(CarByNumberPlate.distanceTravelled);
+        setVIN(CarByNumberPlate.vin);
+      })
+      .catch((error) => {
+        console.log(error);
+        console.log("Xe khong ton tai");
+        setCarNotExist(true);
+      });
+  };
+
+  const clearCarInputModal = () => {
+    setBrand(null);
+    setModel(null);
+    setNumberPlate(null);
+    setColor(null);
+    setOwner(null);
+    setRegisterId(null);
+    setDistanceTravelled(null);
+    setVIN(null);
+  };
 
   return (
     <>
@@ -622,8 +685,15 @@ function RepairedRequestList() {
                   <Row>
                     <Col>
                       <FormGroup>
-                        <Input name="select" id="exampleSelect" type="text" value={search} onFocus={() => setDisplay(true)} onBlur={() => setDisplay(false)}
-                        onChange={e => onChangeHandler(e)} />
+                        <Input
+                          name="select"
+                          id="exampleSelect"
+                          type="text"
+                          value={search}
+                          onFocus={() => setDisplay(true)}
+                          onBlur={() => setDisplay(false)}
+                          onChange={(e) => onChangeHandler(e)}
+                        />
                         {display && renderSuggestions()}
                       </FormGroup>
                     </Col>
@@ -792,7 +862,12 @@ function RepairedRequestList() {
                 </p>
               </ModalHeader>
               <ModalBody>
-                <Form style={{ marginLeft: 10, marginRight: 10 }}>
+                <Form
+                  style={{
+                    marginLeft: 10,
+                    marginRight: 10,
+                  }}
+                >
                   <Row>
                     <Col>
                       <label>Biển số</label>
@@ -805,6 +880,7 @@ function RepairedRequestList() {
                         <Input
                           type="text"
                           onChange={(e) => {
+                            onDismissCarNotExist(true);
                             setNumberPlate(e.target.value);
                             setEmptyFieldCarAlert(false);
                           }}
@@ -815,6 +891,7 @@ function RepairedRequestList() {
                       <Button
                         onClick={() => {
                           console.log("Check xe ton tai trong db");
+                          getCarByNumberPlate();
                         }}
                         color="primary"
                       >
@@ -822,12 +899,22 @@ function RepairedRequestList() {
                       </Button>
                     </Col>
                   </Row>
+                  <Alert
+                    style={{ width: 730 }}
+                    className="alert-error"
+                    color="warning"
+                    isOpen={CarNotExist}
+                    toggle={onDismissCarNotExist}
+                  >
+                    Xe không có trong dữ liệu
+                  </Alert>
                   <Row>
                     <Col sm="6">
                       <FormGroup>
                         <label>Hãng xe</label>
                         <Input
                           type="text"
+                          value={brand}
                           onChange={(e) => {
                             setBrand(e.target.value);
                             setEmptyFieldCarAlert(false);
@@ -839,6 +926,7 @@ function RepairedRequestList() {
                       <FormGroup>
                         <label>Model</label>
                         <Input
+                          value={model}
                           type="text"
                           onChange={(e) => {
                             setModel(e.target.value);
@@ -853,6 +941,7 @@ function RepairedRequestList() {
                       <FormGroup>
                         <label>Màu sắc</label>
                         <Input
+                          value={color}
                           type="text"
                           onChange={(e) => {
                             setColor(e.target.value);
@@ -865,6 +954,7 @@ function RepairedRequestList() {
                       <FormGroup>
                         <label>Chủ xe</label>
                         <Input
+                          value={owner}
                           type="text"
                           onChange={(e) => {
                             setOwner(e.target.value);
@@ -879,6 +969,7 @@ function RepairedRequestList() {
                       <FormGroup>
                         <label>Mã đăng kiểm</label>
                         <Input
+                          value={registerId}
                           type="text"
                           onChange={(e) => {
                             setRegisterId(e.target.value);
@@ -891,6 +982,7 @@ function RepairedRequestList() {
                       <FormGroup>
                         <label>Khoảng cách di chuyển (KM)</label>
                         <Input
+                          value={distanceTravelled}
                           type="text"
                           onChange={(e) => {
                             setDistanceTravelled(e.target.value);
@@ -903,6 +995,7 @@ function RepairedRequestList() {
                   <FormGroup>
                     <label>VIN</label>
                     <Input
+                      value={VIN}
                       type="text"
                       onChange={(e) => {
                         setVIN(e.target.value);
@@ -912,7 +1005,7 @@ function RepairedRequestList() {
                   </FormGroup>
                 </Form>
                 <Alert
-                  style={{ width: 750 }}
+                  style={{ width: 730, marginLeft: 10 }}
                   className="alert-error"
                   color="warning"
                   isOpen={emptyFieldCarAlert}
