@@ -1,6 +1,7 @@
 
 using System.Collections.Generic;
 using GaraApi.Entities.Form;
+using GaraApi.Entities.Identity;
 using GaraApi.Services;
 using GaraApi.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -39,11 +40,12 @@ namespace GaraApi.Controllers
 
         [HttpPost]
         [Authorize("admin, manager, receptionist")]
-        public ActionResult<Quotation> Create([FromBody] Quotation quotation)
+        public ActionResult<Quotation> Create([FromBody] List<QuotationDetail> details)
         {
-            _quotationService.Create(quotation);
-
-            return CreatedAtRoute("GetQuotation", new { id = quotation.Id.ToString() }, quotation);
+            var userId = (HttpContext.Items["User"] as User).Id;
+            
+            var id = _quotationService.Create(userId,details);
+            return CreatedAtRoute("GetQuotation", new { id = id }, id);
         }
         //     public async Task<IActionResult> Create([FromBody] Quotation quotation)
         // {
