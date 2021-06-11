@@ -32,9 +32,13 @@ namespace GaraApi.Controllers
             _userService.Get();
 
         [HttpGet("{id:length(24)}", Name = "GetUser")]
-        [Authorize("admin")]
+        [Authorize("admin, manager, receptionist, storekeeper, employee")]
         public ActionResult<User> Get(string id)
         {
+            if ((HttpContext.Items["User"] as User).Id != id)
+            {
+                return StatusCode(403, "Forbidden");
+            }
             var user = _userService.Get(id);
 
             if (user == null)
