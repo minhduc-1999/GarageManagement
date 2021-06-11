@@ -19,7 +19,7 @@ import {
   Label,
 } from "reactstrap";
 
-import { Tooltip, Fab } from "@material-ui/core";
+import { Tooltip, Fab, Checkbox } from "@material-ui/core";
 import "../components/CustomDesign/SuggestList.css";
 const axios = require("axios");
 
@@ -218,10 +218,12 @@ function RepairedRequestList() {
   const [openCreateQuotation, setOpenCQModal] = React.useState(false);
 
   const handleClickOpenCQ = () => {
+    setSelectedLabor(null);
     setOpenCQModal(true);
   };
 
   const handleClickCloseCQ = () => {
+    setSelectedLabor(null);
     setOpenCQModal(false);
   };
 
@@ -354,7 +356,7 @@ function RepairedRequestList() {
               <ModalBody>
                 <Form>
                   <Row>
-                    <Col className="pr-md-1">
+                    <Col md="4">
                       <FormGroup>
                         <label>Tên phụ tùng</label>
                         <Input name="select" id="exampleSelect" type="select">
@@ -366,84 +368,54 @@ function RepairedRequestList() {
                         </Input>
                       </FormGroup>
                     </Col>
-                    <Col className="pr-md-1">
+                    <Col md="4">
                       <FormGroup>
                         <label>Đơn giá</label>
                         <Input type="text" />
                       </FormGroup>
                     </Col>
-                    <Col className="pl-md-1" style={{ marginLeft: 10 }}>
+                    <Col md="4">
                       <FormGroup>
                         <label>Số lượng</label>
                         <Input type="text" />
                       </FormGroup>
                     </Col>
-                    <Col
-                      md="auto"
-                      style={{ alignItems: "flex-end", display: "flex" }}
-                    >
-                      <Tooltip title="Thêm">
-                        <Fab size="small" style={{ marginBottom: 10 }}>
-                          <i className="tim-icons icon-simple-add"></i>
-                        </Fab>
-                      </Tooltip>
-                    </Col>
                   </Row>
-                  <ColoredLine color="grey" />
-                  <Table className="tablesorter" responsive>
-                    <thead className="text-primary">
-                      <tr>
-                        <th>ID</th>
-                        <th>Phụ tùng</th>
-                        <th>Số lượng</th>
-                        <th>Đơn giá</th>
-                        <th>Phí sửa chữa</th>
-                        <th>Tổng tiền</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <th scope="row">1</th>
-                        <td>abc</td>
-                        <td>50</td>
-                        <td>10000 VNĐ</td>
-                        <td>10000 VNĐ</td>
-                        <td>5010000 VNĐ</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">1</th>
-                        <td>xyz</td>
-                        <td>50</td>
-                        <td>10000 VNĐ</td>
-                        <td>10000 VNĐ</td>
-                        <td>5010000 VNĐ</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">1</th>
-                        <td>binh</td>
-                        <td>50</td>
-                        <td>10000 VNĐ</td>
-                        <td>10000 VNĐ</td>
-                        <td>5010000 VNĐ</td>
-                      </tr>
-                    </tbody>
-                  </Table>
-                  <Row style={{ marginTop: 20 }}>
+                  <Row>
                     <Col hidden={hiddenLaborCost}>
                       <Row>
-                        <Col className="pr-md-1">
+                        <Col md="4">
+                          <label>Chọn dịch vụ</label>
+                        </Col>
+                        <Col md="4">
+                          <label>Tiền phí</label>
+                        </Col>
+                      </Row>
+                    </Col>
+                    <Col hidden={!hiddenLaborCost}>
+                      <Row>
+                        <Col md="4">
+                          <label>Tên dịch vụ</label>
+                        </Col>
+                        <Col md="4">
+                          <label>Tiền phí</label>
+                        </Col>
+                      </Row>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col hidden={hiddenLaborCost}>
+                      <Row>
+                        <Col md="6">
                           <FormGroup>
-                            <label>Loại phí</label>
                             <Input
                               name="select"
                               id="exampleSelect"
                               type="select"
-                              defaultValue={"DEFAULT"}
+                              defaultValue={"0"}
                               onChange={(e) => setSelectedLabor(e.target.value)}
                             >
-                              <option value="DEFAULT" disabled>
-                                Chọn loại phí
-                              </option>
+                              <option value="0">Không</option>
                               {laborCosts.map((laborCost) => (
                                 <option
                                   key={laborCost.name}
@@ -455,17 +427,17 @@ function RepairedRequestList() {
                             </Input>
                           </FormGroup>
                         </Col>
-                        <Col className="pr-md-1">
-                          <label>Tiền phí</label>
-                          <h4>{SelectedLabor} VNĐ</h4>
+                        <Col md="6">
+                          <h4>
+                            {SelectedLabor != null ? SelectedLabor : "0"} VNĐ
+                          </h4>
                         </Col>
                       </Row>
                     </Col>
                     <Col hidden={!hiddenLaborCost}>
                       <Row>
                         <Col className="pr-md-1">
-                          <FormGroup>
-                            <label>Loại phí</label>
+                          <FormGroup style={{ marginRight: 5 }}>
                             <Input
                               type="text"
                               onChange={(e) => setLaborName(e.target.value)}
@@ -473,8 +445,7 @@ function RepairedRequestList() {
                           </FormGroup>
                         </Col>
                         <Col className="pl-md-1" style={{ marginLeft: 10 }}>
-                          <FormGroup>
-                            <label>Phí sửa chữa</label>
+                          <FormGroup style={{ marginLeft: 5 }}>
                             <Input
                               type="text"
                               onChange={(e) => setLaborValue(e.target.value)}
@@ -484,22 +455,17 @@ function RepairedRequestList() {
                       </Row>
                     </Col>
 
-                    <Col md="auto">
-                      <label>Tiền phí</label>
-                      <FormGroup check>
-                        <Label check>
-                          <Input
-                            type="checkbox"
-                            onChange={(e) =>
-                              setHiddenLaborCost(e.target.checked)
-                            }
-                          />{" "}
-                          <strong>Loại phí mới</strong>
-                        </Label>
+                    <Col md="3">
+                      <FormGroup>
+                        <Checkbox
+                          color="primary"
+                          onChange={(e) => setHiddenLaborCost(e.target.checked)}
+                        ></Checkbox>
+                        <label>Loại phí mới</label>
                       </FormGroup>
                     </Col>
                     <Col
-                      md="auto"
+                      md="1"
                       style={{ alignItems: "flex-end", display: "flex" }}
                     >
                       <Tooltip title="Thêm">
@@ -518,24 +484,44 @@ function RepairedRequestList() {
                     <thead className="text-primary">
                       <tr>
                         <th>ID</th>
-                        <th>Loại phí</th>
+                        <th>Phụ tùng</th>
+                        <th>Số lượng</th>
                         <th>Đơn giá</th>
+                        <th>Loại lỗi</th>
+                        <th>Phí sửa chữa</th>
+                        <th>Tổng tiền</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
                         <th scope="row">1</th>
                         <td>abc</td>
+                        <td>50</td>
                         <td>10000 VNĐ</td>
+                        <td>Hư đèn</td>
+                        <td>10000 VNĐ</td>
+                        <td>5010000 VNĐ</td>
                       </tr>
                       <tr>
                         <th scope="row">1</th>
-                        <td>abc</td>
+                        <td>xyz</td>
+                        <td>50</td>
                         <td>10000 VNĐ</td>
+                        <td>Hư đèn</td>
+                        <td>10000 VNĐ</td>
+                        <td>5010000 VNĐ</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">1</th>
+                        <td>binh</td>
+                        <td>50</td>
+                        <td>10000 VNĐ</td>
+                        <td>Hư đèn</td>
+                        <td>10000 VNĐ</td>
+                        <td>5010000 VNĐ</td>
                       </tr>
                     </tbody>
                   </Table>
-
                   <ColoredLine color="grey" />
                   <Row>
                     <Col>
