@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import classNames from "classnames";
-import { Line } from "react-chartjs-2";
 import {
   Card,
   CardHeader,
@@ -13,16 +12,11 @@ import {
   ButtonGroup,
   TabContent,
   TabPane,
-  CardText,
 } from "reactstrap";
 
-import { chartExample1 } from "variables/charts.js";
 
 function StorageHistory() {
   const [activeTab, setActiveTab] = useState("1");
-  const toggle = (tab) => {
-    if (activeTab !== tab) setActiveTab(tab);
-  };
   return (
     <>
       <div className="content">
