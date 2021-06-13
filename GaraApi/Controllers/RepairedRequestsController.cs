@@ -1,6 +1,8 @@
 
 using System.Collections.Generic;
 using GaraApi.Entities.Form;
+using GaraApi.Entities.Identity;
+using GaraApi.Models;
 using GaraApi.Services;
 using GaraApi.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -40,11 +42,13 @@ namespace GaraApi.Controllers
 
         [HttpPost]
         [Authorize("admin, manager, receptionist")]
-        public ActionResult<RepairedRequest> Create([FromForm] RepairedRequest repReq)
+        public ActionResult<RepairedRequest> Create([FromBody] RepairedRequestModel repairedRequestModel)
         {
-            _repReqService.Create(repReq);
+            var userId = (HttpContext.Items["User"] as User).Id;
+            var id = _repReqService.Create(userId,repairedRequestModel);
 
-            return CreatedAtRoute("GetRepairedRequest", new { id = repReq.Id.ToString() }, repReq);
+            return CreatedAtRoute("GetRepairedRequest", new { id = id}, id);
+            
         }
 
         [HttpPut("{id:length(24)}")]

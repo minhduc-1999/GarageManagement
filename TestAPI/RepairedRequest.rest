@@ -1,0 +1,34 @@
+
+//Get all
+GET http://localhost:5000/api/repairedrequests/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYmI4NWRhNDg3OWY5ZTZlNTZhNjBjMiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjk1MDg2NywiZXhwIjoxNjI1MDI0NDY3LCJpYXQiOjE2MjI5NTA4Njd9.HgBbivniOsfKpVjy17MvmVR57FEHqWOQgX6hPVXkngw
+
+###
+//Get 1
+GET http://localhost:5000/api/repairedrequests/60c59ecc7452d17f3422d1fc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYmI4NWRhNDg3OWY5ZTZlNTZhNjBjMiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjk1MDg2NywiZXhwIjoxNjI1MDI0NDY3LCJpYXQiOjE2MjI5NTA4Njd9.HgBbivniOsfKpVjy17MvmVR57FEHqWOQgX6hPVXkngw
+
+
+###
+//create
+POST http://localhost:5000/api/repairedrequests/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYmI4NWRhNDg3OWY5ZTZlNTZhNjBjMiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjk1MDg2NywiZXhwIjoxNjI1MDI0NDY3LCJpYXQiOjE2MjI5NTA4Njd9.HgBbivniOsfKpVjy17MvmVR57FEHqWOQgX6hPVXkngw
+Content-Type: application/json
+{
+    "carid" : "bbbbbbbbbbb",
+    "customerid" : "aaaaaaaaaaaa",
+    "details" : [
+                    {
+                        "accessoryid" : "sdasadasd",
+                        "quantity" : 5,
+                        "unitprice": 20,
+                        "laborcost": 400
+                    },
+                    {
+                        "accessoryid" : "vbbffvwds",
+                        "quantity" : 5,
+                        "unitprice": 20,
+                        "laborcost": 500
+                    }
+                ]
+}

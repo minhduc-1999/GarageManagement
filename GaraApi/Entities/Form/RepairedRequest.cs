@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -5,13 +6,14 @@ namespace GaraApi.Entities.Form
 {
     public class RepairedRequest : Form
     {
-        [BsonRepresentation(BsonType.ObjectId)]
+        [BsonRequired]
         public string CarId { get; set; }
-        [BsonRepresentation(BsonType.ObjectId)]
+        [BsonRequired]
         public string CustomerId { get; set; }
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string AccessoryIssueId { get; set; }
-
         public string State { get; set; }
+        [BsonRequired]
+        public List<QuotationDetail> Details { get; set; }
+        [BsonRequired]
+        public double TotalAmount { get; set; }
     }
 }

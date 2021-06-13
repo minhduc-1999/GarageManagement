@@ -40,7 +40,7 @@ namespace GaraApi.Services
                     Creator = userclaim,
                     TotalAmount = totalAmount,
                     Details = details,
-                    State = "Đang tiến hành"
+                    State = "Chờ xác nhận" // "Hủy" .. "Đã xác nhận" .. "Đã xuất"
                 };
             //Quotation quotation = new Quotation(details,"Đang tiến hành",totalAmount);
             _quotation.InsertOneAsync(quotation);
