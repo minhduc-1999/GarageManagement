@@ -1,6 +1,8 @@
 
 using System.Collections.Generic;
 using GaraApi.Entities.Form;
+using GaraApi.Entities.Identity;
+using GaraApi.Models;
 using GaraApi.Services;
 using GaraApi.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -39,43 +41,47 @@ namespace GaraApi.Controllers
 
         [HttpPost]
         [Authorize("admin, manager, receptionist")]
-        public ActionResult<Bill> Create([FromForm] Bill bill)
+        public ActionResult<Bill> Create([FromBody] BillCreatedModel billModel)
         {
-            _billService.Create(bill);
-
-            return CreatedAtRoute("GetBill", new { id = bill.Id.ToString() }, bill);
-        }
-
-        [HttpPut("{id:length(24)}")]
-        [Authorize("admin")]
-        public IActionResult Update(string id, Bill billIn)
-        {
-            var bill = _billService.Get(id);
-
-            if (bill == null)
+            var creator = (HttpContext.Items["User"] as User).UserClaims;
+            var res = _billService.Create(creator, billModel);
+            if (res.Item1 != 200)
             {
-                return NotFound();
+                return StatusCode(res.Item1, res.Item2);
             }
-
-            _billService.Update(id, billIn);
-
-            return NoContent();
+            return CreatedAtRoute("GetBill", new { id = res.Item3.Id.ToString() }, res.Item3);
         }
 
-        [HttpDelete("{id:length(24)}")]
-        [Authorize("admin")]
-        public IActionResult Delete(string id)
-        {
-            var bill = _billService.Get(id);
+        // [HttpPut("{id:length(24)}")]
+        // [Authorize("admin")]
+        // public IActionResult Update(string id, Bill billIn)
+        // {
+        //     var bill = _billService.Get(id);
 
-            if (bill == null)
-            {
-                return NotFound();
-            }
+        //     if (bill == null)
+        //     {
+        //         return NotFound();
+        //     }
 
-            _billService.Remove(bill.Id);
+        //     _billService.Update(id, billIn);
 
-            return NoContent();
-        }
+        //     return NoContent();
+        // }
+
+        // [HttpDelete("{id:length(24)}")]
+        // [Authorize("admin")]
+        // public IActionResult Delete(string id)
+        // {
+        //     var bill = _billService.Get(id);
+
+        //     if (bill == null)
+        //     {
+        //         return NotFound();
+        //     }
+
+        //     _billService.Remove(bill.Id);
+
+        //     return NoContent();
+        // }
     }
 }

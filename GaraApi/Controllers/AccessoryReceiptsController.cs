@@ -42,8 +42,8 @@ namespace GaraApi.Controllers
         [Authorize("admin, manager, storekeeper")]
         public ActionResult<string> Create([FromBody] List<AccessoryInputModel> model)
         {
-            var userId = (HttpContext.Items["User"] as User).Id;
-            var id = _accReceiptService.Create(userId, model);
+            var creator = (HttpContext.Items["User"] as User).UserClaims;
+            var id = _accReceiptService.Create(creator, model);
             if (id == null)
                 return StatusCode(500);
             return CreatedAtRoute("GetAccessoryReceipt", new { id = id }, id);

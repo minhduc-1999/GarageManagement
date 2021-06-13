@@ -6,18 +6,18 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTg5MDcwM
 //Get 1
 //use to create example in database
 //This api dont use to create Accessory in production release (create through AccessoryReceipt)
-POST http://localhost:5000/api/accessories/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTg5MDcwMjAxZDJkZDg0NWI0ZGNiYiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjg3NjMwMywiZXhwIjoxNjI0OTQ5OTAzLCJpYXQiOjE2MjI4NzYzMDN9.mHKSKMO9cQkg2xQ20B9PUciqMqekijdtJRfjivWs3jE
-Content-Type: application/x-www-form-urlencoded
+# POST http://localhost:5000/api/accessories/
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTg5MDcwMjAxZDJkZDg0NWI0ZGNiYiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjg3NjMwMywiZXhwIjoxNjI0OTQ5OTAzLCJpYXQiOjE2MjI4NzYzMDN9.mHKSKMO9cQkg2xQ20B9PUciqMqekijdtJRfjivWs3jE
+# Content-Type: application/x-www-form-urlencoded
 
-name=Bánh xe container
-&brand=Thịnh Phát
-&quantity=20
-&unit=Chiếc
-&receiptPrice=1000000
-&issuePrice=1500000
-&expiredDate=12/30/2026
-&providerId=60bf96a4a352eee743e6b3ef
-&accessoryTypeId=60bf979ea352eee743e6b3f2
-&description=Bánh xe container cỡ lớn
+# name=Bánh xe container
+# &brand=Thịnh Phát
+# &quantity=20
+# &unit=Chiếc
+# &receiptPrice=1000000
+# &issuePrice=1500000
+# &expiredDate=12/30/2026
+# &providerId=60bf96a4a352eee743e6b3ef
+# &accessoryTypeId=60bf979ea352eee743e6b3f2
+# &description=Bánh xe container cỡ lớn
 

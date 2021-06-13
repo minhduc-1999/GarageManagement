@@ -31,30 +31,33 @@ namespace GaraApi.Services
         {
             double totalAmount = 0;
             var details = repairedRequestModel.quotation.Details;
-            for (int i = 0; i < details.Count; i++){
-                details[i].Amount = details[i].Quantity*details[i].UnitPrice + details[i].LaborCost;
+            for (int i = 0; i < details.Count; i++)
+            {
+                details[i].Amount = details[i].Quantity * details[i].UnitPrice + details[i].LaborCost;
                 totalAmount += details[i].Amount;
             }
             var userclaim = _userSerivce.GetClaim(userId);
             RepairedRequest repairedRequest = new RepairedRequest()
-                {
-                    CarId = repairedRequestModel.CarId,
-                    CustomerId = repairedRequestModel.CustomerId, 
-                    CreatedDate = System.DateTime.Now,
-                    Creator = userclaim,
-                    TotalAmount = totalAmount,
-                    Quotation = repairedRequestModel.quotation,
-                    State = RepairedRequest.RepairedRequestState.init // "Hủy" .. "Đã xác nhận" .. "Đã xuất"
-                };
+            {
+                CarId = repairedRequestModel.CarId,
+                CustomerId = repairedRequestModel.CustomerId,
+                CreatedDate = System.DateTime.Now,
+                Creator = userclaim,
+                TotalAmount = totalAmount,
+                Quotation = repairedRequestModel.quotation,
+                State = RepairedRequest.RepairedRequestState.init // "Hủy" .. "Đã xác nhận" .. "Đã xuất"
+            };
             _repairedRequest.InsertOne(repairedRequest);
             return repairedRequest.Id;
         }
 
-        public bool Update(RepairedRequest repairedRequestIn , RepairedRequestUpdateModel repReqUpdateIn) {
+        public bool Update(RepairedRequest repairedRequestIn, RepairedRequestUpdateModel repReqUpdateIn)
+        {
             double totalAmount = 0;
             var details = repReqUpdateIn.quotation.Details;
-            for (int i = 0; i < details.Count; i++){
-                details[i].Amount = details[i].Quantity*details[i].UnitPrice + details[i].LaborCost;
+            for (int i = 0; i < details.Count; i++)
+            {
+                details[i].Amount = details[i].Quantity * details[i].UnitPrice + details[i].LaborCost;
                 totalAmount += details[i].Amount;
             }
 
@@ -73,5 +76,17 @@ namespace GaraApi.Services
 
         public void Remove(string id) =>
             _repairedRequest.DeleteOne(repairedRequest => repairedRequest.Id == id);
+
+
+        public List<QuotationDetail> GetQuotationDetails(string id)
+        {
+            return _repairedRequest.Find(rr => rr.Id == id).Project(rr => rr.Quotation.Details).FirstOrDefault();
+        }
+
+        public Quotation.QuotationtState? GetQuotationtState(string id)
+        {
+            return _repairedRequest.Find(rr => rr.Id == id).Project(rr => rr.Quotation.State).FirstOrDefault();
+
+        }
     }
 }
