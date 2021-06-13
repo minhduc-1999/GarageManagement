@@ -15,20 +15,57 @@ POST http://localhost:5000/api/repairedrequests/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYmI4NWRhNDg3OWY5ZTZlNTZhNjBjMiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjk1MDg2NywiZXhwIjoxNjI1MDI0NDY3LCJpYXQiOjE2MjI5NTA4Njd9.HgBbivniOsfKpVjy17MvmVR57FEHqWOQgX6hPVXkngw
 Content-Type: application/json
 {
-    "carid" : "bbbbbbbbbbb",
-    "customerid" : "aaaaaaaaaaaa",
-    "details" : [
+    "carid" : "aacascs",
+    "customerid" : "dsafqfq",
+    "quotation" :{  
+            "state" : "not_confirmed",
+            "details": [
                     {
-                        "accessoryid" : "sdasadasd",
+                        "accessoryid" : "ffsfsf",
                         "quantity" : 5,
                         "unitprice": 20,
-                        "laborcost": 400
+                        "laborcost": 200
                     },
                     {
-                        "accessoryid" : "vbbffvwds",
+                        "accessoryid" : "saffa",
                         "quantity" : 5,
                         "unitprice": 20,
                         "laborcost": 500
                     }
                 ]
+    }
+}
+
+###
+//delete
+DELETE http://localhost:5000/api/repairedrequests/60c5c9caa813009987a3ddbc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYmI4NWRhNDg3OWY5ZTZlNTZhNjBjMiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjk1MDg2NywiZXhwIjoxNjI1MDI0NDY3LCJpYXQiOjE2MjI5NTA4Njd9.HgBbivniOsfKpVjy17MvmVR57FEHqWOQgX6hPVXkngw
+
+###
+//update
+PUT http://localhost:5000/api/repairedrequests/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYmI4NWRhNDg3OWY5ZTZlNTZhNjBjMiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjk1MDg2NywiZXhwIjoxNjI1MDI0NDY3LCJpYXQiOjE2MjI5NTA4Njd9.HgBbivniOsfKpVjy17MvmVR57FEHqWOQgX6hPVXkngw
+Content-Type: application/json
+{
+    "id": "60c5c9a1a813009987a3ddbb",
+    "carid" : "aacascs",
+    "customerid" : "60c5c9a1a813009987a3ddaa",
+    "quotation" :{  
+            "state" : "not_confirmed", //{confirmed,not_confirmed}
+            "details": [
+                    {
+                        "accessoryid" : "faa",
+                        "quantity" : 5,
+                        "unitprice": 20,
+                        "laborcost": 200
+                    },
+                    {
+                        "accessoryid" : "saffa",
+                        "quantity" : 5,
+                        "unitprice": 20,
+                        "laborcost": 10000
+                    }
+                ]
+    },
+    "rrstate" : "finished" // repairedRequestState {init,finished,canceled}
 }

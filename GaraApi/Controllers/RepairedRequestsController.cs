@@ -51,20 +51,17 @@ namespace GaraApi.Controllers
             
         }
 
-        [HttpPut("{id:length(24)}")]
+        [HttpPut]
         [Authorize("admin, manager, receptionist")]
-        public IActionResult Update(string id, RepairedRequest repReqIn)
+        public bool Update([FromBody] RepairedRequestUpdateModel repReqUpdateIn)
         {
-            var repReq = _repReqService.Get(id);
-
+            var repReq = _repReqService.Get(repReqUpdateIn.Id);
+            
             if (repReq == null)
             {
-                return NotFound();
+                return false;
             }
-
-            _repReqService.Update(id, repReqIn);
-
-            return NoContent();
+            return _repReqService.Update(repReq, repReqUpdateIn);
         }
 
         [HttpDelete("{id:length(24)}")]
