@@ -27,10 +27,7 @@ const App = props => {
       setInitializing(false);
       return;
     }
-    axios.get('http://localhost:5000/api/users', {
-      params: {
-        id: userId
-      },
+    axios.get(process.env.REACT_APP_BASE_URL + 'api/users' + userId, {
       headers: {
         Authorization: 'Bearer ' + token
       }
