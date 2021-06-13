@@ -37,9 +37,8 @@ function RepairedRequestList() {
   const [alertVisible, setAlertVisible] = useState(false);
   const [emptyFieldAlert, setEmptyFieldAlert] = useState(false);
   const [listName, setListName] = useState(null);
-  const [search, setSearch] = useState(null);
+  const [search, setSearch] = useState("");
   const [list, setList] = useState([]);
-  const [display, setDisplay] = useState(false);
 
   const [brand, setBrand] = useState(null);
   const [numberPlate, setNumberPlate] = useState(null);
@@ -77,7 +76,7 @@ function RepairedRequestList() {
     createCar.append("Color", color);
     createCar.append("Model", model);
     axios
-      .post(process.env.REACT_APP_BASE_URL + "cars", createCar, {
+      .post(process.env.REACT_APP_BASE_URL + "api/cars", createCar, {
         headers: {
           Authorization: "Bearer " + loginToken,
         },
@@ -105,7 +104,7 @@ function RepairedRequestList() {
     createCustomer.append("PhoneNumber", phoneNum);
     createCustomer.append("Email", email);
     axios
-      .post(process.env.REACT_APP_BASE_URL + "customers", createCustomer, {
+      .post(process.env.REACT_APP_BASE_URL + "api/customers", createCustomer, {
         headers: {
           Authorization: "Bearer " + loginToken,
         },
@@ -138,7 +137,7 @@ function RepairedRequestList() {
     let loginToken = localStorage.getItem("LoginToken");
     async function fetchLaborCostData() {
       axios
-        .get(process.env.REACT_APP_BASE_URL + "laborcosts", {
+        .get(process.env.REACT_APP_BASE_URL + "api/laborcosts", {
           headers: {
             Authorization: "Bearer " + loginToken,
           },
@@ -153,7 +152,7 @@ function RepairedRequestList() {
     }
     async function fetchCustomerData() {
       axios
-        .get(process.env.REACT_APP_BASE_URL + "customers", {
+        .get(process.env.REACT_APP_BASE_URL + "api/customers", {
           headers: {
             Authorization: "Bearer " + loginToken,
           },
@@ -265,8 +264,9 @@ function RepairedRequestList() {
     setSearch(value);
     let temp = [];
     if (value) {
-      const regex = new RegExp(`^${value}`, "i");
-      temp = listName.sort().filter((v) => regex.test(v));
+      temp = listName.filter((name) =>
+        name.toLowerCase().includes(value.toLowerCase())
+      );
     }
     setList(temp);
   };
@@ -277,10 +277,12 @@ function RepairedRequestList() {
     }
     return (
       <div className="sugList">
-        {list.slice(0, 5).map((l) => (
+        {list.slice(0, 5).map((l, index) => (
           <p
+            key={index}
             className="sugItem"
             onClick={() => {
+              console.log(l);
               setSearch(l);
               setList([]);
             }}
@@ -674,13 +676,11 @@ function RepairedRequestList() {
                         <Input
                           name="select"
                           id="exampleSelect"
-                          type="text"
+                          type="search"
                           value={search}
-                          onFocus={() => setDisplay(true)}
-                          onBlur={() => setDisplay(false)}
                           onChange={(e) => onChangeHandler(e)}
-                        />
-                        {display && renderSuggestions()}
+                        ></Input>
+                        {renderSuggestions()}
                       </FormGroup>
                     </Col>
                     <Col md="auto">

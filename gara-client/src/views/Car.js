@@ -20,7 +20,7 @@ function Car() {
     let loginToken = localStorage.getItem("LoginToken");
     async function fetchCarData() {
       axios
-        .get("http://localhost:5000/api/cars", {
+        .get(process.env.REACT_APP_BASE_URL + "api/cars", {
           headers: {
             Authorization: "Bearer " + loginToken,
           },

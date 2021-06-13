@@ -1,6 +1,7 @@
 
 using System.Collections.Generic;
 using GaraApi.Entities;
+using GaraApi.Models;
 using GaraApi.Services;
 using GaraApi.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +13,12 @@ namespace GaraApi.Controllers
     public class AccessoriesController : ControllerBase
     {
         private readonly AccessoryService _accessoryService;
+        private readonly AccessoryTypeService _accessoryTypeService;
 
-        public AccessoriesController(AccessoryService accessoryService)
+        public AccessoriesController(AccessoryService accessoryService, AccessoryTypeService accessoryTypeService)
         {
             _accessoryService = accessoryService;
+            _accessoryTypeService = accessoryTypeService;
         }
 
         [HttpGet]
@@ -37,18 +40,18 @@ namespace GaraApi.Controllers
             return accessory;
         }
 
-        [HttpPost]
-        [Authorize("admin, manager, storekeeper")]
-        public ActionResult<Accessory> Create([FromForm] Accessory accessory)
-        {
-            _accessoryService.Create(accessory);
+        // [HttpPost]
+        // [Authorize("admin, manager, storekeeper")]
+        // public ActionResult<Accessory> Create([FromForm] Accessory accessory)
+        // {
+        //     _accessoryService.Create(accessory);
 
-            return CreatedAtRoute("GetAccessory", new { id = accessory.Id.ToString() }, accessory);
-        }
+        //     return CreatedAtRoute("GetAccessory", new { id = accessory.Id.ToString() }, accessory);
+        // }
 
         [HttpPut("{id:length(24)}")]
-        [Authorize("admin")]
-        public IActionResult Update(string id, Accessory accessoryIn)
+        [Authorize("admin, manager, storekeeper")]
+        public IActionResult Update(string id, [FromForm] AccessoryUpdateModel accessoryIn)
         {
             var accessory = _accessoryService.Get(id);
 
@@ -57,7 +60,17 @@ namespace GaraApi.Controllers
                 return NotFound();
             }
 
-            _accessoryService.Update(id, accessoryIn);
+            var accType = _accessoryTypeService.Get(accessoryIn.AccessoryTypeId);
+            if (accType == null)
+                return StatusCode(404, new { message = "Provider Not Existed" });
+
+            accessory.Name = accessoryIn.Name;
+            accessory.IssuePrice = accessoryIn.IssuePrice;
+            accessory.AccessoryType = accType;
+            accessory.Description = accessoryIn.Description;
+
+
+            _accessoryService.Update(id, accessory);
 
             return NoContent();
         }
@@ -66,14 +79,14 @@ namespace GaraApi.Controllers
         [Authorize("admin, manager, storekeeper")]
         public IActionResult Delete(string id)
         {
-            var accessory = _accessoryService.Get(id);
+            var exist = _accessoryService.isExisted(id);
 
-            if (accessory == null)
+            if (!exist)
             {
                 return NotFound();
             }
 
-            _accessoryService.Remove(accessory.Id);
+            _accessoryService.Remove(id);
 
             return NoContent();
         }

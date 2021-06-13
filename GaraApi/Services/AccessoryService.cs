@@ -1,5 +1,6 @@
 using GaraApi.Entities;
 using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -26,8 +27,31 @@ namespace GaraApi.Services
 
         public Accessory Create(Accessory accessory)
         {
-            _accessory.InsertOne(accessory);
-            return accessory;
+            try
+            {
+                _accessory.InsertOne(accessory);
+                return accessory;
+            }
+            catch
+            {
+                return null;
+            }
+
+        }
+
+        public List<Accessory> Create(List<Accessory> accessories)
+        {
+            try
+            {
+                _accessory.InsertMany(accessories);
+                //var res = accessories.ConvertAll<string>(acc => acc.Id);
+                return accessories;
+            }
+            catch
+            {
+                return null;
+            }
+
         }
 
         public void Update(string id, Accessory accessoryIn) =>
@@ -38,5 +62,13 @@ namespace GaraApi.Services
 
         public void Remove(string id) =>
             _accessory.DeleteOne(accessory => accessory.Id == id);
+
+        public bool isExisted(string id)
+        {
+            var num = _accessory.CountDocuments(acc => acc.Id == id);
+            if (num == 0)
+                return false;
+            return true;
+        }
     }
 }

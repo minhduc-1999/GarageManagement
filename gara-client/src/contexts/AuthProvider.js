@@ -17,11 +17,11 @@ const AuthProvider = ({children}) => {
             let loginFormData = new FormData();
             loginFormData.append('Username', username);
             loginFormData.append('Password', password);
-            axios.post('http://localhost:5000/api/login', loginFormData)
+            axios.post(process.env.REACT_APP_BASE_URL + 'api/login', loginFormData)
               .then(response => {
-                console.log(response);
                 return response.data;
               }).then(data => {
+                console.log(data);
                 setUserAcc(data);
                 localStorage.setItem('UserId', data.id);
                 localStorage.setItem('LoginToken', data.token);

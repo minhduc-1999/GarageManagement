@@ -85,10 +85,10 @@ function AdminNavbar(props) {
           </NavbarToggler>
           <Collapse navbar isOpen={collapseOpen}>
             <Nav className="ml-auto" navbar>
-              <InputGroup className="search-bar">
+              <InputGroup style={{justifyContent: 'flex-end'}} className="search-bar">
                 <Button color="link" onClick={toggleModalSearch}>
-                  <i className="tim-icons icon-zoom-split" />
                   <span className="d-lg-none d-md-block">Search</span>
+                  <i className="tim-icons icon-zoom-split" />
                 </Button>
               </InputGroup>
               <UncontrolledDropdown nav>
@@ -157,7 +157,9 @@ function AdminNavbar(props) {
                   </NavLink>
                   <DropdownItem divider tag="li" />
                   <NavLink tag="li">
-                    <DropdownItem onClick={logout} className="nav-item">Đăng xuất</DropdownItem>
+                    <DropdownItem onClick={logout} className="nav-item">
+                      <Link to="/admin/">Đăng xuất</Link>
+                    </DropdownItem>
                   </NavLink>
                 </DropdownMenu>
               </UncontrolledDropdown>

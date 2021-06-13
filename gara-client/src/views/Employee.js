@@ -50,7 +50,7 @@ function Employee() {
     let loginToken = localStorage.getItem("LoginToken");
     async function fetchUserData() {
       axios
-        .get(process.env.REACT_APP_BASE_URL + "users", {
+        .get(process.env.REACT_APP_BASE_URL + "api/users", {
           headers: {
             Authorization: "Bearer " + loginToken,
           },
@@ -62,7 +62,7 @@ function Employee() {
     }
     async function fetchUserRoles() {
       axios
-        .get(process.env.REACT_APP_BASE_URL + "users/roles", {
+        .get(process.env.REACT_APP_BASE_URL + "api/users/roles", {
           headers: {
             Authorization: "Bearer " + loginToken,
           },
@@ -94,7 +94,7 @@ function Employee() {
     createUser.append("dateOB", dateOB);
     createUser.append("address", address);
     axios
-      .post(process.env.REACT_APP_BASE_URL + "users", createUser, {
+      .post(process.env.REACT_APP_BASE_URL + "api/users", createUser, {
         headers: {
           Authorization: "Bearer " + loginToken,
         },

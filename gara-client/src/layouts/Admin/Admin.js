@@ -105,7 +105,7 @@ function Admin(props) {
               />
               <Switch>
                 {getRoutes(routes)}
-                <Redirect from="*" to="/admin/repairrequestlist" />
+                <Redirect from="*" to="/admin/user-profile" />
               </Switch>
               <Footer fluid />
             </div>
