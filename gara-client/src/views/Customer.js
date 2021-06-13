@@ -4,7 +4,6 @@ import {
   CardHeader,
   CardBody,
   CardTitle,
-  Table,
   Row,
   Col,
 } from "reactstrap";
@@ -44,7 +43,7 @@ function Customer() {
                     <CardTitle tag="h4">Danh sách khách hàng</CardTitle>
                   </CardHeader>
                   <CardBody>
-                    <Table className="tablesorter" responsive>
+                    <table class="table">
                       <thead className="text-primary">
                         <tr>
                           <th>STT</th>
@@ -65,7 +64,7 @@ function Customer() {
                           </tr>
                         ))}
                       </tbody>
-                    </Table>
+                    </table>
                   </CardBody>
                 </Card>
               </Col>
@@ -75,7 +74,7 @@ function Customer() {
                     <CardTitle tag="h4">Danh sách phiếu sửa chữa</CardTitle>
                   </CardHeader>
                   <CardBody>
-                    <Table className="tablesorter" responsive>
+                    <table class="table">
                       <thead className="text-primary">
                         <tr>
                           <th>ID</th>
@@ -108,7 +107,7 @@ function Customer() {
                           <td>Xe đạp</td>
                         </tr>
                       </tbody>
-                    </Table>
+                    </table>
                   </CardBody>
                 </Card>
               </Col>
