@@ -2,7 +2,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.Text.Json.Serialization;
 
-namespace GaraApi.Entities.Form
+namespace GaraApi.Entities
 {
     public class QuotationDetail
     {

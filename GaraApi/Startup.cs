@@ -16,6 +16,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Conventions;
 
 namespace GaraApi
 {
@@ -38,8 +40,9 @@ namespace GaraApi
             services.AddDatabaseService();
 
             //enable Cors policy
-            services.AddCors(c => {
-              c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            services.AddCors(c =>
+            {
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             });
 
             services.AddControllers();
@@ -52,6 +55,10 @@ namespace GaraApi
             {
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             });
+
+            var pack = new ConventionPack();
+            pack.Add(new EnumRepresentationConvention(BsonType.String));
+            ConventionRegistry.Register("EnumStringConvention", pack, t => true);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,6 +78,7 @@ namespace GaraApi
             app.UseRouting();
 
             app.UseMiddleware<JwtMiddleware>();
+
 
             app.UseEndpoints(endpoints =>
             {

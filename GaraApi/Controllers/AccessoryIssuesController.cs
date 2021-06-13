@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using GaraApi.Entities.Form;
+using GaraApi.Entities.Identity;
 using GaraApi.Services;
 using GaraApi.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GaraApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/accessory-issues")]
     [ApiController]
     public class AccessoryIssuesController : ControllerBase
     {
@@ -38,43 +39,47 @@ namespace GaraApi.Controllers
 
         [HttpPost]
         [Authorize("admin, manager, storekeeper")]
-        public ActionResult<AccessoryIssue> Create([FromForm] AccessoryIssue accIssue)
+        public ActionResult<AccessoryIssue> Create([FromBody] AccessoryIssue accIssue)
         {
-            _accIssueService.Create(accIssue);
-
-            return CreatedAtRoute("GetAccessoryIssue", new { id = accIssue.Id.ToString() }, accIssue);
-        }
-
-        [HttpPut("{id:length(24)}")]
-        [Authorize("admin")]
-        public IActionResult Update(string id, AccessoryIssue accIssueIn)
-        {
-            var accIssue = _accIssueService.Get(id);
-
-            if (accIssue == null)
+            var creator = (HttpContext.Items["User"] as User).UserClaims;
+            var res = _accIssueService.Create(creator, accIssue);
+            if (res == null)
             {
-                return NotFound();
+                return StatusCode(400);
             }
-
-            _accIssueService.Update(id, accIssueIn);
-
-            return NoContent();
+            return CreatedAtRoute("GetAccessoryIssue", new { id = res.Id.ToString() }, res);
         }
 
-        [HttpDelete("{id:length(24)}")]
-        [Authorize("admin")]
-        public IActionResult Delete(string id)
-        {
-            var accIssue = _accIssueService.Get(id);
+        // [HttpPut("{id:length(24)}")]
+        // [Authorize("admin")]
+        // public IActionResult Update(string id, AccessoryIssue accIssueIn)
+        // {
+        //     var accIssue = _accIssueService.Get(id);
 
-            if (accIssue == null)
-            {
-                return NotFound();
-            }
+        //     if (accIssue == null)
+        //     {
+        //         return NotFound();
+        //     }
 
-            _accIssueService.Remove(accIssue.Id);
+        //     _accIssueService.Update(id, accIssueIn);
 
-            return NoContent();
-        }
+        //     return NoContent();
+        // }
+
+        // [HttpDelete("{id:length(24)}")]
+        // [Authorize("admin")]
+        // public IActionResult Delete(string id)
+        // {
+        //     var accIssue = _accIssueService.Get(id);
+
+        //     if (accIssue == null)
+        //     {
+        //         return NotFound();
+        //     }
+
+        //     _accIssueService.Remove(accIssue.Id);
+
+        //     return NoContent();
+        // }
     }
 }

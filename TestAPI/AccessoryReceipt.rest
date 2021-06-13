@@ -11,29 +11,29 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTg5MDcwM
 
 ###
 //create
-GET http://localhost:5000/api/accessory-receipts/
+POST http://localhost:5000/api/accessory-receipts/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTg5MDcwMjAxZDJkZDg0NWI0ZGNiYiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjg3NjMwMywiZXhwIjoxNjI0OTQ5OTAzLCJpYXQiOjE2MjI4NzYzMDN9.mHKSKMO9cQkg2xQ20B9PUciqMqekijdtJRfjivWs3jE
 Content-Type: application/json
 
 [
-        {
-            "name": "Ắc quy 220V",
-            "quantity": 15,
-            "unit": "Cái",
-            "receiptPrice": 4000000,
-            "expiredTime": 4,
-            "providerId": "60bf9687a352eee743e6b3ee", //change here
-            "accessoryTypeId": "60c23193ea09602510dca3fd",  //change here
-            "description": "Ắc quy 220v"
-        },
-        {
-            "name": "Ắc quy 250V",
-            "quantity": 10,
-            "unit": "Can",
-            "receiptPrice": 5000000,
-            "expiredTime": 4,
-            "providerId": "60bf9687a352eee743e6b3ee",  //change here
-            "accessoryTypeId": "60bf9781a352eee743e6b3f0",  //change here
-            "description": "Ắc quy 250V, dùng cho xe 16 chỗ"
-        }
-    ]
+    {
+        "name": "Nhớt Ô tô",
+        "quantity": 15,
+        "unit": "Thùng",
+        "receiptPrice": 4000000,
+        "expiredTime": 4,
+        "providerId": "60bf9687a352eee743e6b3ee",
+        "accessoryTypeId": "60c23193ea09602510dca3fd",
+        "description": "Nhớt"
+    },
+    {
+        "name": "Kính chiếu hậu ô tô",
+        "quantity": 10,
+        "unit": "Cái",
+        "receiptPrice": 5000000,
+        "expiredTime": 4,
+        "providerId": "60bf9687a352eee743e6b3ee", 
+        "accessoryTypeId": "60bf9781a352eee743e6b3f0",  
+        "description": "Ắc quy 250V, dùng cho xe 16 chỗ"  
+    }
+]

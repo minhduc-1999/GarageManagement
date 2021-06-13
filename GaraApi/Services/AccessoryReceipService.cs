@@ -1,5 +1,6 @@
 using GaraApi.Entities;
 using GaraApi.Entities.Form;
+using GaraApi.Entities.Identity;
 using GaraApi.Models;
 using GaraApi.Services.Identity;
 using MongoDB.Driver;
@@ -12,18 +13,16 @@ namespace GaraApi.Services
     public class AccessoryReceiptService
     {
         private readonly IMongoCollection<AccessoryReceipt> _accessoryReceipt;
-        private readonly UserService _userSerivce;
         private readonly AccessoryService _accessoryService;
         private readonly AccessoryTypeService _accTypeService;
         private readonly ProviderService _providerService;
 
-        public AccessoryReceiptService(IGaraDatabaseSettings settings, UserService userSerivce, AccessoryService accessoryService, AccessoryTypeService accessoryTypeService, ProviderService providerService)
+        public AccessoryReceiptService(IGaraDatabaseSettings settings, AccessoryService accessoryService, AccessoryTypeService accessoryTypeService, ProviderService providerService)
         {
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
 
             _accessoryReceipt = database.GetCollection<AccessoryReceipt>(settings.AccessoryReceiptCollectionName);
-            _userSerivce = userSerivce;
             _accessoryService = accessoryService;
             _accTypeService = accessoryTypeService;
             _providerService = providerService;
@@ -36,7 +35,7 @@ namespace GaraApi.Services
         public AccessoryReceipt Get(string id) =>
             _accessoryReceipt.Find<AccessoryReceipt>(accessoryReceipt => accessoryReceipt.Id == id).FirstOrDefault();
 
-        public string Create(string userId, List<AccessoryInputModel> model)
+        public string Create(UserClaim creator, List<AccessoryInputModel> model)
         {
             try
             {
@@ -75,13 +74,12 @@ namespace GaraApi.Services
                     };
                 });
 
-                var userclaim = _userSerivce.GetClaim(userId);
                 double total = details.Sum(detail => detail.Quantity * detail.UnitPrice);
 
                 AccessoryReceipt newReceipt = new AccessoryReceipt()
                 {
                     CreatedDate = DateTime.Now,
-                    Creator = userclaim,
+                    Creator = creator,
                     TotalAmount = total,
                     Details = details.ToArray()
                 };
