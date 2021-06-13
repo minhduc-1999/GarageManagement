@@ -37,6 +37,10 @@ function Employee() {
   const [alertVisible, setAlertVisible] = useState(false);
   const [emptyFiledAlert, setEmptyFieldAlert] = useState(false);
   const [onChange, setOnchange] = useState(false);
+  const [onResetPass, setOnResetPass] = useState(false);
+  const [onResetPassUser, setOnResetPassUser] = useState(null);
+  const [newPass, setNewPass] = useState('');
+  const [selectUser, setSelectUser] = useState('');
 
   const translateRoles = {
     admin: "admin",
@@ -109,6 +113,23 @@ function Employee() {
         setAlertVisible(true);
       });
   };
+
+  const handleResetPass = () => {
+    let loginToken = localStorage.getItem('LoginToken');
+    let resetPassForm = new FormData();
+    resetPassForm.append('id', onResetPassUser);
+    resetPassForm.append('newpassword', newPass);
+    axios.post(process.env.REACT_APP_BASE_URL + 'api/users/reset', resetPassForm, {
+      headers: {
+        Authorization: 'Bearer ' + loginToken,
+      },
+    }).then(() => {
+      setOnchange(!onChange);
+      console.log('Doi pass thanh cong cho user ' + onResetPassUser);
+      setOnResetPass(false);
+      setNewPass('');
+    }).catch(error => console.log(error))
+  }
 
   const handleOpenDialog = () => {
    setOnAddNewUser(!onAddNewUser);
@@ -296,6 +317,39 @@ function Employee() {
               </ModalFooter>
             </Modal>
 
+            <Modal isOpen={onResetPass} size="sm" >
+              <ModalBody>
+                <Form>
+                  <Label >Đổi mật khẩu cho user: <strong>{selectUser}</strong></Label>
+                  <Input
+                    type='text'
+                    placeholder='Mật khẩu mới'
+                    value={newPass}
+                    onChange={e => setNewPass(e.target.value)}>
+                  </Input>
+                </Form>
+              </ModalBody>
+              <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
+                <Button
+                  className="btn-fill"
+                  color="primary"
+                  type="submit"
+                  style={{ marginRight: 25 }}
+                  onClick={handleResetPass}
+                >
+                  Xác nhận
+                </Button>
+                <Button
+                  className="btn-fill"
+                  color="secondary"
+                  type="submit"
+                  onClick={() => setOnResetPass(false)}
+                >
+                  Hủy
+                </Button>
+              </ModalFooter>
+            </Modal>
+
             <Row>
               <Col md="12">
                 <Card>
@@ -332,7 +386,7 @@ function Employee() {
                       </thead>
                       <tbody>
                         {users.map((user, index) => (
-                          <tr key={index}>
+                          <tr key={index} onClick={() => {setOnResetPassUser(user.id); setSelectUser(user.username); setOnResetPass(true)}} >
                             <th scope="row">{index + 1}</th>
                             <td>
                               {user.userClaims.lastName}{" "}
