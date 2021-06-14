@@ -27,7 +27,7 @@ function RepairedRequestList() {
   const [laborCosts, setLaborCost] = useState(null);
   const [SelectedLabor, setSelectedLabor] = useState(null);
   const [laborName, setLaborName] = useState(null);
-  const [laborValue, setLaborValue] = useState(null);
+  const [laborValue, setLaborValue] = useState("");
   const [onChange, setOnchange] = useState(false);
 
   const [name, setName] = useState(null);
@@ -49,6 +49,12 @@ function RepairedRequestList() {
   const [color, setColor] = useState(null);
   const [model, setModel] = useState(null);
   const [emptyFieldCarAlert, setEmptyFieldCarAlert] = useState(false);
+
+  const [selectedAccessory, setSelectedAccessory] = useState(null);
+  const [listAccessoryDB, setListAccessoryDB] = useState(null);
+  const [accessorySearch, setAccessorySearch] = useState("");
+  const [accessoryList, setAccessoryList] = useState([]);
+  const [quantity, setQuantity] = useState(0);
 
   const AddNewCar = () => {
     if (
@@ -165,7 +171,23 @@ function RepairedRequestList() {
         })
         .catch((error) => console.log(error));
     }
+    async function fetchAccessoriesData() {
+      axios
+        .get(process.env.REACT_APP_BASE_URL + "api/accessories", {
+          headers: {
+            Authorization: "Bearer " + loginToken,
+          },
+        })
+        .then((response) => {
+          return response.data;
+        })
+        .then((data) => {
+          setListAccessoryDB(data);
+        })
+        .catch((error) => console.log(error));
+    }
     fetchCustomerData();
+    fetchAccessoriesData();
     fetchLaborCostData();
   }, [onChange]);
 
@@ -217,46 +239,166 @@ function RepairedRequestList() {
   const [openCreateQuotation, setOpenCQModal] = React.useState(false);
 
   const handleClickOpenCQ = () => {
-    setSelectedLabor(null);
     setOpenCQModal(true);
   };
 
   const handleClickCloseCQ = () => {
+    clearQDFields();
+    setTempQuotationTotal(0);
+    setQDList([]);
+    setHiddenLaborCost(false);
     setSelectedLabor(null);
     setOpenCQModal(false);
   };
 
   const [hiddenLaborCost, setHiddenLaborCost] = React.useState(false);
 
-  const createNewLaborCost = () => {
-    if (!laborName || !laborValue) {
-      console.log("Thiếu thông tin tạo phí sửa chữa mới");
-      return;
+  // const createNewLaborCost = () => {
+  //   if (!laborName || !laborValue) {
+  //     console.log("Thiếu thông tin tạo phí sửa chữa mới");
+  //     return;
+  //   }
+  //   let loginToken = localStorage.getItem("LoginToken");
+  //   let createLaborCost = new FormData();
+  //   createLaborCost.append("name", laborName);
+  //   createLaborCost.append("value", laborValue);
+  //   axios
+  //     .post(
+  //       process.env.REACT_APP_BASE_URL + "api/laborcosts",
+  //       createLaborCost,
+  //       {
+  //         headers: {
+  //           Authorization: "Bearer " + loginToken,
+  //         },
+  //       }
+  //     )
+  //     .then((response) => {
+  //       console.log(response);
+  //       setOnchange(!onChange);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // };
+
+  const addQDToTable = () => {
+    if (quantity !== 0 && selectedAccessory !== null) {
+      if (hiddenLaborCost && laborName !== "" && laborValue !== "") {
+        if (true) {
+          setQDList([
+            ...QDList,
+            {
+              accessoryId: selectedAccessory.id,
+              accessoryName: selectedAccessory.name,
+              quantity: quantity,
+              unitPrice: selectedAccessory.issuePrice,
+              laborCost: laborValue,
+              issueName: laborName,
+            },
+          ]);
+          setTempQuotationTotal(
+            tempQuotationTotal +
+              quantity * Number(selectedAccessory.issuePrice) +
+              Number(laborValue)
+          );
+        }
+        clearQDFields();
+      } else {
+        if (SelectedLabor === null) {
+          setQDList([
+            ...QDList,
+            {
+              accessoryId: selectedAccessory.id,
+              accessoryName: selectedAccessory.name,
+              quantity: quantity,
+              unitPrice: selectedAccessory.issuePrice,
+            },
+          ]);
+          setTempQuotationTotal(
+            tempQuotationTotal + quantity * Number(selectedAccessory.issuePrice)
+          );
+        } else if (SelectedLabor.name !== "Không") {
+          setQDList([
+            ...QDList,
+            {
+              accessoryId: selectedAccessory.id,
+              accessoryName: selectedAccessory.name,
+              quantity: quantity,
+              unitPrice: selectedAccessory.issuePrice,
+              laborCost: SelectedLabor.value,
+              issueName: SelectedLabor.name,
+            },
+          ]);
+          setTempQuotationTotal(
+            tempQuotationTotal +
+              quantity * Number(selectedAccessory.issuePrice) +
+              Number(SelectedLabor.value)
+          );
+        } else {
+          setQDList([
+            ...QDList,
+            {
+              accessoryId: selectedAccessory.id,
+              accessoryName: selectedAccessory.name,
+              quantity: quantity,
+              unitPrice: selectedAccessory.issuePrice,
+            },
+          ]);
+          setTempQuotationTotal(
+            tempQuotationTotal + quantity * Number(selectedAccessory.issuePrice)
+          );
+        }
+        clearQDFields();
+      }
     }
-    let loginToken = localStorage.getItem("LoginToken");
-    let createLaborCost = new FormData();
-    createLaborCost.append("name", laborName);
-    createLaborCost.append("value", laborValue);
-    axios
-      .post(process.env.REACT_APP_BASE_URL + "laborcosts", createLaborCost, {
-        headers: {
-          Authorization: "Bearer " + loginToken,
-        },
-      })
-      .then((response) => {
-        console.log(response);
-        setOnchange(!onChange);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
   };
 
-  const addLaborCostToTable = () => {
-    if (hiddenLaborCost) {
-      createNewLaborCost();
-    } else {
+  const clearQDFields = () => {
+    setAccessorySearch("");
+    setSelectedAccessory(null);
+    setQuantity(0);
+    setSelectedLabor(null);
+    setLaborName("");
+    setLaborValue("");
+  };
+
+  const onAccessoriesChangeHandler = (e) => {
+    const value = e.target.value;
+    if (value != null && listAccessoryDB != null) {
+      setAccessorySearch(value);
+      setSelectedAccessory(null);
+      let temp = [];
+      if (value) {
+        temp = listAccessoryDB.filter((ac) =>
+          ac.name.toLowerCase().includes(value.toLowerCase())
+        );
+      }
+      setAccessoryList(temp);
     }
+  };
+
+  const renderAccessoriesSuggestions = () => {
+    if (accessoryList.length === 0) {
+      return null;
+    }
+    return (
+      <div className="sugAccessoriesList">
+        {accessoryList.slice(0, 5).map((l, index) => (
+          <p
+            key={index}
+            className="sugAccessoriesItem"
+            onClick={() => {
+              console.log(l);
+              setSelectedAccessory(l);
+              setAccessorySearch(l.name);
+              setAccessoryList([]);
+            }}
+          >
+            {l.name}
+          </p>
+        ))}
+      </div>
+    );
   };
 
   const onChangeHandler = (e) => {
@@ -304,10 +446,11 @@ function RepairedRequestList() {
       return;
     }
     let loginToken = localStorage.getItem("LoginToken");
+    console.log("[Bien so] " + numberPlate);
     axios
       .get(
         process.env.REACT_APP_BASE_URL +
-          "cars/search?type=numberplate&value=" +
+          "api/cars/search?type=numberplate&value=" +
           numberPlate.trim(),
         {
           headers: {
@@ -344,6 +487,9 @@ function RepairedRequestList() {
     setVIN(null);
   };
 
+  const [QDList, setQDList] = useState([]);
+  const [tempQuotationTotal, setTempQuotationTotal] = useState(0);
+
   return (
     <>
       <div className="content">
@@ -353,7 +499,9 @@ function RepairedRequestList() {
           <div>
             <Modal isOpen={openCreateQuotation} size="lg">
               <ModalHeader>
-                <h4 className="title">Phiếu báo giá dịch vụ</h4>
+                <p style={{ fontSize: 22 }} className="title">
+                  Phiếu báo giá dịch vụ
+                </p>
               </ModalHeader>
               <ModalBody>
                 <Form>
@@ -361,25 +509,41 @@ function RepairedRequestList() {
                     <Col md="4">
                       <FormGroup>
                         <label>Tên phụ tùng</label>
-                        <Input name="select" id="exampleSelect" type="select">
-                          <option>Phụ tùng 1</option>
-                          <option>Phụ tùng 2</option>
-                          <option>Phụ tùng 3</option>
-                          <option>Phụ tùng 4</option>
-                          <option>Phụ tùng 5</option>
-                        </Input>
+                        <Input
+                          name="select"
+                          id="exampleSelect"
+                          type="search"
+                          value={accessorySearch}
+                          onChange={(e) => onAccessoriesChangeHandler(e)}
+                        ></Input>
+                        {renderAccessoriesSuggestions()}
                       </FormGroup>
                     </Col>
                     <Col md="4">
                       <FormGroup>
                         <label>Đơn giá</label>
-                        <Input type="text" />
+                        <h4>
+                          {selectedAccessory != null
+                            ? selectedAccessory.issuePrice
+                            : 0}{" "}
+                          VNĐ
+                        </h4>
                       </FormGroup>
                     </Col>
                     <Col md="4">
                       <FormGroup>
                         <label>Số lượng</label>
-                        <Input type="text" />
+                        <Input
+                          type="text"
+                          value={quantity}
+                          onChange={(e) => {
+                            setQuantity(
+                              e.target.value
+                                .replace(/\D/, "")
+                                .replace(/^0+/, "")
+                            );
+                          }}
+                        />
                       </FormGroup>
                     </Col>
                   </Row>
@@ -400,7 +564,7 @@ function RepairedRequestList() {
                           <label>Tên dịch vụ</label>
                         </Col>
                         <Col md="4">
-                          <label>Tiền phí</label>
+                          <label>Tiền phí (VNĐ)</label>
                         </Col>
                       </Row>
                     </Col>
@@ -415,14 +579,17 @@ function RepairedRequestList() {
                               id="exampleSelect"
                               type="select"
                               defaultValue={"0"}
-                              onChange={(e) => setSelectedLabor(e.target.value)}
+                              onChange={(e) =>
+                                setSelectedLabor({
+                                  name: e.target.options[e.target.selectedIndex]
+                                    .text,
+                                  value: e.target.value,
+                                })
+                              }
                             >
-                              <option value="0">Không</option>
+                              <option value={"0"}>Không</option>
                               {laborCosts.map((laborCost) => (
-                                <option
-                                  key={laborCost.name}
-                                  value={laborCost.value}
-                                >
+                                <option value={laborCost.value}>
                                   {laborCost.name}
                                 </option>
                               ))}
@@ -431,7 +598,8 @@ function RepairedRequestList() {
                         </Col>
                         <Col md="6">
                           <h4>
-                            {SelectedLabor != null ? SelectedLabor : "0"} VNĐ
+                            {SelectedLabor != null ? SelectedLabor.value : "0"}{" "}
+                            VNĐ
                           </h4>
                         </Col>
                       </Row>
@@ -442,6 +610,7 @@ function RepairedRequestList() {
                           <FormGroup style={{ marginRight: 5 }}>
                             <Input
                               type="text"
+                              value={laborName}
                               onChange={(e) => setLaborName(e.target.value)}
                             />
                           </FormGroup>
@@ -450,7 +619,14 @@ function RepairedRequestList() {
                           <FormGroup style={{ marginLeft: 5 }}>
                             <Input
                               type="text"
-                              onChange={(e) => setLaborValue(e.target.value)}
+                              value={laborValue}
+                              onChange={(e) =>
+                                setLaborValue(
+                                  e.target.value
+                                    .replace(/\D/, "")
+                                    .replace(/^0+/, "")
+                                )
+                              }
                             />
                           </FormGroup>
                         </Col>
@@ -474,7 +650,7 @@ function RepairedRequestList() {
                         <Fab
                           size="small"
                           style={{ marginBottom: 10 }}
-                          onClick={addLaborCostToTable}
+                          onClick={addQDToTable}
                         >
                           <i className="tim-icons icon-simple-add"></i>
                         </Fab>
@@ -495,33 +671,25 @@ function RepairedRequestList() {
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <th scope="row">1</th>
-                        <td>abc</td>
-                        <td>50</td>
-                        <td>10000 VNĐ</td>
-                        <td>Hư đèn</td>
-                        <td>10000 VNĐ</td>
-                        <td>5010000 VNĐ</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">1</th>
-                        <td>xyz</td>
-                        <td>50</td>
-                        <td>10000 VNĐ</td>
-                        <td>Hư đèn</td>
-                        <td>10000 VNĐ</td>
-                        <td>5010000 VNĐ</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">1</th>
-                        <td>binh</td>
-                        <td>50</td>
-                        <td>10000 VNĐ</td>
-                        <td>Hư đèn</td>
-                        <td>10000 VNĐ</td>
-                        <td>5010000 VNĐ</td>
-                      </tr>
+                      {QDList.map((QD, index) => (
+                        <tr key={index}>
+                          <th scope="row">{index + 1}</th>
+                          <td>{QD.accessoryName}</td>
+                          <td>{QD.quantity}</td>
+                          <td>{QD.unitPrice} VNĐ</td>
+                          <td>
+                            {QD.issueName != null ? QD.issueName : "Không có"}
+                          </td>
+                          <td>{QD.laborCost != null ? QD.laborCost : 0} VNĐ</td>
+                          <td>
+                            {QD.laborCost != null
+                              ? Number(QD.quantity) * Number(QD.unitPrice) +
+                                Number(QD.laborCost)
+                              : Number(QD.quantity) * Number(QD.unitPrice)}
+                            VNĐ
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </Table>
                   <ColoredLine color="grey" />
@@ -533,7 +701,9 @@ function RepairedRequestList() {
                     </Col>
                     <Row>
                       <Col md="auto" style={{ marginRight: 25 }}>
-                        <legend className="title">600000 VNĐ</legend>
+                        <legend className="title">
+                          {tempQuotationTotal} VNĐ
+                        </legend>
                       </Col>
                     </Row>
                   </Row>
@@ -563,8 +733,17 @@ function RepairedRequestList() {
                   className="btn-fill"
                   color="primary"
                   type="submit"
+                  style={{ marginRight: 25 }}
                 >
                   Lưu
+                </Button>
+                <Button
+                  onClick={handleClickCloseCQ}
+                  className="btn-fill"
+                  color="primary"
+                  type="submit"
+                >
+                  Xác nhận
                 </Button>
               </ModalFooter>
             </Modal>
@@ -661,7 +840,9 @@ function RepairedRequestList() {
             </Modal>
             <Modal isOpen={open} size="sm">
               <ModalHeader>
-                <h4 className="title">Phiếu tiếp nhận xe</h4>
+                <p style={{ fontSize: 22 }} className="title">
+                  Phiếu tiếp nhận xe
+                </p>
               </ModalHeader>
               <ModalBody>
                 <Form>

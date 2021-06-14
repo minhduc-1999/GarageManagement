@@ -1,24 +1,44 @@
 .sugList {
-    width: 260px;
-    display: flex;
-    flex-direction: column;
-    z-index: 999;
-    position: fixed;
-    background-color: white;
-    border-style: solid;
-    border-radius: 5px;
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  z-index: 999;
+  position: fixed;
+  background-color: white;
+  border-style: solid;
+  border-radius: 5px;
 }
 .sugItem {
-    color: black;
-    padding-left: 20px;
-    text-decoration: none;
-    cursor: pointer;
-    text-decoration: none;
+  color: black;
+  padding-left: 20px;
+  text-decoration: none;
+  cursor: pointer;
+  text-decoration: none;
 }
 .sugItem:hover {
-    background-color: lightgray;
+  background-color: lightgray;
 }
 #exampleSelect::-webkit-search-cancel-button {
-    position: relative;
-    font-size: 20px;
+  position: relative;
+  font-size: 20px;
+}
+.sugAccessoriesList {
+  width: 230px;
+  display: flex;
+  flex-direction: column;
+  z-index: 999;
+  position: fixed;
+  background-color: white;
+  border-style: solid;
+  border-radius: 5px;
+}
+.sugAccessoriesItem {
+  color: black;
+  padding-left: 20px;
+  text-decoration: none;
+  cursor: pointer;
+  text-decoration: none;
+}
+.sugItem:hover {
+  background-color: lightgray;
 }
