@@ -1,11 +1,15 @@
+using garaapi.Interfaces.Report;
+using garaapi.Models.ReportModel;
 using GaraApi.Entities;
+using MongoDB.Bson;
 using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace GaraApi.Services
 {
-    public class CustomerService
+    public class CustomerService : IReportService
     {
         private readonly IMongoCollection<Customer> _customer;
 
@@ -25,8 +29,18 @@ namespace GaraApi.Services
 
         public Customer Create(Customer customer)
         {
-            _customer.InsertOne(customer);
-            return customer;
+            customer.CreatedDate = System.DateTime.Now;
+            try
+            {
+                _customer.InsertOne(customer);
+                return customer;
+            }
+            catch
+            {
+                return null;
+            }
+
+
         }
 
         public void Update(string id, Customer customerIn) =>
@@ -53,5 +67,44 @@ namespace GaraApi.Services
                 return false;
             return true;
         }
+
+        public IEnumerable<ReportElement> Accept(IReportVisitor visitor)
+        {
+            return visitor.ExportCustomerReport(this._customer);
+        }
+
+        // public Dictionary<int, double> GetAnnualReport(int year)
+        // {
+        //     var filterBuilder = Builders<Customer>.Filter;
+        //     var filter = filterBuilder.Gte("CreatedDate", new DateTime(year, 1, 1))
+        //      & filterBuilder.Lt("CreatedDate", new DateTime(year + 1, 1, 1));
+        //     var data = _customer.Find(filter)
+        //     .Project(cus => new Tuple<int, double>(cus.CreatedDate.Month, 1))
+        //     .ToList().GroupBy(pair => pair.Item1);
+        //     var res = new Dictionary<int, double>();
+        //     foreach (var group in data)
+        //     {
+        //         var total = group.Count();
+        //         res.Add(group.Key, total);
+        //     }
+        //     return res;
+        // }
+
+        // public Dictionary<int, double> GetMonthlyFigure(int month, int year)
+        // {
+        //     var filter = Builders<Customer>.Filter.Gte("CreatedDate", new DateTime(year, month, 1));
+        //     var data = _customer.Find(
+        //         filter
+        //     ).Project(
+        //         cus => new Tuple<int, double>(cus.CreatedDate.Day, 1)
+        //     ).ToList().GroupBy(pair => pair.Item1);
+        //     var res = new Dictionary<int, double>();
+        //     foreach (var group in data)
+        //     {
+        //         var total = group.Sum(pair => pair.Item2);
+        //         res.Add(group.Key, total);
+        //     }
+        //     return res;
+        // }
     }
 }

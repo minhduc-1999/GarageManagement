@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using garaapi.Interfaces.Report;
+using garaapi.Models.ReportModel;
 using GaraApi.Entities;
 using GaraApi.Entities.Form;
 using GaraApi.Entities.Identity;
@@ -8,7 +10,7 @@ using MongoDB.Driver;
 
 namespace GaraApi.Services
 {
-    public class BillService
+    public class BillService : IReportService
     {
         private readonly IMongoCollection<Bill> _bill;
         private readonly RepairedRequestService _rrService;
@@ -100,6 +102,11 @@ namespace GaraApi.Services
             if (num == 0)
                 return false;
             return true;
+        }
+
+        public IEnumerable<ReportElement> Accept(IReportVisitor visitor)
+        {
+            return visitor.ExportRevenueReport(this._bill);
         }
     }
 }

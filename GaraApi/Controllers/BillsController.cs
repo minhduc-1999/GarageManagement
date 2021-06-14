@@ -1,5 +1,8 @@
 
+using System;
 using System.Collections.Generic;
+using garaapi.Models.ReportModel;
+using garaapi.Services.ReportService;
 using GaraApi.Entities.Form;
 using GaraApi.Entities.Identity;
 using GaraApi.Models;
@@ -50,6 +53,33 @@ namespace GaraApi.Controllers
                 return StatusCode(res.Item1, res.Item2);
             }
             return CreatedAtRoute("GetBill", new { id = res.Item3.Id.ToString() }, res.Item3);
+        }
+
+        [HttpGet("/api/report/revenue")]
+        [Authorize("admin, manager, receptionist")]
+        public ActionResult<List<ReportElement>> GetReport([FromQuery] string option, [FromQuery] int year, [FromQuery] int month)
+        {
+            IEnumerable<ReportElement> res = null;
+            if (option == "annual")
+            {
+                res = _billService.Accept(new AnnualReportVisitor(new DateTime(year, 1, 1), new DateTime(year + 1, 1, 1)));
+            }
+
+            if (option == "monthly")
+            {
+                int endMonth = month + 1;
+                int endYear = year;
+                if (month == 12)
+                {
+                    endMonth = 1;
+                    endYear++;
+                }
+                res = _billService.Accept(new MonthlyReportVisitor(new DateTime(year, month, 1), new DateTime(endYear, endMonth, 1)));
+            }
+
+            if (res == null)
+                return BadRequest();
+            return new List<ReportElement>(res);
         }
 
         // [HttpPut("{id:length(24)}")]

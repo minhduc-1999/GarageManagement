@@ -17,10 +17,10 @@ POST http://localhost:5000/api/customers/
 Content-Type: application/x-www-form-urlencoded
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTg5MDcwMjAxZDJkZDg0NWI0ZGNiYiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjg3NjMwMywiZXhwIjoxNjI0OTQ5OTAzLCJpYXQiOjE2MjI4NzYzMDN9.mHKSKMO9cQkg2xQ20B9PUciqMqekijdtJRfjivWs3jE
 
-name=Trương Hữu Minh Đức
-&address=Thừa Thiên Huế
-&phoneNumber=0928838232
-&email=bacuong@gmail.com
+name=Trương Bá Cường
+&address=Quảng Bình
+&phoneNumber=049111838232
+&email=cuong@gmail.com
 
 ###
 //delete customer

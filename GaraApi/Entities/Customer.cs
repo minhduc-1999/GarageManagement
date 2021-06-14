@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using MongoDB.Bson;
@@ -23,5 +24,8 @@ namespace GaraApi.Entities
         [BsonIgnoreIfNull]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Email { get; set; }
+        [BsonRequired]
+        [BsonRepresentation(BsonType.DateTime)]
+        public DateTime CreatedDate { get; set; }
     }
 }
