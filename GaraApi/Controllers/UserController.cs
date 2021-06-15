@@ -32,7 +32,7 @@ namespace GaraApi.Controllers
             _userService.Get();
 
         [HttpGet("{id:length(24)}", Name = "GetUser")]
-        [Authorize("admin, manager, receptionist, storekeeper, employee")]
+        [Authorize("admin, manager, receptionist, storekeeper")]
         public ActionResult<User> Get(string id)
         {
             if ((HttpContext.Items["User"] as User).Id != id)
@@ -56,6 +56,9 @@ namespace GaraApi.Controllers
             var curUser = _userService.GetUserByUsername(account.Username);
             if (curUser != null)
                 return BadRequest(new { message = "Username has been used" });
+            var role = _roleService.Get(account.RoleId);
+            if (role == null)
+                return BadRequest(new { message = "Role Not Found" });
             var md5 = new MD5CryptoServiceProvider();
             var passHash = md5.ComputeHash(Encoding.ASCII.GetBytes(account.Password));
             User user = new User()
@@ -63,14 +66,13 @@ namespace GaraApi.Controllers
                 Username = account.Username,
                 PasswordHash = Encoding.ASCII.GetString(passHash),
                 AccessFailCount = 0,
-                Role = account.Role,
+                Role = role,
                 UserClaims = new UserClaim()
                 {
                     Email = account.Email,
                     PhoneNumber = account.PhoneNumber,
                     DateOB = account.DateOB,
-                    FirstName = account.FirstName,
-                    LastName = account.LastName,
+                    FullName = account.FullName,
                     Address = account.Address
                 }
             };
@@ -99,6 +101,9 @@ namespace GaraApi.Controllers
         [Authorize("admin")]
         public IActionResult Delete(string id)
         {
+            var curUser = (HttpContext.Items["User"] as User);
+            if (curUser.Id == id)
+                return BadRequest(new { message = "Cannot Delete Yourself" });
             var user = _userService.Get(id);
 
             if (user == null)
@@ -130,6 +135,8 @@ namespace GaraApi.Controllers
         [Authorize("admin")]
         public ActionResult ResetPassword([FromForm] string id, [FromForm] string newPassword)
         {
+            if (!_userService.IsExisted(id))
+                return BadRequest(new { message = "User Not Found" });
             var res = _userService.ResetPass(id, newPassword);
             if (res)
                 return Ok(new { message = "Đặt lại mật khẩu thành công" });

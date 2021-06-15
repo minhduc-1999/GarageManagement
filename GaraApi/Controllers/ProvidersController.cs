@@ -18,12 +18,12 @@ namespace GaraApi.Controllers
         }
 
         [HttpGet]
-        [Authorize("admin, manager, storekeeper, employee, receptionist")]
+        [Authorize("admin, manager, storekeeper")]
         public ActionResult<List<Provider>> Get() =>
             _providerService.Get();
 
         [HttpGet("{id:length(24)}", Name = "GetProvider")]
-        [Authorize("admin, manager, storekeeper, employee, receptionist")]
+        [Authorize("admin, manager, storekeeper")]
         public ActionResult<Provider> Get(string id)
         {
             var provider = _providerService.Get(id);
@@ -37,20 +37,20 @@ namespace GaraApi.Controllers
         }
 
         [HttpPost]
-        [Authorize("admin, manager, storekeeper, receptionist")]
+        [Authorize("admin, manager, storekeeper")]
         public ActionResult<Provider> Create([FromForm] Provider provider)
         {
             var curProvider = _providerService.GetProviderByName(provider.Name);
             if (curProvider != null)
                 return BadRequest(new { message = "Provider has been used" });
-            
+
             _providerService.Create(provider);
 
             return CreatedAtRoute("GetProvider", new { id = provider.Id.ToString() }, provider);
         }
 
         [HttpPut]
-        [Authorize("admin, manager, storekeeper, receptionist")]
+        [Authorize("admin, manager, storekeeper")]
         public IActionResult Update([FromBody] Provider providerIn)
         {
             var provider = _providerService.Get(providerIn.Id);

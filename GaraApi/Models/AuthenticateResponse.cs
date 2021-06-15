@@ -9,18 +9,17 @@ namespace GaraApi.Models
         public string Id { get; set; }
         public string Username { get; set; }
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string FirstName { get; set; }
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string LastName { get; set; }
+        public string FullName { get; set; }
         public string Token { get; set; }
+        public string Role { get; set; }
 
         public AuthenticateResponse(User user, string token)
         {
             Id = user.Id;
-            FirstName = user.UserClaims.FirstName;
-            LastName = user.UserClaims.LastName;
+            FullName = user.UserClaims.FullName;
             Username = user.Username;
             Token = token;
+            Role = user.Role;
         }
     }
 }

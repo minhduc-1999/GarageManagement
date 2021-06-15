@@ -43,6 +43,14 @@ namespace GaraApi.Services.Identity
         public void Remove(string id) =>
             _user.DeleteOne(user => user.Id == id);
 
+        public bool IsExisted(string id)
+        {
+            var count = _user.Find(user => user.Id == id).CountDocuments();
+            if (count == 0)
+                return false;
+            return true;
+        }
+
         public bool ResetPass(string id, string newPass)
         {
             // var update = Builders<User>.Update.Set("PasswordHash", Helpers.Md5Hash(newPass));
@@ -52,9 +60,9 @@ namespace GaraApi.Services.Identity
             //     return true;
             // }
             // return false;
-            var isLock = _user.Find(user => user.Id == id).Project(user => user.IsLock).FirstOrDefault();
-            if (isLock)
-                return false;
+            // var isLock = _user.Find(user => user.Id == id).Project(user => user.IsLock).FirstOrDefault();
+            // if (isLock)
+            //     return false;
             return Update(id, "PasswordHash", Helpers.Md5Hash(newPass));
         }
 

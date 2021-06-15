@@ -33,7 +33,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpPost("account/password")]
-        [Authorize("admin, manager, storekeeper, employee, receptionist")]
+        [Authorize("admin, manager, storekeeper, receptionist")]
         public ActionResult ChangePassword([FromForm] ChangePassRequest model)
         {
             string userId = (HttpContext.Items["User"] as User).Id;
@@ -48,7 +48,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpPut("account")]
-        [Authorize("admin, manager, storekeeper, employee, receptionist")]
+        [Authorize("admin, manager, storekeeper, receptionist")]
         public ActionResult UpdateProfile([FromForm] string id, [FromForm] UserClaim claim)
         {
             string userId = (HttpContext.Items["User"] as User).Id;
