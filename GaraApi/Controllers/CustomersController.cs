@@ -1,7 +1,10 @@
+using garaapi.Models.ReportModel;
+using garaapi.Services.ReportService;
 using GaraApi.Entities;
 using GaraApi.Services;
 using GaraApi.Utils;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 
 namespace GaraApi.Controllers
@@ -43,9 +46,12 @@ namespace GaraApi.Controllers
             var isExist = _customerService.IsExisted(customer.Name, customer.PhoneNumber);
             if (isExist)
                 return BadRequest(new { message = "Thông tin khách hàng đã tồn tại" });
-            _customerService.Create(customer);
-
-            return CreatedAtRoute("GetCustomer", new { id = customer.Id.ToString() }, customer);
+            var res = _customerService.Create(customer);
+            if (res == null)
+            {
+                return BadRequest();
+            }
+            return CreatedAtRoute("GetCustomer", new { id = res.Id.ToString() }, res);
         }
 
         [HttpPut("{id:length(24)}")]
@@ -78,6 +84,32 @@ namespace GaraApi.Controllers
             _customerService.Remove(id);
 
             return NoContent();
+        }
+        [HttpGet("/api/report/new-customer")]
+        [Authorize("admin, manager, receptionist")]
+        public ActionResult<List<ReportElement>> GetReport([FromQuery] string option, [FromQuery] int year, [FromQuery] int month)
+        {
+            IEnumerable<ReportElement> res = null;
+            if (option == "annual")
+            {
+                res = _customerService.Accept(new AnnualReportVisitor(new DateTime(year, 1, 1), new DateTime(year + 1, 1, 1)));
+            }
+
+            if (option == "monthly")
+            {
+                int endMonth = month + 1;
+                int endYear = year;
+                if (month == 12)
+                {
+                    endMonth = 1;
+                    endYear++;
+                }
+                res = _customerService.Accept(new MonthlyReportVisitor(new DateTime(year, month, 1), new DateTime(endYear, endMonth, 1)));
+            }
+
+            if (res == null)
+                return BadRequest();
+            return new List<ReportElement>(res);
         }
     }
 }

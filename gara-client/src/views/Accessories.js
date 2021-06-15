@@ -30,14 +30,18 @@ function Accessories() {
   const [expiredDate, setExpiredDate] = useState(null);
   const [providerId, setProviderId] = useState(null);
   const [accessoryTypeId, setAccessoryTypeId] = useState(null);
+  const [description, setDescription] = useState(null);
   const [list, setList] = useState([]);
   const [search, setSearch] = useState("");
 
-  // const [provider, setProvider] = useState(null);
-  // const [accessoryType, setAccessoryType] = useState(null);
-  // const [typeName, setAccessoryTypeName] = useState(null);
+  const [provider, setProvider] = useState(null);
+  const [accessoryType, setAccessoryType] = useState(null);
+  const [typeName, setAccessoryTypeName] = useState(null);
   const [providerName, setProviderName] = useState(null);
+  const [providerAddress, setProviderAdd] = useState(null);
   const [providerNum, setProviderNum] = useState(null);
+  const [emptyFiledAlert, setEmptyFieldAlert] = useState(false);
+
 
   useEffect(() => {
     let loginToken = localStorage.getItem("LoginToken");
@@ -56,7 +60,39 @@ function Accessories() {
         })
         .catch((error) => console.log(error));
     }
+    async function fetchProviderData() {
+      axios
+        .get(process.env.REACT_APP_BASE_URL + "api/providers", {
+          headers: {
+            Authorization: "Bearer " + loginToken,
+          },
+        })
+        .then((response) => {
+          return response.data;
+        })
+        .then((data) => {
+          setProvider(data);
+        })
+        .catch((error) => console.log(error));
+    }
+    async function fetchAccessoryTypeData() {
+      axios
+        .get(process.env.REACT_APP_BASE_URL + "api/accessorytypes", {
+          headers: {
+            Authorization: "Bearer " + loginToken,
+          },
+        })
+        .then((response) => {
+          return response.data;
+        })
+        .then((data) => {
+          setAccessoryType(data);
+        })
+        .catch((error) => console.log(error));
+    }
     fetchAccessoryData();
+    fetchProviderData();
+    fetchAccessoryTypeData();
   }, [onChange]);
 
   const renderSuggestions = () => {
@@ -84,8 +120,9 @@ function Accessories() {
   const createNewProvider = () => {
     let loginToken = localStorage.getItem("LoginToken");
     let createNewProvider = new FormData();
-    createNewProvider.append("name", providerName);
-    createNewProvider.append("phonenumber", providerNum);
+    createNewProvider.append("Name", providerName);
+    createNewProvider.append("PhoneNumber", providerNum);
+    createNewProvider.append("Address", providerAddress);
     axios
       .post(process.env.REACT_APP_BASE_URL + "providers", createNewProvider, {
         headers: {
@@ -101,36 +138,41 @@ function Accessories() {
       });
   };
 
-  // const createNewType = () => {
-  //   let loginToken = localStorage.getItem("LoginToken");
-  //   let createNewType = new FormData();
-  //   createNewType.append("name", typeName);
-  //   axios
-  //     .post(process.env.REACT_APP_BASE_URL + "accessorytypes", createNewType, {
-  //       headers: {
-  //         Authorization: "Bearer " + loginToken,
-  //       },
-  //     })
-  //     .then((response) => {
-  //       console.log(response);
-  //       setOnchange(!onChange);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  // };
+  const createNewType = () => {
+    let loginToken = localStorage.getItem("LoginToken");
+    let createNewType = new FormData();
+    createNewType.append("Name", typeName);
+    axios
+      .post(process.env.REACT_APP_BASE_URL + "accessorytypes", createNewType, {
+        headers: {
+          Authorization: "Bearer " + loginToken,
+        },
+      })
+      .then((response) => {
+        console.log(response);
+        setOnchange(!onChange);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const CreateAccessory = () => {
+    if (!name || !quantity || !unit || !receipPrice || !expiredDate || !providerId ||!accessoryTypeId) {
+      console.log("Thiếu thông tin" + "\n" + name + "\n" + quantity + "\n" + unit + "\n" + receipPrice + "\n"+ expiredDate + "\n"+ providerId + "\n"+accessoryTypeId+ "\n");
+      setEmptyFieldAlert(true);
+      return;
+    }
     let loginToken = localStorage.getItem("LoginToken");
-    console.log("TOKEN " + loginToken);
     let createAccessoryReceipt = new FormData();
-    createAccessoryReceipt.append("name", name);
-    createAccessoryReceipt.append("quantity", quantity);
-    createAccessoryReceipt.append("unit", unit);
-    createAccessoryReceipt.append("receipPrice", receipPrice);
-    createAccessoryReceipt.append("expiredDate", expiredDate);
-    createAccessoryReceipt.append("providerId", providerId);
-    createAccessoryReceipt.append("accessoryTypeId", accessoryTypeId);
+    createAccessoryReceipt.append("Name", name);
+    createAccessoryReceipt.append("Quantity", quantity);
+    createAccessoryReceipt.append("Unit", unit);
+    createAccessoryReceipt.append("ReceipPrice", receipPrice);
+    createAccessoryReceipt.append("ExpiredDate", expiredDate);
+    createAccessoryReceipt.append("ProviderId", providerId);
+    createAccessoryReceipt.append("AccessoryTypeId", accessoryTypeId);
+    createAccessoryReceipt.append("Description", description);
     axios
       .post(
         process.env.REACT_APP_BASE_URL + "api/accessory-receipts/",
@@ -143,7 +185,6 @@ function Accessories() {
       )
       .then((response) => {
         console.log(response);
-        setOnchange(!onChange);
       })
       .catch((error) => {
         console.log(error);
@@ -191,7 +232,7 @@ function Accessories() {
   return (
     <>
       <div className="content">
-        {accessories === null ? (
+        {(accessories === null || provider ===null || accessoryType ===null) ? (
           <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
         ) : (
           <div>
@@ -379,14 +420,23 @@ function Accessories() {
                         <Col>
                           <FormGroup>
                             <Input
+                              defaultValue={"DEFAULT"}
+                              type="select"
                               name="select"
                               id="exampleSelect"
-                              type="search"
-                              value={search}
                               onChange={(e) => {
                                 setAccessoryTypeId(e.target.value);
                               }}
-                            ></Input>
+                            >
+                                  <option value="DEFAULT" disabled>
+                                Loại phụ tùng
+                              </option>
+                              {accessoryType.map((item) => (
+                                <option key={item.id} value={item.id}>
+                                  {item.name}
+                                </option>
+                              ))}
+                            </Input>
                             {renderSuggestions()}
                           </FormGroup>
                         </Col>
@@ -407,15 +457,22 @@ function Accessories() {
                         <Col className="pr-md-1">
                           <FormGroup>
                             <Input
-                              type="select"
-                              onChange={(e) => {
-                                setProviderId(e.target.value);
-                              }}
+                             
+                          defaultValue={"DEFAULT"}
+                          type="select"
+                          name="select"
+                          id="exampleSelect"
+                          onChange={(e) => setProviderId(e.target.value)}
+                              
                             >
-                              <option>Ncc1</option>
-                              <option>Ncc2</option>
-                              <option>Ncc3</option>
-                              <option>Ncc4;</option>
+                              <option value="DEFAULT" disabled>
+                                Nhà cung cấp
+                              </option>
+                              {provider.map((item) => (
+                                <option key={item.id} value={item.id}>
+                                  {item.name}
+                                </option>
+                              ))}
                             </Input>
                           </FormGroup>
                         </Col>
@@ -436,6 +493,9 @@ function Accessories() {
                     fullWidth
                     rowsMax={4}
                     variant="outlined"
+                    onChange={(e) => {
+                      setDescription(e.target.value);
+                    }}
                   />
                 </Form>
               </ModalBody>
@@ -476,7 +536,7 @@ function Accessories() {
                       type="search"
                       value={search}
                       onChange={(e) => {
-                        setProviderName(e.target.value);
+                        setAccessoryTypeName(e.target.value);
                       }}
                     ></Input>
                     {renderSuggestions()}
@@ -485,7 +545,7 @@ function Accessories() {
               </ModalBody>
               <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
                 <Button
-                  // onClick={AddNewCustomer}
+                  onClick={createNewType}
                   className="btn-fill"
                   color="primary"
                   type="submit"
@@ -529,6 +589,16 @@ function Accessories() {
                       type="text"
                       onChange={(e) => {
                         setProviderNum(e.target.value);
+                      }}
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <label htmlFor="exampleInputEmail1">Số điện thoại</label>
+                    <Input
+                      placeholder="Địa chỉ"
+                      type="text"
+                      onChange={(e) => {
+                        setProviderAdd(e.target.value);
                       }}
                     />
                   </FormGroup>

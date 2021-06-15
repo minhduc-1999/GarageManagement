@@ -16,7 +16,7 @@ namespace GaraApi.Utils
                 sp.GetRequiredService<IOptions<GaraDatabaseSettings>>().Value);
 
             services.AddSingleton<AccessoryService>();
-            services.AddSingleton<QuotationService>();
+            //services.AddSingleton<QuotationService>();
             services.AddSingleton<BillService>();
             services.AddSingleton<AccessoryIssueService>();
             services.AddSingleton<AccessoryReceiptService>();

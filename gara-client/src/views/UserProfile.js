@@ -41,7 +41,9 @@ function UserProfile() {
       setFirstName(response.data.userClaims.firstName);
       setEmail(response.data.userClaims.email);
       setAddress(response.data.userClaims.address);
-      setDateOB(new Date(response.data.userClaims.dateOB).toISOString().split("T")[0]);
+      if (response.data.userClaims.dateOB) {
+        setDateOB(new Date(response.data.userClaims.dateOB).toISOString().split("T")[0]);
+      }
       setPhoneNum(response.data.userClaims.phoneNumber);
     })
   }, [onChange]);

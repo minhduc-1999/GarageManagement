@@ -1,6 +1,8 @@
 
 using System.Collections.Generic;
 using GaraApi.Entities.Form;
+using GaraApi.Entities.Identity;
+using GaraApi.Models;
 using GaraApi.Services;
 using GaraApi.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -40,27 +42,26 @@ namespace GaraApi.Controllers
 
         [HttpPost]
         [Authorize("admin, manager, receptionist")]
-        public ActionResult<RepairedRequest> Create([FromForm] RepairedRequest repReq)
+        public ActionResult<RepairedRequest> Create([FromBody] RepairedRequestModel repairedRequestModel)
         {
-            _repReqService.Create(repReq);
+            var userId = (HttpContext.Items["User"] as User).Id;
+            var id = _repReqService.Create(userId,repairedRequestModel);
 
-            return CreatedAtRoute("GetRepairedRequest", new { id = repReq.Id.ToString() }, repReq);
+            return CreatedAtRoute("GetRepairedRequest", new { id = id}, id);
+            
         }
 
-        [HttpPut("{id:length(24)}")]
+        [HttpPut]
         [Authorize("admin, manager, receptionist")]
-        public IActionResult Update(string id, RepairedRequest repReqIn)
+        public bool Update([FromBody] RepairedRequestUpdateModel repReqUpdateIn)
         {
-            var repReq = _repReqService.Get(id);
-
+            var repReq = _repReqService.Get(repReqUpdateIn.Id);
+            
             if (repReq == null)
             {
-                return NotFound();
+                return false;
             }
-
-            _repReqService.Update(id, repReqIn);
-
-            return NoContent();
+            return _repReqService.Update(repReq, repReqUpdateIn);
         }
 
         [HttpDelete("{id:length(24)}")]

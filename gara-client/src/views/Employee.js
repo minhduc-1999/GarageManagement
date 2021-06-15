@@ -4,7 +4,6 @@ import {
   CardHeader,
   CardBody,
   CardTitle,
-  Table,
   Row,
   Col,
   Button,
@@ -22,7 +21,7 @@ const axios = require("axios");
 const dateFormat = require("dateformat");
 
 function Employee() {
-  const [users, setUsers] = useState(null);
+  const [users, setUsers] = useState([]);
   const [userRoles, setUserRoles] = useState(null);
   const [onAddNewUser, setOnAddNewUser] = useState(false);
   const [username, setUsername] = useState(null);
@@ -37,6 +36,12 @@ function Employee() {
   const [alertVisible, setAlertVisible] = useState(false);
   const [emptyFiledAlert, setEmptyFieldAlert] = useState(false);
   const [onChange, setOnchange] = useState(false);
+  const [onResetPass, setOnResetPass] = useState(false);
+  const [onResetPassUser, setOnResetPassUser] = useState(null);
+  const [newPass, setNewPass] = useState("");
+  const [selectUser, setSelectUser] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
 
   const translateRoles = {
     admin: "admin",
@@ -110,13 +115,99 @@ function Employee() {
       });
   };
 
+  const handleResetPass = () => {
+    let loginToken = localStorage.getItem("LoginToken");
+    let resetPassForm = new FormData();
+    resetPassForm.append("id", onResetPassUser);
+    resetPassForm.append("newpassword", newPass);
+    axios
+      .post(process.env.REACT_APP_BASE_URL + "api/users/reset", resetPassForm, {
+        headers: {
+          Authorization: "Bearer " + loginToken,
+        },
+      })
+      .then(() => {
+        setOnchange(!onChange);
+        console.log("Doi pass thanh cong cho user " + onResetPassUser);
+        setOnResetPass(false);
+        setNewPass("");
+      })
+      .catch((error) => console.log(error));
+  };
+
   const handleOpenDialog = () => {
-   setOnAddNewUser(!onAddNewUser);
-   setAlertVisible(false);
-   setEmptyFieldAlert(false);
-  }
+    setOnAddNewUser(!onAddNewUser);
+    setAlertVisible(false);
+    setEmptyFieldAlert(false);
+  };
   const onDismiss = () => setAlertVisible(!alertVisible);
   const onDismissEmpty = () => setEmptyFieldAlert(!emptyFiledAlert);
+
+  const getSearchTerm = (e) => {
+    setSearchTerm(e.target.value);
+    if (e.target.value !== "") {
+      const newUserList = users.filter((user) => {
+        return (Object.values(user)[3].firstName)
+          .toLowerCase()
+          .includes(e.target.value.toLowerCase());
+      });
+      setSearchResult(newUserList);
+    } else {
+      setSearchResult(users);
+    }
+  };
+
+  const renderUser = () => (searchTerm.length < 1 ? users : searchResult).map((user, index) => {
+    return (
+    <tr
+      key={index}
+      onClick={() => {
+        setOnResetPassUser(user.id);
+        setSelectUser(user.username);
+        setOnResetPass(true);
+      }}
+    >
+      <th scope="row">{index + 1}</th>
+      <td>
+        {user.userClaims.lastName}{" "}
+        {user.userClaims.firstName}{" "}
+      </td>
+      <td>
+        {user.userClaims.dateOB
+          ? dateFormat(
+              user.userClaims.dateOB,
+              "dd/mm/yyyy"
+            )
+          : "-"}
+      </td>
+      <td>
+        {user.userClaims.address
+          ? user.userClaims.address
+          : "-"}
+      </td>
+      <td>
+        {user.userClaims.email
+          ? user.userClaims.email
+          : "-"}
+      </td>
+      <td>
+        {user.userClaims.phoneNumber
+          ? user.userClaims.phoneNumber
+          : "-"}
+      </td>
+      <td>{user.username}</td>
+      <td>
+        {
+          translateRoles[
+            userRoles.find(
+              (role) => role.id === user.role
+            )?.roleName
+          ]
+        }
+      </td>
+    </tr>
+    );
+  });
 
   return (
     <>
@@ -142,7 +233,10 @@ function Employee() {
                           name="user"
                           id="user"
                           placeholder="Tài khoản"
-                          onChange={(e) => {setUsername(e.target.value); setEmptyFieldAlert(false);}}
+                          onChange={(e) => {
+                            setUsername(e.target.value);
+                            setEmptyFieldAlert(false);
+                          }}
                         />
                       </FormGroup>
                     </Col>
@@ -154,7 +248,10 @@ function Employee() {
                           name="password"
                           id="password"
                           placeholder="Mật khẩu"
-                          onChange={(e) => {setPassword(e.target.value); setEmptyFieldAlert(false);}}
+                          onChange={(e) => {
+                            setPassword(e.target.value);
+                            setEmptyFieldAlert(false);
+                          }}
                         />
                       </FormGroup>
                     </Col>
@@ -265,7 +362,7 @@ function Employee() {
                     Tên tài khoản đã được sử dụng.
                   </Alert>
                   <Alert
-                    style={{margin: 0}}
+                    style={{ margin: 0 }}
                     className="alert-error"
                     color="warning"
                     isOpen={emptyFiledAlert}
@@ -296,6 +393,41 @@ function Employee() {
               </ModalFooter>
             </Modal>
 
+            <Modal isOpen={onResetPass} size="sm">
+              <ModalBody>
+                <Form>
+                  <Label>
+                    Đổi mật khẩu cho user: <strong>{selectUser}</strong>
+                  </Label>
+                  <Input
+                    type="text"
+                    placeholder="Mật khẩu mới"
+                    value={newPass}
+                    onChange={(e) => setNewPass(e.target.value)}
+                  ></Input>
+                </Form>
+              </ModalBody>
+              <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
+                <Button
+                  className="btn-fill"
+                  color="primary"
+                  type="submit"
+                  style={{ marginRight: 25 }}
+                  onClick={handleResetPass}
+                >
+                  Xác nhận
+                </Button>
+                <Button
+                  className="btn-fill"
+                  color="secondary"
+                  type="submit"
+                  onClick={() => setOnResetPass(false)}
+                >
+                  Hủy
+                </Button>
+              </ModalFooter>
+            </Modal>
+
             <Row>
               <Col md="12">
                 <Card>
@@ -303,7 +435,14 @@ function Employee() {
                     <Row>
                       <Col>
                         <CardTitle tag="h4">Danh sách nhân viên</CardTitle>
+                        <Input
+                          value={searchTerm}
+                          type="text"
+                          placeholder="Tìm kiếm nhân viên"
+                          onChange={(e) => getSearchTerm(e)}
+                        />
                       </Col>
+                      <Col md="6" />
                       <Col md="auto">
                         <Button
                           className="btn-fill"
@@ -311,67 +450,32 @@ function Employee() {
                           type="submit"
                           onClick={handleOpenDialog}
                         >
-                          Thêm
+                          Thêm NV mới
                         </Button>
                       </Col>
                     </Row>
                   </CardHeader>
                   <CardBody>
-                    <Table className="tablesorter" responsive>
-                      <thead className="text-primary">
-                        <tr>
-                          <th>STT</th>
-                          <th>Họ và tên</th>
-                          <th>Ngày sinh</th>
-                          <th>Địa chỉ</th>
-                          <th>Email</th>
-                          <th>Số điện thoại</th>
-                          <th>Tên đăng nhập</th>
-                          <th>Chức vụ</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {users.map((user, index) => (
-                          <tr key={index}>
-                            <th scope="row">{index + 1}</th>
-                            <td>
-                              {user.userClaims.lastName}{" "}
-                              {user.userClaims.firstName}{" "}
-                            </td>
-                            <td>
-                              {user.userClaims.dateOB
-                                ? dateFormat(
-                                    user.userClaims.dateOB,
-                                    "dd/mm/yyyy"
-                                  )
-                                : "-"}
-                            </td>
-                            <td>
-                              {user.userClaims.address
-                                ? user.userClaims.address
-                                : "-"}
-                            </td>
-                            <td>
-                              {user.userClaims.email
-                                ? user.userClaims.email
-                                : "-"}
-                            </td>
-                            <td>
-                              {user.userClaims.phoneNumber
-                                ? user.userClaims.phoneNumber
-                                : "-"}
-                            </td>
-                            <td>{user.username}</td>
-                            <td>
-                              {translateRoles[
-                                userRoles.find((role) => role.id === user.role)
-                                  ?.roleName
-                              ]}
-                            </td>
+                    {renderUser().length <= 0 ?
+                      <p style={{fontSize: 20, marginLeft: 10}}>Không tìm thấy nhân viên phù hợp</p> :
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>STT</th>
+                            <th>Họ và tên</th>
+                            <th>Ngày sinh</th>
+                            <th>Địa chỉ</th>
+                            <th>Email</th>
+                            <th>Số điện thoại</th>
+                            <th>Tên đăng nhập</th>
+                            <th>Chức vụ</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </Table>
+                        </thead>
+                        <tbody>
+                          {renderUser()}
+                        </tbody>
+                      </table>
+                    }
                   </CardBody>
                 </Card>
               </Col>
