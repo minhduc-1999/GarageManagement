@@ -20,8 +20,7 @@ const axios = require('axios');
 function UserProfile() {
   const {userAcc} = useContext(AuthContext);
   const [onChange, setOnChange] = useState(false);
-  const [lastName, setLastName] = useState(null);
-  const [firstName, setFirstName] = useState(null);
+  const [fullName, setFullName] = useState(null);
   const [email, setEmail] = useState(null);
   const [address, setAddress] = useState(null);
   const [dateOB, setDateOB] = useState(null);
@@ -37,8 +36,7 @@ function UserProfile() {
         Authorization: 'Bearer ' + loginToken
       }
     }).then((response) => {
-      setLastName(response.data.userClaims.lastName);
-      setFirstName(response.data.userClaims.firstName);
+      setFullName(response.data.userClaims.fullName);
       setEmail(response.data.userClaims.email);
       setAddress(response.data.userClaims.address);
       if (response.data.userClaims.dateOB) {
@@ -55,8 +53,7 @@ function UserProfile() {
     let userId = localStorage.getItem('UserId');
     const updateForm = new FormData();
     updateForm.append('id', userId);
-    updateForm.append("firstName", firstName);
-    updateForm.append("lastName", lastName);
+    updateForm.append("fullName", fullName);
     updateForm.append("email", email);
     updateForm.append("phoneNumber", phoneNum);
     updateForm.append("dateOB", dateOB);
@@ -92,7 +89,7 @@ function UserProfile() {
               <CardBody>
                 <Form>
                   <Row>
-                    <Col className="pr-md-1" md="6">
+                    <Col md="12">
                       <FormGroup>
                         <label>Công ty quản lý</label>
                         <Input
@@ -103,7 +100,9 @@ function UserProfile() {
                         />
                       </FormGroup>
                     </Col>
-                    <Col className="pl-md-1" md="6">
+                  </Row>
+                  <Row>
+                    <Col className="pr-md-1" md="6">
                       <FormGroup>
                         <label>Username</label>
                         <Input
@@ -113,27 +112,14 @@ function UserProfile() {
                         />
                       </FormGroup>
                     </Col>
-                  </Row>
-                  <Row>
-                    <Col className="pr-md-1" md="6">
-                      <FormGroup>
-                        <label>Họ</label>
-                        <Input
-                          value={lastName}
-                          placeholder="Company"
-                          type="text"
-                          onChange={e => setLastName(e.target.value)}
-                        />
-                      </FormGroup>
-                    </Col>
                     <Col className="pl-md-1" md="6">
                       <FormGroup>
-                        <label>Tên</label>
+                        <label>Họ và tên</label>
                         <Input
-                          value={firstName}
-                          placeholder="Last Name"
+                          value={fullName}
+                          placeholder="Họ và tên"
                           type="text"
-                          onChange={e => setFirstName(e.target.value)}
+                          onChange={e => setFullName(e.target.value)}
                         />
                       </FormGroup>
                     </Col>

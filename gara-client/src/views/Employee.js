@@ -27,12 +27,11 @@ function Employee() {
   const [username, setUsername] = useState(null);
   const [password, setPassword] = useState(null);
   const [roleId, setRoleId] = useState(null);
-  const [firstName, setFirstName] = useState(null);
-  const [lastName, setLastName] = useState(null);
-  const [email, setEmail] = useState(null);
-  const [phoneNum, setPhoneNum] = useState(null);
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phoneNum, setPhoneNum] = useState('');
   const [dateOB, setDateOB] = useState(null);
-  const [address, setAddress] = useState(null);
+  const [address, setAddress] = useState('');
   const [alertVisible, setAlertVisible] = useState(false);
   const [emptyFiledAlert, setEmptyFieldAlert] = useState(false);
   const [onChange, setOnchange] = useState(false);
@@ -91,9 +90,8 @@ function Employee() {
     let createUser = new FormData();
     createUser.append("username", username);
     createUser.append("password", password);
-    createUser.append("role", roleId);
-    createUser.append("firstName", firstName);
-    createUser.append("lastName", lastName);
+    createUser.append("roleId", roleId);
+    createUser.append("fullName", fullName);
     createUser.append("email", email);
     createUser.append("phoneNumber", phoneNum);
     createUser.append("dateOB", dateOB);
@@ -147,7 +145,7 @@ function Employee() {
     setSearchTerm(e.target.value);
     if (e.target.value !== "") {
       const newUserList = users.filter((user) => {
-        return (Object.values(user)[3].firstName)
+        return (Object.values(user)[3].fullName)
           .toLowerCase()
           .includes(e.target.value.toLowerCase());
       });
@@ -169,8 +167,7 @@ function Employee() {
     >
       <th scope="row">{index + 1}</th>
       <td>
-        {user.userClaims.lastName}{" "}
-        {user.userClaims.firstName}{" "}
+        {user.userClaims.fullName}
       </td>
       <td>
         {user.userClaims.dateOB
@@ -198,11 +195,7 @@ function Employee() {
       <td>{user.username}</td>
       <td>
         {
-          translateRoles[
-            userRoles.find(
-              (role) => role.id === user.role
-            )?.roleName
-          ]
+          translateRoles[user.role]
         }
       </td>
     </tr>
@@ -212,7 +205,7 @@ function Employee() {
   return (
     <>
       <div className="content">
-        {users === null || userRoles === null ? (
+        {users.length < 1 || userRoles === null ? (
           <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
         ) : (
           <div>
@@ -259,30 +252,16 @@ function Employee() {
                   <Row>
                     <Col sm="6">
                       <FormGroup>
-                        <Label for="exampleEmail">Họ</Label>
+                        <Label for="exampleEmail">Họ và tên</Label>
                         <Input
                           type="text"
                           name="user"
                           id="lastName"
-                          placeholder="Họ"
-                          onChange={(e) => setLastName(e.target.value)}
+                          placeholder="Họ và tên"
+                          onChange={(e) => setFullName(e.target.value)}
                         />
                       </FormGroup>
                     </Col>
-                    <Col sm="6">
-                      <FormGroup>
-                        <Label for="exampleEmail">Tên</Label>
-                        <Input
-                          type="text"
-                          name="user"
-                          id="firstName"
-                          placeholder="Tên"
-                          onChange={(e) => setFirstName(e.target.value)}
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
                     <Col sm="6">
                       <FormGroup>
                         <Label>Chức vụ</Label>
@@ -304,6 +283,8 @@ function Employee() {
                         </Input>
                       </FormGroup>
                     </Col>
+                  </Row>
+                  <Row>
                     <Col sm="6">
                       <FormGroup>
                         <Label for="exampleEmail">Ngày sinh</Label>
@@ -316,8 +297,6 @@ function Employee() {
                         />
                       </FormGroup>
                     </Col>
-                  </Row>
-                  <Row>
                     <Col sm="6">
                       <FormGroup>
                         <Label for="exampleEmail">Email</Label>
@@ -330,6 +309,8 @@ function Employee() {
                         />
                       </FormGroup>
                     </Col>
+                  </Row>
+                  <Row>
                     <Col sm="6">
                       <FormGroup>
                         <Label for="exampleEmail">Số điện thoại</Label>
@@ -342,17 +323,19 @@ function Employee() {
                         />
                       </FormGroup>
                     </Col>
+                    <Col sm="6">
+                      <FormGroup>
+                        <Label for="exampleEmail">Địa chỉ</Label>
+                        <Input
+                          type="text"
+                          name="user"
+                          id="address"
+                          placeholder="Địa chỉ"
+                          onChange={(e) => setAddress(e.target.value)}
+                        />
+                      </FormGroup>
+                    </Col>
                   </Row>
-                  <FormGroup>
-                    <Label for="exampleEmail">Địa chỉ</Label>
-                    <Input
-                      type="text"
-                      name="user"
-                      id="address"
-                      placeholder="Địa chỉ"
-                      onChange={(e) => setAddress(e.target.value)}
-                    />
-                  </FormGroup>
                   <Alert
                     className="alert-error"
                     color="warning"
