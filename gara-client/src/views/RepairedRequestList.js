@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { AuthContext } from "contexts/AuthProvider";
 import {
   Card,
   CardHeader,
@@ -24,6 +25,7 @@ import "../components/CustomDesign/SuggestList.css";
 const axios = require("axios");
 
 function RepairedRequestList() {
+  const {userAcc} = useContext(AuthContext);
   const [laborCosts, setLaborCost] = useState(null);
   const [SelectedLabor, setSelectedLabor] = useState(null);
   const [laborName, setLaborName] = useState(null);
@@ -493,7 +495,9 @@ function RepairedRequestList() {
   return (
     <>
       <div className="content">
-        {laborCosts === null ? (
+        {userAcc.role === "storekeeper" ? 
+        <p>Bạn không có quyền truy cập</p> :
+        (laborCosts === null ? (
           <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
         ) : (
           <div>
@@ -1280,7 +1284,7 @@ function RepairedRequestList() {
               </Card>
             </Row>
           </div>
-        )}
+        ))}
       </div>
     </>
   );

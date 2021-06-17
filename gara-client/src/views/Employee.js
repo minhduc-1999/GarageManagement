@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { AuthContext } from "contexts/AuthProvider";
 import {
   Card,
   CardHeader,
@@ -21,6 +22,7 @@ const axios = require("axios");
 const dateFormat = require("dateformat");
 
 function Employee() {
+  const {userAcc} = useContext(AuthContext);
   const [users, setUsers] = useState([]);
   const [userRoles, setUserRoles] = useState(null);
   const [onAddNewUser, setOnAddNewUser] = useState(false);
@@ -205,7 +207,9 @@ function Employee() {
   return (
     <>
       <div className="content">
-        {users.length < 1 || userRoles === null ? (
+        {userAcc.role !== "admin" ? 
+        <p>Bạn không có quyền truy cập</p> :
+        (users.length < 1 || userRoles === null ? (
           <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
         ) : (
           <div>
@@ -464,7 +468,7 @@ function Employee() {
               </Col>
             </Row>
           </div>
-        )}
+        ))}
       </div>
     </>
   );

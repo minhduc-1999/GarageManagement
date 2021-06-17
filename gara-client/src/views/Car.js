@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-
+import React, { useEffect, useState, useContext } from "react";
+import { AuthContext } from "contexts/AuthProvider";
 import {
   Card,
   CardHeader,
@@ -13,6 +13,7 @@ import {
 const axios = require("axios");
 
 function Car() {
+  const {userAcc} = useContext(AuthContext);
   const [cars, setCars] = useState(null);
   const [onChange, setOnchange] = useState(false);
 
@@ -39,7 +40,9 @@ function Car() {
   return (
     <>
       <div className="content">
-        {cars === null ? (
+        {userAcc.role === "storekeeper" ? 
+        <p>Bạn không có quyền truy cập</p> :
+        (cars === null ? (
           <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
         ) : (
           <div className="content">
@@ -89,7 +92,8 @@ function Car() {
               </Col>
             </Row>
           </div>
-        )}
+        ))
+        }
       </div>
     </>
   );
