@@ -71,7 +71,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpDelete("{id:length(24)}")]
-        [Authorize("admin")]
+        [Authorize("admin, manager")]
         public IActionResult Delete(string id)
         {
             var isExist = _customerService.IsExisted(id);

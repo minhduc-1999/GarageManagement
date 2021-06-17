@@ -18,12 +18,12 @@ namespace GaraApi.Controllers
         }
 
         [HttpGet]
-        [Authorize("admin, manager, storekeeper, receptionist, employee")]
+        [Authorize("admin, manager, storekeeper, receptionist")]
         public ActionResult<List<AccessoryType>> Get() =>
             _accessoryTypeService.Get();
 
         [HttpGet("{id:length(24)}", Name = "GetAccessoryType")]
-        [Authorize("admin, manager, storekeeper, receptionist, employee")]
+        [Authorize("admin, manager, storekeeper, receptionist")]
         public ActionResult<AccessoryType> Get(string id)
         {
             var accessoryType = _accessoryTypeService.Get(id);
@@ -65,7 +65,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpDelete("{id:length(24)}")]
-        [Authorize("admin, manager, storekeeper")]
+        [Authorize("admin")]
         public IActionResult Delete(string id)
         {
             var accessoryType = _accessoryTypeService.Get(id);

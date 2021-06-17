@@ -20,12 +20,12 @@ namespace GaraApi.Controllers
         }
 
         [HttpGet]
-        [Authorize("admin, manager, storekeeper")]
+        [Authorize("admin, manager, storekeeper, receptionist")]
         public ActionResult<List<AccessoryReceipt>> Get() =>
             _accReceiptService.Get();
 
         [HttpGet("{id:length(24)}", Name = "GetAccessoryReceipt")]
-        [Authorize("admin, manager, storekeeper")]
+        [Authorize("admin, manager, storekeeper, receptionist")]
         public ActionResult<AccessoryReceipt> Get(string id)
         {
             var accReceipt = _accReceiptService.Get(id);
