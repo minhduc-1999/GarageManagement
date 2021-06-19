@@ -22,8 +22,17 @@ import {
 import { Tooltip, Fab, Checkbox } from "@material-ui/core";
 import "../components/CustomDesign/SuggestList.css";
 const axios = require("axios");
+const dateFormat = require("dateformat");
 
 function RepairedRequestList() {
+  const translateRRState = {
+    init: "Chưa hoàn thành",
+    finished: "Đã hoàn thành",
+    canceled: "Đã hủy",
+  };
+
+  const [RRList, setRRList] = useState([]);
+
   const [laborCosts, setLaborCost] = useState(null);
   const [SelectedLabor, setSelectedLabor] = useState(null);
   const [laborName, setLaborName] = useState(null);
@@ -56,31 +65,40 @@ function RepairedRequestList() {
   const [accessoryList, setAccessoryList] = useState([]);
   const [quantity, setQuantity] = useState(0);
 
-  const AddNewCar = () => {
-    if (
-      !brand ||
-      !numberPlate ||
-      !VIN ||
-      !distanceTravelled ||
-      !registerId ||
-      !owner ||
-      !color ||
-      !model
-    ) {
-      setEmptyFieldCarAlert(true);
+  const [canSaveRR, setCanSaveRR] = useState(0); //0 =  false, 2 = true
+
+  const createTempCar = () => {
+    var newCar = {
+      id: "",
+      brand: brand,
+      numberPlate: numberPlate,
+      VIN: VIN,
+      distanceTravelled: distanceTravelled,
+      registerId: registerId,
+      owner: owner,
+      color: color,
+      model: model,
+    };
+    setSelectedCar(newCar);
+    handleCloseNewCar();
+  };
+
+  async function AddNewCar() {
+    //const AddNewCar = () => {
+    if (selectedCar === null) {
+      //setEmptyFieldCarAlert(true);
       return;
     }
     let loginToken = localStorage.getItem("LoginToken");
-    console.log("TOKEN " + loginToken);
     let createCar = new FormData();
-    createCar.append("Brand", brand);
-    createCar.append("NumberPlate", numberPlate);
-    createCar.append("VIN", VIN);
-    createCar.append("DistanceTravelled", distanceTravelled);
-    createCar.append("RegisterId", registerId);
-    createCar.append("Owner", owner);
-    createCar.append("Color", color);
-    createCar.append("Model", model);
+    createCar.append("Brand", selectedCar.brand);
+    createCar.append("NumberPlate", selectedCar.numberPlate);
+    createCar.append("VIN", selectedCar.VIN);
+    createCar.append("DistanceTravelled", selectedCar.distanceTravelled);
+    createCar.append("RegisterId", selectedCar.registerId);
+    createCar.append("Owner", selectedCar.owner);
+    createCar.append("Color", selectedCar.color);
+    createCar.append("Model", selectedCar.model);
     axios
       .post(process.env.REACT_APP_BASE_URL + "api/cars", createCar, {
         headers: {
@@ -88,17 +106,35 @@ function RepairedRequestList() {
         },
       })
       .then((response) => {
+        setSelectedCar(response.data);
         console.log("Add new car oke");
         clearCarInputModal();
+        setCanSaveRR(2);
       })
       .catch((error) => {
         console.log(error);
       });
-  };
+  }
 
   const onDismissCarEmpty = () => setEmptyFieldAlert(!emptyFieldCarAlert);
 
-  const AddNewCustomer = () => {
+  const createTempCustomer = () => {
+    var newCustomer = {
+      id: "",
+      name: name,
+      address: address,
+      phoneNumber: phoneNum,
+      email: email,
+    };
+    setSelectedCustomer(newCustomer);
+    if (openNewCustomer) {
+      setSearch(newCustomer.name);
+      handleCloseNewCustomer();
+    }
+  };
+
+  async function AddNewCustomer() {
+    //const AddNewCustomer = () => {
     if (!name || !address || !phoneNum || !email) {
       setEmptyFieldAlert(true);
       return;
@@ -116,15 +152,18 @@ function RepairedRequestList() {
         },
       })
       .then((response) => {
-        console.log("thanh cong");
-        setOpenNewCustomer(!openNewCustomer);
-        setOnchange(!onChange);
+        setSelectedCustomer(response.data);
+        // if (openNewCustomer) {
+        //   setOpenNewCustomer(false);
+        // }
+        setCanSaveRR(1);
       })
       .catch((error) => {
         console.log(error);
         setAlertVisible(true);
+        throw new Error(error);
       });
-  };
+  }
 
   const onDismiss = () => setAlertVisible(!alertVisible);
   const onDismissEmpty = () => setEmptyFieldAlert(!emptyFieldAlert);
@@ -139,20 +178,19 @@ function RepairedRequestList() {
     />
   );
 
+  const [listCar, setListCar] = useState([]);
+
   useEffect(() => {
     let loginToken = localStorage.getItem("LoginToken");
-    async function fetchLaborCostData() {
+    async function fetchCarData() {
       axios
-        .get(process.env.REACT_APP_BASE_URL + "api/laborcosts", {
+        .get(process.env.REACT_APP_BASE_URL + "api/cars", {
           headers: {
             Authorization: "Bearer " + loginToken,
           },
         })
         .then((response) => {
-          return response.data;
-        })
-        .then((data) => {
-          setLaborCost(data);
+          setListCar(response.data);
         })
         .catch((error) => console.log(error));
     }
@@ -167,7 +205,35 @@ function RepairedRequestList() {
           return response.data;
         })
         .then((data) => {
-          setListName(data.map((dat) => dat.name));
+          setListName(data);
+          //setListName(data.map((dat) => dat.name));
+        })
+        .catch((error) => console.log(error));
+    }
+    async function fetchRRData() {
+      axios
+        .get(process.env.REACT_APP_BASE_URL + "api/repairedrequests", {
+          headers: {
+            Authorization: "Bearer " + loginToken,
+          },
+        })
+        .then((response) => {
+          setRRList(response.data);
+        })
+        .catch((error) => console.log(error));
+    }
+    async function fetchLaborCostData() {
+      axios
+        .get(process.env.REACT_APP_BASE_URL + "api/laborcosts", {
+          headers: {
+            Authorization: "Bearer " + loginToken,
+          },
+        })
+        .then((response) => {
+          return response.data;
+        })
+        .then((data) => {
+          setLaborCost(data);
         })
         .catch((error) => console.log(error));
     }
@@ -186,14 +252,55 @@ function RepairedRequestList() {
         })
         .catch((error) => console.log(error));
     }
+    fetchCarData();
     fetchCustomerData();
+    fetchRRData();
     fetchAccessoriesData();
     fetchLaborCostData();
   }, [onChange]);
 
+  useEffect(() => {
+    if (canSaveRR === 1) {
+      if (selectedCar.id === "") {
+        AddNewCar();
+      } else {
+        setCanSaveRR(2);
+        console.log(canSaveRR);
+      }
+    } else if (canSaveRR === 2) {
+      let loginToken = localStorage.getItem("LoginToken");
+      var quotation = {
+        details: selectedQD,
+      };
+      const tempRR = {
+        carId: selectedCar.id,
+        customerId: selectedCustomer.id,
+        quotation: quotation,
+      };
+
+      console.log(quotation);
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + loginToken,
+      };
+      axios
+        .post(process.env.REACT_APP_BASE_URL + "api/repairedrequests", tempRR, {
+          headers: headers,
+        })
+        .then((response) => {
+          setOnchange(!onChange);
+        })
+        .catch((error) => {
+          console.log("ERROR" + error);
+        });
+      handleClose();
+    }
+  }, [canSaveRR]);
+
   const [openNewCustomer, setOpenNewCustomer] = React.useState(false);
 
   const handleClickOpenNewCustomer = () => {
+    setSelectedCustomer(null);
     setOpenNewCustomer(true);
   };
 
@@ -211,6 +318,7 @@ function RepairedRequestList() {
   };
 
   const handleCloseNewCar = () => {
+    setCarByNumberPlate(null);
     setOpenNewCar(false);
     setEmptyFieldCarAlert(false);
     clearCarInputModal();
@@ -229,10 +337,16 @@ function RepairedRequestList() {
   const [open, setOpenModal] = React.useState(false);
 
   const handleClickOpen = () => {
+    setCanSaveRR(0);
     setOpenModal(true);
   };
 
   const handleClose = () => {
+    setCanSaveRR(0);
+    setSelectedQD(null);
+    setSelectedCustomer(null);
+    setSelectedCar(null);
+    setSearch("");
     setOpenModal(false);
   };
 
@@ -251,35 +365,15 @@ function RepairedRequestList() {
     setOpenCQModal(false);
   };
 
-  const [hiddenLaborCost, setHiddenLaborCost] = React.useState(false);
+  const saveQuotationDetails = () => {
+    QDList.forEach(function (dt) {
+      delete dt.accessoryName;
+    });
+    setSelectedQD(QDList);
+    handleClickCloseCQ();
+  };
 
-  // const createNewLaborCost = () => {
-  //   if (!laborName || !laborValue) {
-  //     console.log("Thiếu thông tin tạo phí sửa chữa mới");
-  //     return;
-  //   }
-  //   let loginToken = localStorage.getItem("LoginToken");
-  //   let createLaborCost = new FormData();
-  //   createLaborCost.append("name", laborName);
-  //   createLaborCost.append("value", laborValue);
-  //   axios
-  //     .post(
-  //       process.env.REACT_APP_BASE_URL + "api/laborcosts",
-  //       createLaborCost,
-  //       {
-  //         headers: {
-  //           Authorization: "Bearer " + loginToken,
-  //         },
-  //       }
-  //     )
-  //     .then((response) => {
-  //       console.log(response);
-  //       setOnchange(!onChange);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  // };
+  const [hiddenLaborCost, setHiddenLaborCost] = React.useState(false);
 
   const addQDToTable = () => {
     if (quantity !== 0 && selectedAccessory !== null) {
@@ -406,8 +500,8 @@ function RepairedRequestList() {
     setSearch(value);
     let temp = [];
     if (value) {
-      temp = listName.filter((name) =>
-        name.toLowerCase().includes(value.toLowerCase())
+      temp = listName.filter((data) =>
+        data.name.toLowerCase().includes(value.toLowerCase())
       );
     }
     setList(temp);
@@ -424,12 +518,13 @@ function RepairedRequestList() {
             key={index}
             className="sugItem"
             onClick={() => {
+              setSelectedCustomer(l);
               console.log(l);
-              setSearch(l);
+              setSearch(l.name);
               setList([]);
             }}
           >
-            {l}
+            {l.name}
           </p>
         ))}
       </div>
@@ -446,21 +541,20 @@ function RepairedRequestList() {
       return;
     }
     let loginToken = localStorage.getItem("LoginToken");
-    console.log("[Bien so] " + numberPlate);
+    console.log("[Bien so] " + numberPlate.trim());
     axios
-      .get(
-        process.env.REACT_APP_BASE_URL +
-          "api/cars/search?type=numberplate&value=" +
-          numberPlate.trim(),
-        {
-          headers: {
-            Authorization: "Bearer " + loginToken,
-          },
-        }
-      )
+      .get(process.env.REACT_APP_BASE_URL + "api/cars/search", {
+        params: {
+          type: "numberplate",
+          value: numberPlate.trim(),
+        },
+        headers: {
+          Authorization: "Bearer " + loginToken,
+        },
+      })
       .then((response) => {
+        console.log(response.data);
         setCarByNumberPlate(response.data);
-        console.log(CarByNumberPlate);
         setBrand(CarByNumberPlate.brand);
         setModel(CarByNumberPlate.model);
         setColor(CarByNumberPlate.color);
@@ -470,6 +564,7 @@ function RepairedRequestList() {
         setVIN(CarByNumberPlate.vin);
       })
       .catch((error) => {
+        //setCarByNumberPlate(null);
         console.log(error);
         console.log("Xe khong ton tai");
         setCarNotExist(true);
@@ -490,10 +585,75 @@ function RepairedRequestList() {
   const [QDList, setQDList] = useState([]);
   const [tempQuotationTotal, setTempQuotationTotal] = useState(0);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
+  const [searchField, setSearchField] = useState(1);
+  const [isDateSearch, setIsDateSearch] = useState(false);
+
+  const getSearchField = (e) => {
+    setSearchResult([]);
+    setSearchTerm("");
+    setSearchField(e.target.value);
+    if (e.target.value === "6") {
+      var today = new Date();
+      var currentDate = today.toISOString().substring(0, 10);
+      document.getElementById("searhDate").value = currentDate;
+      setIsDateSearch(true);
+      filterRRByDate(document.getElementById("searhDate").value);
+    } else {
+      setIsDateSearch(false);
+    }
+  };
+
+  const filterRRByDate = (date) => {
+    if (date !== null) {
+      const newRRList = RRList.filter((RR) => {
+        console.log(
+          "[Ngày của RR] " + dateFormat(RR.createdDate, "dd/mm/yyyy")
+        );
+        console.log("[Ngày chọn] " + dateFormat(date, "dd/mm/yyyy"));
+        return (
+          dateFormat(Object.values(RR)[3].createdDate, "dd/mm/yyyy") ===
+          dateFormat(date, "dd/mm/yyyy")
+        );
+      });
+      console.log(newRRList);
+      setSearchResult(newRRList);
+    } else {
+      setSearchResult(RRList);
+    }
+  };
+
+  const getSearchTerm = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const [selectedCar, setSelectedCar] = useState(null);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [selectedQD, setSelectedQD] = useState(null);
+
+  const saveRR = () => {
+    if (
+      selectedCar !== null &&
+      selectedCustomer !== null &&
+      selectedQD !== null
+    ) {
+      console.log("Lưu car and cus vào DB");
+      if (selectedCustomer.id === "") {
+        AddNewCustomer();
+      } else {
+        setCanSaveRR(1);
+        console.log(canSaveRR);
+      }
+    } else {
+      console.log("Chưa đủ dữ kiện để lưu");
+    }
+  };
+
   return (
     <>
       <div className="content">
-        {laborCosts === null ? (
+        {RRList === null || laborCosts === null ? (
           <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
         ) : (
           <div>
@@ -511,7 +671,7 @@ function RepairedRequestList() {
                         <label>Tên phụ tùng</label>
                         <Input
                           name="select"
-                          id="exampleSelect"
+                          //id="exampleSelect"
                           type="search"
                           value={accessorySearch}
                           onChange={(e) => onAccessoriesChangeHandler(e)}
@@ -729,7 +889,7 @@ function RepairedRequestList() {
                   In phiếu
                 </Button>
                 <Button
-                  onClick={handleClickCloseCQ}
+                  onClick={saveQuotationDetails}
                   className="btn-fill"
                   color="primary"
                   type="submit"
@@ -848,7 +1008,7 @@ function RepairedRequestList() {
                 <Form>
                   <Row>
                     <Col>
-                      <label>Khách hàng</label>
+                      <label style={{ fontWeight: "bold" }}>Khách hàng</label>
                     </Col>
                   </Row>
                   <Row>
@@ -876,39 +1036,61 @@ function RepairedRequestList() {
                       </Tooltip>
                     </Col>
                   </Row>
-                  <Row>
-                    <Col>
-                      <Label style={{ marginTop: 10 }}>Thêm xe mới</Label>
-                    </Col>
-                    <Col sm="auto">
-                      <Tooltip title="Thêm xe mới">
-                        <Fab
-                          onClick={handleClickOpenNewCar}
-                          size="small"
-                          style={{ marginBottom: 10 }}
-                        >
-                          <i className="tim-icons icon-simple-add"></i>
-                        </Fab>
-                      </Tooltip>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col>
-                      <FormGroup>
-                        <label>Nội dung sửa chữa</label>
-                        <Input cols="80" rows="4" type="textarea" />
-                      </FormGroup>
-                    </Col>
-                  </Row>
+                  {selectedCar === null ? (
+                    <Row>
+                      <Col>
+                        <Label style={{ marginTop: 10, fontWeight: "bold" }}>
+                          Thêm xe mới
+                        </Label>
+                      </Col>
+                      <Col sm="auto">
+                        <Tooltip title="Thêm xe mới">
+                          <Fab
+                            onClick={handleClickOpenNewCar}
+                            size="small"
+                            style={{ marginBottom: 10 }}
+                          >
+                            <i className="tim-icons icon-simple-add"></i>
+                          </Fab>
+                        </Tooltip>
+                      </Col>
+                    </Row>
+                  ) : (
+                    <Row>
+                      <Col>
+                        <Row>
+                          <Col>
+                            <Label
+                              style={{ marginTop: 10, fontWeight: "bold" }}
+                            >
+                              Thông tin xe
+                            </Label>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col>
+                            <Label>
+                              {selectedCar.brand} {selectedCar.model}
+                            </Label>
+                          </Col>
+                          <Col>
+                            <Label>{selectedCar.numberPlate}</Label>
+                          </Col>
+                        </Row>
+                      </Col>
+                    </Row>
+                  )}
                 </Form>
               </ModalBody>
-              <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
+              <ModalFooter
+                style={{ marginRight: 10, justifyContent: "flex-end" }}
+              >
                 <Button
                   onClick={handleClose}
                   className="btn-fill"
                   color="primary"
                   type="submit"
-                  style={{ marginRight: 20 }}
+                  style={{ marginRight: 10 }}
                 >
                   Hủy
                 </Button>
@@ -917,7 +1099,7 @@ function RepairedRequestList() {
                   className="btn-fill"
                   color="primary"
                   type="submit"
-                  style={{ marginRight: 20 }}
+                  style={{ marginRight: 10 }}
                 >
                   Báo giá
                 </Button>
@@ -925,9 +1107,18 @@ function RepairedRequestList() {
                   onClick={handleClickOpenInvoice}
                   className="btn-fill"
                   color="primary"
+                  type="submit"
+                  style={{ marginRight: 10 }}
+                >
+                  Hóa đơn
+                </Button>
+                <Button
+                  onClick={saveRR}
+                  className="btn-fill"
+                  color="primary"
                   type="submit" /*style={{marginRight:20}}*/
                 >
-                  Thanh toán
+                  Lưu
                 </Button>
               </ModalFooter>
             </Modal>
@@ -1004,7 +1195,7 @@ function RepairedRequestList() {
               </ModalBody>
               <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
                 <Button
-                  onClick={AddNewCustomer}
+                  onClick={createTempCustomer}
                   className="btn-fill"
                   color="primary"
                   type="submit"
@@ -1183,7 +1374,14 @@ function RepairedRequestList() {
               </ModalBody>
               <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
                 <Button
-                  onClick={AddNewCar}
+                  onClick={() => {
+                    if (CarByNumberPlate != null) {
+                      setSelectedCar(CarByNumberPlate);
+                      handleCloseNewCar();
+                    } else {
+                      createTempCar();
+                    }
+                  }}
                   className="btn-fill"
                   color="primary"
                   type="submit"
@@ -1222,60 +1420,126 @@ function RepairedRequestList() {
                       </Button>
                     </Col>
                   </Row>
+                  <Row>
+                    <Col md="2">
+                      <Input
+                        type="select"
+                        defaultValue={"1"}
+                        onChange={(e) => getSearchField(e)}
+                      >
+                        <option value="1">Chủ xe</option>
+                        <option value="2">Địa chỉ</option>
+                        <option value="3">Số điện thoại</option>
+                        <option value="4">Xe</option>
+                        <option value="5">Biển số</option>
+                        <option value="6">Ngày tiếp nhận</option>
+                      </Input>
+                    </Col>
+                    <Col md="3" hidden={isDateSearch}>
+                      <Input
+                        value={searchTerm}
+                        type="text"
+                        placeholder="Nội dung tìm kiếm"
+                        onChange={(e) => getSearchTerm(e)}
+                      />
+                    </Col>
+                    <Col md="3" hidden={!isDateSearch}>
+                      <Input
+                        id="searhDate"
+                        type="date"
+                        onChange={(e) => filterRRByDate(e.target.value)}
+                      />
+                    </Col>
+                  </Row>
                 </CardHeader>
                 <CardBody>
-                  <Table className="tablesorter" responsive>
-                    <thead className="text-primary">
-                      <tr>
-                        <th>ID</th>
-                        <th>Ngày tiếp nhận</th>
-                        <th>Chủ xe</th>
-                        <th>Địa chỉ</th>
-                        <th>Số điện thoại</th>
-                        <th>Hiệu xe</th>
-                        <th>Biển số</th>
-                        <th>Tình trạng</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <th scope="row">1</th>
-                        <td>22/04/2021</td>
-                        <td>Nguyen Van A</td>
-                        <td>TP.HCM</td>
-                        <td>0123456789</td>
-                        <td>BMW-350i</td>
-                        <td>92A-12345</td>
-                        <td>
-                          <font color="red">Chưa thanh toán</font>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th scope="row">2</th>
-                        <td>22/04/2021</td>
-                        <td>Nguyen Van B</td>
-                        <td>TP.HCM</td>
-                        <td>0123456789</td>
-                        <td>Mazda 3</td>
-                        <td>92A-54321</td>
-                        <td>
-                          <font color="green">Đã thanh toán</font>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th scope="row">3</th>
-                        <td>22/04/2021</td>
-                        <td>Nguyen Van C</td>
-                        <td>TP.HCM</td>
-                        <td>0123456789</td>
-                        <td>Lexus 570</td>
-                        <td>92A-12346</td>
-                        <td>
-                          <font color="green">Đã thanh toán</font>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </Table>
+                  {RRList.length < 1 ? (
+                    <p style={{ fontSize: 20, marginLeft: 10 }}>
+                      Không tìm thấy nhân viên phù hợp
+                    </p>
+                  ) : (
+                    <table class="table" responsive>
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Ngày tiếp nhận</th>
+                          <th>Chủ xe</th>
+                          <th>Địa chỉ</th>
+                          <th>Số điện thoại</th>
+                          <th>Hiệu xe</th>
+                          <th>Biển số</th>
+                          <th>Tình trạng</th>
+                        </tr>
+                      </thead>
+                      {/* <tbody>{renderRRList()}</tbody> */}
+                      <tbody>
+                        {(searchTerm.length < 1 && searchField !== "6"
+                          ? RRList
+                          : RRList
+                        ) // o day phai la searchResult
+                          .map((RR, index) => {
+                            return (
+                              <tr key={index}>
+                                <th scope="row">{index + 1}</th>
+                                <td>
+                                  {RR.createdDate
+                                    ? dateFormat(RR.createdDate, "dd/mm/yyyy")
+                                    : "-"}
+                                </td>
+                                <td>
+                                  {
+                                    listName.find(
+                                      (cus) => cus.id === RR.customerId
+                                    )?.name
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    listName.find(
+                                      (cus) => cus.id === RR.customerId
+                                    )?.address
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    listName.find(
+                                      (cus) => cus.id === RR.customerId
+                                    )?.phoneNumber
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    listCar.find((car) => car.id === RR.carId)
+                                      ?.model
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    listCar.find((car) => car.id === RR.carId)
+                                      ?.numberPlate
+                                  }
+                                </td>
+                                <td>
+                                  {RR.state === "init" ? (
+                                    <font color="yellow">
+                                      {translateRRState[RR.state]}
+                                    </font>
+                                  ) : RR.state === "finished" ? (
+                                    <font color="green">
+                                      {translateRRState[RR.state]}
+                                    </font>
+                                  ) : (
+                                    <font color="red">
+                                      {translateRRState[RR.state]}
+                                    </font>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                      </tbody>
+                    </table>
+                  )}
                 </CardBody>
               </Card>
             </Row>

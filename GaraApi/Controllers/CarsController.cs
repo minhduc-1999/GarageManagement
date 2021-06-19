@@ -23,19 +23,20 @@ namespace GaraApi.Controllers
             _carService.Get();
         [HttpGet("search/", Name = "GetCar")]
         [Authorize("admin, manager, storekeeper, employee, receptionist")]
-        public ActionResult<Car> Get([FromQuery] string type , [FromQuery] string value)
+        public ActionResult<Car> Get([FromQuery] string type, [FromQuery] string value)
         {
             var car = new Car();
             car = null;
-            switch(type){
+            switch (type)
+            {
                 case "id":
-                    car = _carService.GetById(value); 
+                    car = _carService.GetById(value);
                     break;
                 case "numberplate":
-                    car = _carService.GetByNumberPlate(value); 
+                    car = _carService.GetByNumberPlate(value);
                     break;
                 case "vin":
-                    car = _carService.GetByVIN(value); 
+                    car = _carService.GetByVIN(value);
                     break;
                 default:
                     break;
@@ -47,7 +48,7 @@ namespace GaraApi.Controllers
 
             return car;
         }
-        
+
 
         [HttpPost]
         [Authorize("admin, manager, receptionist")]
@@ -56,8 +57,8 @@ namespace GaraApi.Controllers
             var curCar = _carService.GetCarByNumberPlate(car.NumberPlate);
             if (curCar != null)
                 return BadRequest(new { message = "Car has been used" });
-            _carService.Create(car);
-            return CreatedAtRoute("GetCarByNumberPlate", new { id = car.Id.ToString() }, car);
+            var res = _carService.Create(car);
+            return CreatedAtRoute("GetCar", new { id = res.Id.ToString() }, car);
         }
 
         [HttpPut]

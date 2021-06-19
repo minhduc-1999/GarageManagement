@@ -42,6 +42,23 @@ function Employee() {
   const [selectUser, setSelectUser] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResult, setSearchResult] = useState([]);
+  const [isDateSearch, setIsDateSearch] = useState(false);
+  const [searchField, setSearchField] = useState("1");
+
+  const getSearchField = (e) => {
+    setSearchResult([]);
+    setSearchTerm("");
+    setSearchField(e.target.value);
+    if (e.target.value === "2") {
+      var today = new Date();
+      var currentDate = today.toISOString().substring(0, 10);
+      document.getElementById("searhDate").value = currentDate;
+      setIsDateSearch(true);
+      filterUserByDate(document.getElementById("searhDate").value);
+    } else {
+      setIsDateSearch(false);
+    }
+  };
 
   const translateRoles = {
     admin: "admin",
@@ -143,13 +160,13 @@ function Employee() {
   const onDismiss = () => setAlertVisible(!alertVisible);
   const onDismissEmpty = () => setEmptyFieldAlert(!emptyFiledAlert);
 
-  const getSearchTerm = (e) => {
-    setSearchTerm(e.target.value);
-    if (e.target.value !== "") {
+  const filterUserByDate = (date) => {
+    if (date !== null) {
       const newUserList = users.filter((user) => {
-        return (Object.values(user)[3].firstName)
-          .toLowerCase()
-          .includes(e.target.value.toLowerCase());
+        return (
+          dateFormat(Object.values(user)[3].dateOB, "dd/mm/yyyy") ===
+          dateFormat(date, "dd/mm/yyyy")
+        );
       });
       setSearchResult(newUserList);
     } else {
@@ -157,57 +174,88 @@ function Employee() {
     }
   };
 
-  const renderUser = () => (searchTerm.length < 1 ? users : searchResult).map((user, index) => {
-    return (
-    <tr
-      key={index}
-      onClick={() => {
-        setOnResetPassUser(user.id);
-        setSelectUser(user.username);
-        setOnResetPass(true);
-      }}
-    >
-      <th scope="row">{index + 1}</th>
-      <td>
-        {user.userClaims.lastName}{" "}
-        {user.userClaims.firstName}{" "}
-      </td>
-      <td>
-        {user.userClaims.dateOB
-          ? dateFormat(
-              user.userClaims.dateOB,
-              "dd/mm/yyyy"
-            )
-          : "-"}
-      </td>
-      <td>
-        {user.userClaims.address
-          ? user.userClaims.address
-          : "-"}
-      </td>
-      <td>
-        {user.userClaims.email
-          ? user.userClaims.email
-          : "-"}
-      </td>
-      <td>
-        {user.userClaims.phoneNumber
-          ? user.userClaims.phoneNumber
-          : "-"}
-      </td>
-      <td>{user.username}</td>
-      <td>
-        {
-          translateRoles[
-            userRoles.find(
-              (role) => role.id === user.role
-            )?.roleName
-          ]
-        }
-      </td>
-    </tr>
+  const getSearchTerm = (e) => {
+    setSearchTerm(e.target.value);
+    if (e.target.value !== "") {
+      console.log(e.target.value);
+      let newUserList = [];
+      switch (searchField) {
+        case "1":
+          newUserList = users.filter((user) => {
+            return Object.values(user)[3]
+              .firstName.toLowerCase()
+              .includes(e.target.value.toLowerCase());
+          });
+          break;
+        case "3":
+          newUserList = users.filter((user) => {
+            return Object.values(user)[3]
+              .address.toLowerCase()
+              .includes(e.target.value.toLowerCase());
+          });
+          break;
+        case "4":
+          newUserList = users.filter((user) => {
+            return Object.values(user)[3]
+              .email.toLowerCase()
+              .includes(e.target.value.toLowerCase());
+          });
+          break;
+        case "5":
+          newUserList = users.filter((user) => {
+            return Object.values(user)[3]
+              .phoneNumber.toLowerCase()
+              .includes(e.target.value.toLowerCase());
+          });
+          break;
+
+        default:
+          break;
+      }
+      setSearchResult(newUserList);
+    } else {
+      setSearchResult(users);
+    }
+  };
+
+  const renderUser = () =>
+    (searchTerm.length < 1 && searchField !== "2" ? users : searchResult).map(
+      (user, index) => {
+        return (
+          <tr
+            key={index}
+            onDoubleClick={() => {
+              setOnResetPassUser(user.id);
+              setSelectUser(user.username);
+              setOnResetPass(true);
+            }}
+          >
+            <th scope="row">{index + 1}</th>
+            <td>
+              {user.userClaims.lastName} {user.userClaims.firstName}{" "}
+            </td>
+            <td>
+              {user.userClaims.dateOB
+                ? dateFormat(user.userClaims.dateOB, "dd/mm/yyyy")
+                : "-"}
+            </td>
+            <td>{user.userClaims.address ? user.userClaims.address : "-"}</td>
+            <td>{user.userClaims.email ? user.userClaims.email : "-"}</td>
+            <td>
+              {user.userClaims.phoneNumber ? user.userClaims.phoneNumber : "-"}
+            </td>
+            <td>{user.username}</td>
+            <td>
+              {
+                translateRoles[
+                  userRoles.find((role) => role.id === user.role)?.roleName
+                ]
+              }
+            </td>
+          </tr>
+        );
+      }
     );
-  });
 
   return (
     <>
@@ -435,12 +483,6 @@ function Employee() {
                     <Row>
                       <Col>
                         <CardTitle tag="h4">Danh sách nhân viên</CardTitle>
-                        <Input
-                          value={searchTerm}
-                          type="text"
-                          placeholder="Tìm kiếm nhân viên"
-                          onChange={(e) => getSearchTerm(e)}
-                        />
                       </Col>
                       <Col md="6" />
                       <Col md="auto">
@@ -454,10 +496,44 @@ function Employee() {
                         </Button>
                       </Col>
                     </Row>
+                    <Row>
+                      <Col md="2">
+                        <Input
+                          //value={searchTerm}
+                          type="select"
+                          defaultValue={"1"}
+                          onChange={(e) => getSearchField(e)}
+                        >
+                          <option value="1">Họ và Tên</option>
+                          <option value="2">Ngày sinh</option>
+                          <option value="3">Địa chỉ</option>
+                          <option value="4">Email</option>
+                          <option value="5">Số điện thoại</option>
+                        </Input>
+                      </Col>
+                      <Col md="3" hidden={isDateSearch}>
+                        <Input
+                          value={searchTerm}
+                          type="text"
+                          placeholder="Tìm kiếm nhân viên"
+                          onChange={(e) => getSearchTerm(e)}
+                        />
+                      </Col>
+                      <Col md="3" hidden={!isDateSearch}>
+                        <Input
+                          id="searhDate"
+                          type="date"
+                          onChange={(e) => filterUserByDate(e.target.value)}
+                        />
+                      </Col>
+                    </Row>
                   </CardHeader>
                   <CardBody>
-                    {renderUser().length <= 0 ?
-                      <p style={{fontSize: 20, marginLeft: 10}}>Không tìm thấy nhân viên phù hợp</p> :
+                    {renderUser().length <= 0 ? (
+                      <p style={{ fontSize: 20, marginLeft: 10 }}>
+                        Không tìm thấy nhân viên phù hợp
+                      </p>
+                    ) : (
                       <table class="table">
                         <thead>
                           <tr>
@@ -471,11 +547,9 @@ function Employee() {
                             <th>Chức vụ</th>
                           </tr>
                         </thead>
-                        <tbody>
-                          {renderUser()}
-                        </tbody>
+                        <tbody>{renderUser()}</tbody>
                       </table>
-                    }
+                    )}
                   </CardBody>
                 </Card>
               </Col>
