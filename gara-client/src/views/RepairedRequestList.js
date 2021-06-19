@@ -297,6 +297,12 @@ function RepairedRequestList() {
     }
   }, [canSaveRR]);
 
+  useEffect(() => {
+    setQDList(QDList);
+  }, [onQDListChange]);
+
+  const [onQDListChange, setOnQDListChange] = useState(false);
+
   const [openNewCustomer, setOpenNewCustomer] = React.useState(false);
 
   const handleClickOpenNewCustomer = () => {
@@ -358,7 +364,6 @@ function RepairedRequestList() {
 
   const handleClickCloseCQ = () => {
     clearQDFields();
-    setTempQuotationTotal(0);
     setQDList([]);
     setHiddenLaborCost(false);
     setSelectedLabor(null);
@@ -375,6 +380,11 @@ function RepairedRequestList() {
 
   const [hiddenLaborCost, setHiddenLaborCost] = React.useState(false);
 
+  const removeDQFromTable = (index) => {
+    QDList.splice(index, 1);
+    setOnQDListChange(!onQDListChange);
+  };
+
   const addQDToTable = () => {
     if (quantity !== 0 && selectedAccessory !== null) {
       if (hiddenLaborCost && laborName !== "" && laborValue !== "") {
@@ -390,11 +400,6 @@ function RepairedRequestList() {
               issueName: laborName,
             },
           ]);
-          setTempQuotationTotal(
-            tempQuotationTotal +
-              quantity * Number(selectedAccessory.issuePrice) +
-              Number(laborValue)
-          );
         }
         clearQDFields();
       } else {
@@ -408,9 +413,6 @@ function RepairedRequestList() {
               unitPrice: selectedAccessory.issuePrice,
             },
           ]);
-          setTempQuotationTotal(
-            tempQuotationTotal + quantity * Number(selectedAccessory.issuePrice)
-          );
         } else if (SelectedLabor.name !== "Không") {
           setQDList([
             ...QDList,
@@ -423,11 +425,6 @@ function RepairedRequestList() {
               issueName: SelectedLabor.name,
             },
           ]);
-          setTempQuotationTotal(
-            tempQuotationTotal +
-              quantity * Number(selectedAccessory.issuePrice) +
-              Number(SelectedLabor.value)
-          );
         } else {
           setQDList([
             ...QDList,
@@ -438,12 +435,28 @@ function RepairedRequestList() {
               unitPrice: selectedAccessory.issuePrice,
             },
           ]);
-          setTempQuotationTotal(
-            tempQuotationTotal + quantity * Number(selectedAccessory.issuePrice)
-          );
         }
         clearQDFields();
       }
+    }
+  };
+
+  const calcTempQuotationTotal = () => {
+    if (QDList === null) {
+      return 0;
+    } else {
+      let total = 0;
+      QDList.map((QD) => {
+        if (!QD.hasOwnProperty("laborCosts")) {
+          total = Number(total) + Number(QD.quantity) * Number(QD.unitPrice);
+        } else {
+          total =
+            Number(total) +
+            Number(QD.quantity) * Number(QD.unitPrice) +
+            Number(QD.laborCost);
+        }
+      });
+      return total;
     }
   };
 
@@ -583,7 +596,6 @@ function RepairedRequestList() {
   };
 
   const [QDList, setQDList] = useState([]);
-  const [tempQuotationTotal, setTempQuotationTotal] = useState(0);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResult, setSearchResult] = useState([]);
@@ -818,7 +830,7 @@ function RepairedRequestList() {
                     </Col>
                   </Row>
                   <ColoredLine color="grey" />
-                  <Table className="tablesorter" responsive>
+                  <table class="table">
                     <thead className="text-primary">
                       <tr>
                         <th>ID</th>
@@ -848,10 +860,18 @@ function RepairedRequestList() {
                               : Number(QD.quantity) * Number(QD.unitPrice)}
                             VNĐ
                           </td>
+                          <Fab
+                            size="small"
+                            onClick={() => {
+                              removeDQFromTable(index);
+                            }}
+                          >
+                            <i className="tim-icons icon-simple-delete"></i>
+                          </Fab>
                         </tr>
                       ))}
                     </tbody>
-                  </Table>
+                  </table>
                   <ColoredLine color="grey" />
                   <Row>
                     <Col>
@@ -862,7 +882,7 @@ function RepairedRequestList() {
                     <Row>
                       <Col md="auto" style={{ marginRight: 25 }}>
                         <legend className="title">
-                          {tempQuotationTotal} VNĐ
+                          {calcTempQuotationTotal()} VNĐ
                         </legend>
                       </Col>
                     </Row>
@@ -1458,7 +1478,7 @@ function RepairedRequestList() {
                       Không tìm thấy nhân viên phù hợp
                     </p>
                   ) : (
-                    <table class="table" responsive>
+                    <Table hover className="mb-0">
                       <thead>
                         <tr>
                           <th>ID</th>
@@ -1538,7 +1558,7 @@ function RepairedRequestList() {
                             );
                           })}
                       </tbody>
-                    </table>
+                    </Table>
                   )}
                 </CardBody>
               </Card>
