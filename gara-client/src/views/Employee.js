@@ -281,7 +281,7 @@ function Employee() {
                           </option>
                           {userRoles.map((item) => (
                             <option key={item.id} value={item.id}>
-                              {item.roleName}
+                              {translateRoles[item.roleName]}
                             </option>
                           ))}
                         </Input>
