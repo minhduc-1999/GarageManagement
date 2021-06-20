@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { AuthContext } from "contexts/AuthProvider";
 import {
   Card,
   CardHeader,
@@ -36,6 +37,7 @@ function RepairedRequestList() {
   const [selectedRRState, setSelectedRRState] = useState(null);
   const [disableRRState, setDisableRRState] = useState(true);
 
+  const { userAcc } = useContext(AuthContext);
   const [laborCosts, setLaborCost] = useState(null);
   const [SelectedLabor, setSelectedLabor] = useState(null);
   const [laborName, setLaborName] = useState(null);
@@ -840,7 +842,9 @@ function RepairedRequestList() {
   return (
     <>
       <div className="content">
-        {RRList === null || laborCosts === null ? (
+        {userAcc.role === "storekeeper" ? (
+          <p>Bạn không có quyền truy cập</p>
+        ) : RRList === null || laborCosts === null ? (
           <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
         ) : (
           <div>

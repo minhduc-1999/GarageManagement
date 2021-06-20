@@ -56,7 +56,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpGet("/api/report/revenue")]
-        [Authorize("admin, manager, receptionist")]
+        [Authorize("admin, manager")]
         public ActionResult<List<ReportElement>> GetReport([FromQuery] string option, [FromQuery] int year, [FromQuery] int month)
         {
             IEnumerable<ReportElement> res = null;

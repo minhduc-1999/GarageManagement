@@ -18,11 +18,11 @@ namespace GaraApi.Controllers
         }
 
         [HttpGet]
-        [Authorize("admin, manager, storekeeper, employee, receptionist")]
+        [Authorize("admin, manager, receptionist")]
         public ActionResult<List<Car>> Get() =>
             _carService.Get();
         [HttpGet("search/", Name = "GetCar")]
-        [Authorize("admin, manager, storekeeper, employee, receptionist")]
+        [Authorize("admin, manager, receptionist")]
         public ActionResult<Car> Get([FromQuery] string type, [FromQuery] string value)
         {
             var car = new Car();
@@ -78,7 +78,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpDelete("{id:length(24)}")]
-        [Authorize("admin, manager, receptionist")]
+        [Authorize("admin, manager")]
         public IActionResult Delete(string id)
         {
             var car = _carService.GetById(id);

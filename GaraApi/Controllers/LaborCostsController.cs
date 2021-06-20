@@ -49,7 +49,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpPut]
-        [Authorize("admin")]
+        [Authorize("admin, manager")]
         public IActionResult Update([FromBody] LaborCost laborCostIn)
         {
             var laborCost = _laborCostService.Get(laborCostIn.Id);
@@ -74,7 +74,7 @@ namespace GaraApi.Controllers
         // }
 
         [HttpDelete("{id:length(24)}")]
-        [Authorize("admin")]
+        [Authorize("admin, manager")]
         public IActionResult Delete(string id)
         {
             var laborCost = _laborCostService.Get(id);

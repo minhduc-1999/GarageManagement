@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { AuthContext } from "contexts/AuthProvider";
 import {
   Card,
   CardHeader,
@@ -21,18 +22,18 @@ const axios = require("axios");
 const dateFormat = require("dateformat");
 
 function Employee() {
+  const { userAcc } = useContext(AuthContext);
   const [users, setUsers] = useState([]);
   const [userRoles, setUserRoles] = useState(null);
   const [onAddNewUser, setOnAddNewUser] = useState(false);
   const [username, setUsername] = useState(null);
   const [password, setPassword] = useState(null);
   const [roleId, setRoleId] = useState(null);
-  const [firstName, setFirstName] = useState(null);
-  const [lastName, setLastName] = useState(null);
-  const [email, setEmail] = useState(null);
-  const [phoneNum, setPhoneNum] = useState(null);
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNum, setPhoneNum] = useState("");
   const [dateOB, setDateOB] = useState(null);
-  const [address, setAddress] = useState(null);
+  const [address, setAddress] = useState("");
   const [alertVisible, setAlertVisible] = useState(false);
   const [emptyFiledAlert, setEmptyFieldAlert] = useState(false);
   const [onChange, setOnchange] = useState(false);
@@ -108,9 +109,8 @@ function Employee() {
     let createUser = new FormData();
     createUser.append("username", username);
     createUser.append("password", password);
-    createUser.append("role", roleId);
-    createUser.append("firstName", firstName);
-    createUser.append("lastName", lastName);
+    createUser.append("roleId", roleId);
+    createUser.append("fullName", fullName);
     createUser.append("email", email);
     createUser.append("phoneNumber", phoneNum);
     createUser.append("dateOB", dateOB);
@@ -183,7 +183,7 @@ function Employee() {
         case "1":
           newUserList = users.filter((user) => {
             return Object.values(user)[3]
-              .firstName.toLowerCase()
+              .fullName.toLowerCase()
               .includes(e.target.value.toLowerCase());
           });
           break;
@@ -231,9 +231,7 @@ function Employee() {
             }}
           >
             <th scope="row">{index + 1}</th>
-            <td>
-              {user.userClaims.lastName} {user.userClaims.firstName}{" "}
-            </td>
+            <td>{user.userClaims.fullName}</td>
             <td>
               {user.userClaims.dateOB
                 ? dateFormat(user.userClaims.dateOB, "dd/mm/yyyy")
@@ -260,7 +258,9 @@ function Employee() {
   return (
     <>
       <div className="content">
-        {users === null || userRoles === null ? (
+        {userAcc.role !== "admin" ? (
+          <p>Bạn không có quyền truy cập</p>
+        ) : users.length < 1 || userRoles === null ? (
           <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
         ) : (
           <div>
@@ -307,30 +307,16 @@ function Employee() {
                   <Row>
                     <Col sm="6">
                       <FormGroup>
-                        <Label for="exampleEmail">Họ</Label>
+                        <Label for="exampleEmail">Họ và tên</Label>
                         <Input
                           type="text"
                           name="user"
                           id="lastName"
-                          placeholder="Họ"
-                          onChange={(e) => setLastName(e.target.value)}
+                          placeholder="Họ và tên"
+                          onChange={(e) => setFullName(e.target.value)}
                         />
                       </FormGroup>
                     </Col>
-                    <Col sm="6">
-                      <FormGroup>
-                        <Label for="exampleEmail">Tên</Label>
-                        <Input
-                          type="text"
-                          name="user"
-                          id="firstName"
-                          placeholder="Tên"
-                          onChange={(e) => setFirstName(e.target.value)}
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
                     <Col sm="6">
                       <FormGroup>
                         <Label>Chức vụ</Label>
@@ -346,12 +332,14 @@ function Employee() {
                           </option>
                           {userRoles.map((item) => (
                             <option key={item.id} value={item.id}>
-                              {item.roleName}
+                              {translateRoles[item.roleName]}
                             </option>
                           ))}
                         </Input>
                       </FormGroup>
                     </Col>
+                  </Row>
+                  <Row>
                     <Col sm="6">
                       <FormGroup>
                         <Label for="exampleEmail">Ngày sinh</Label>
@@ -364,8 +352,6 @@ function Employee() {
                         />
                       </FormGroup>
                     </Col>
-                  </Row>
-                  <Row>
                     <Col sm="6">
                       <FormGroup>
                         <Label for="exampleEmail">Email</Label>
@@ -378,6 +364,8 @@ function Employee() {
                         />
                       </FormGroup>
                     </Col>
+                  </Row>
+                  <Row>
                     <Col sm="6">
                       <FormGroup>
                         <Label for="exampleEmail">Số điện thoại</Label>
@@ -390,17 +378,19 @@ function Employee() {
                         />
                       </FormGroup>
                     </Col>
+                    <Col sm="6">
+                      <FormGroup>
+                        <Label for="exampleEmail">Địa chỉ</Label>
+                        <Input
+                          type="text"
+                          name="user"
+                          id="address"
+                          placeholder="Địa chỉ"
+                          onChange={(e) => setAddress(e.target.value)}
+                        />
+                      </FormGroup>
+                    </Col>
                   </Row>
-                  <FormGroup>
-                    <Label for="exampleEmail">Địa chỉ</Label>
-                    <Input
-                      type="text"
-                      name="user"
-                      id="address"
-                      placeholder="Địa chỉ"
-                      onChange={(e) => setAddress(e.target.value)}
-                    />
-                  </FormGroup>
                   <Alert
                     className="alert-error"
                     color="warning"

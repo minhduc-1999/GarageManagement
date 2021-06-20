@@ -20,10 +20,7 @@ namespace GaraApi.Entities.Identity
 
         [BsonIgnoreIfNull]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string FirstName { get; set; }
-        [BsonIgnoreIfNull]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string LastName { get; set; }
+        public string FullName { get; set; }
 
         [BsonIgnoreIfNull]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

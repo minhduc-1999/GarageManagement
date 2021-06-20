@@ -12,17 +12,19 @@ namespace GaraApi.Models
         [StringLength(16, MinimumLength = 5)]
         public string Password { get; set; }
         [Required]
-        public string Role { get; set; }
+        [StringLength(24, MinimumLength = 24)]
+        public string RoleId { get; set; }
         [Phone]
+        [Required]
         public string PhoneNumber { get; set; }
         [EmailAddress]
         public string Email { get; set; }
         [DataType(DataType.Date)]
         public DateTime? DateOB { get; set; }
         [StringLength(50)]
-        public string FirstName { get; set; }
-        [StringLength(50)]
-        public string LastName { get; set; }
+        [Required]
+        public string FullName { get; set; }
+        [Required]
         public string Address { get; set; }
 
     }
