@@ -32,6 +32,8 @@ function RepairedRequestList() {
   };
 
   const [RRList, setRRList] = useState([]);
+  //const [newRR, setNewRR] = useState(false);
+  const [selectedRR, setSelectedRR] = useState(null);
 
   const [laborCosts, setLaborCost] = useState(null);
   const [SelectedLabor, setSelectedLabor] = useState(null);
@@ -268,31 +270,11 @@ function RepairedRequestList() {
         console.log(canSaveRR);
       }
     } else if (canSaveRR === 2) {
-      let loginToken = localStorage.getItem("LoginToken");
-      var quotation = {
-        details: selectedQD,
-      };
-      const tempRR = {
-        carId: selectedCar.id,
-        customerId: selectedCustomer.id,
-        quotation: quotation,
-      };
-
-      console.log(quotation);
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + loginToken,
-      };
-      axios
-        .post(process.env.REACT_APP_BASE_URL + "api/repairedrequests", tempRR, {
-          headers: headers,
-        })
-        .then((response) => {
-          setOnchange(!onChange);
-        })
-        .catch((error) => {
-          console.log("ERROR" + error);
-        });
+      if (selectedRR !== null) {
+        updateRRInDB();
+      } else {
+        saveRRInDB();
+      }
       handleClose();
     }
   }, [canSaveRR]);
@@ -300,6 +282,71 @@ function RepairedRequestList() {
   useEffect(() => {
     setQDList(QDList);
   }, [onQDListChange]);
+
+  const updateRRInDB = () => {
+    //RR !== null
+    let loginToken = localStorage.getItem("LoginToken");
+    var quotation = {
+      state: selectedQuotationState,
+      details: selectedQD,
+    };
+    const tempRR = {
+      id: selectedRR.id,
+      carId: selectedCar.id,
+      customerId: selectedCustomer.id,
+      quotation: quotation,
+    };
+
+    console.log(quotation);
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + loginToken,
+    };
+    axios
+      .put(process.env.REACT_APP_BASE_URL + "api/repairedrequests", tempRR, {
+        headers: headers,
+      })
+      .then((response) => {
+        setOnchange(!onChange);
+      })
+      .catch((error) => {
+        console.log("ERROR" + error);
+      });
+  };
+
+  const saveRRInDB = () => {
+    let loginToken = localStorage.getItem("LoginToken");
+    var quotation = {
+      state: selectedQuotationState,
+      details: selectedQD,
+    };
+    const tempRR = {
+      carId: selectedCar.id,
+      customerId: selectedCustomer.id,
+      quotation: quotation,
+    };
+
+    console.log(quotation);
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + loginToken,
+    };
+    axios
+      .post(process.env.REACT_APP_BASE_URL + "api/repairedrequests", tempRR, {
+        headers: headers,
+      })
+      .then((response) => {
+        setOnchange(!onChange);
+      })
+      .catch((error) => {
+        console.log("ERROR" + error);
+      });
+  };
+
+  const confirmQuotation = () => {
+    setSelectedQuotationState("confirmed");
+    saveQuotationDetails();
+  };
 
   const [onQDListChange, setOnQDListChange] = useState(false);
 
@@ -348,6 +395,15 @@ function RepairedRequestList() {
   };
 
   const handleClose = () => {
+    //clearQuotation
+    clearQDFields();
+    setQDList([]);
+    setHiddenLaborCost(false);
+    setSelectedLabor(null);
+    setSelectedQuotationState("not_confirmed");
+
+    //clearRR
+    setSelectedRR(null);
     setCanSaveRR(0);
     setSelectedQD(null);
     setSelectedCustomer(null);
@@ -363,10 +419,10 @@ function RepairedRequestList() {
   };
 
   const handleClickCloseCQ = () => {
-    clearQDFields();
-    setQDList([]);
-    setHiddenLaborCost(false);
-    setSelectedLabor(null);
+    // clearQDFields();
+    // setQDList([]);
+    // setHiddenLaborCost(false);
+    // setSelectedLabor(null);
     setOpenCQModal(false);
   };
 
@@ -643,6 +699,8 @@ function RepairedRequestList() {
   const [selectedCar, setSelectedCar] = useState(null);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedQD, setSelectedQD] = useState(null);
+  const [selectedQuotationState, setSelectedQuotationState] =
+    useState("not_confirmed");
 
   const saveRR = () => {
     if (
@@ -662,6 +720,19 @@ function RepairedRequestList() {
     }
   };
 
+  const openRR = (RR) => {
+    setSelectedRR(RR);
+
+    setSelectedCustomer(listName.find((cus) => cus.id === RR.customerId));
+    setSearch(listName.find((cus) => cus.id === RR.customerId).name);
+    setSelectedCar(listCar.find((car) => car.id === RR.carId));
+    setQDList(RR.quotation.details);
+
+    setSelectedQuotationState(RR.quotation.state);
+
+    handleClickOpen();
+  };
+
   return (
     <>
       <div className="content">
@@ -677,158 +748,170 @@ function RepairedRequestList() {
               </ModalHeader>
               <ModalBody>
                 <Form>
-                  <Row>
-                    <Col md="4">
-                      <FormGroup>
-                        <label>Tên phụ tùng</label>
-                        <Input
-                          name="select"
-                          //id="exampleSelect"
-                          type="search"
-                          value={accessorySearch}
-                          onChange={(e) => onAccessoriesChangeHandler(e)}
-                        ></Input>
-                        {renderAccessoriesSuggestions()}
-                      </FormGroup>
-                    </Col>
-                    <Col md="4">
-                      <FormGroup>
-                        <label>Đơn giá</label>
-                        <h4>
-                          {selectedAccessory != null
-                            ? selectedAccessory.issuePrice
-                            : 0}{" "}
-                          VNĐ
-                        </h4>
-                      </FormGroup>
-                    </Col>
-                    <Col md="4">
-                      <FormGroup>
-                        <label>Số lượng</label>
-                        <Input
-                          type="text"
-                          value={quantity}
-                          onChange={(e) => {
-                            setQuantity(
-                              e.target.value
-                                .replace(/\D/, "")
-                                .replace(/^0+/, "")
-                            );
-                          }}
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col hidden={hiddenLaborCost}>
+                  {selectedRR !== null &&
+                  selectedRR.quotation.state === "confirmed" ? (
+                    <div hidden="true"></div>
+                  ) : (
+                    <div>
                       <Row>
                         <Col md="4">
-                          <label>Chọn dịch vụ</label>
-                        </Col>
-                        <Col md="4">
-                          <label>Tiền phí</label>
-                        </Col>
-                      </Row>
-                    </Col>
-                    <Col hidden={!hiddenLaborCost}>
-                      <Row>
-                        <Col md="4">
-                          <label>Tên dịch vụ</label>
-                        </Col>
-                        <Col md="4">
-                          <label>Tiền phí (VNĐ)</label>
-                        </Col>
-                      </Row>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col hidden={hiddenLaborCost}>
-                      <Row>
-                        <Col md="6">
                           <FormGroup>
+                            <label>Tên phụ tùng</label>
                             <Input
                               name="select"
-                              id="exampleSelect"
-                              type="select"
-                              defaultValue={"0"}
-                              onChange={(e) =>
-                                setSelectedLabor({
-                                  name: e.target.options[e.target.selectedIndex]
-                                    .text,
-                                  value: e.target.value,
-                                })
-                              }
-                            >
-                              <option value={"0"}>Không</option>
-                              {laborCosts.map((laborCost) => (
-                                <option value={laborCost.value}>
-                                  {laborCost.name}
-                                </option>
-                              ))}
-                            </Input>
+                              //id="exampleSelect"
+                              type="search"
+                              value={accessorySearch}
+                              onChange={(e) => onAccessoriesChangeHandler(e)}
+                            ></Input>
+                            {renderAccessoriesSuggestions()}
                           </FormGroup>
                         </Col>
-                        <Col md="6">
-                          <h4>
-                            {SelectedLabor != null ? SelectedLabor.value : "0"}{" "}
-                            VNĐ
-                          </h4>
-                        </Col>
-                      </Row>
-                    </Col>
-                    <Col hidden={!hiddenLaborCost}>
-                      <Row>
-                        <Col className="pr-md-1">
-                          <FormGroup style={{ marginRight: 5 }}>
-                            <Input
-                              type="text"
-                              value={laborName}
-                              onChange={(e) => setLaborName(e.target.value)}
-                            />
+                        <Col md="4">
+                          <FormGroup>
+                            <label>Đơn giá</label>
+                            <h4>
+                              {selectedAccessory != null
+                                ? selectedAccessory.issuePrice
+                                : 0}{" "}
+                              VNĐ
+                            </h4>
                           </FormGroup>
                         </Col>
-                        <Col className="pl-md-1" style={{ marginLeft: 10 }}>
-                          <FormGroup style={{ marginLeft: 5 }}>
+                        <Col md="4">
+                          <FormGroup>
+                            <label>Số lượng</label>
                             <Input
                               type="text"
-                              value={laborValue}
-                              onChange={(e) =>
-                                setLaborValue(
+                              value={quantity}
+                              onChange={(e) => {
+                                setQuantity(
                                   e.target.value
                                     .replace(/\D/, "")
                                     .replace(/^0+/, "")
-                                )
-                              }
+                                );
+                              }}
                             />
                           </FormGroup>
                         </Col>
                       </Row>
-                    </Col>
+                      <Row>
+                        <Col hidden={hiddenLaborCost}>
+                          <Row>
+                            <Col md="4">
+                              <label>Chọn dịch vụ</label>
+                            </Col>
+                            <Col md="4">
+                              <label>Tiền phí</label>
+                            </Col>
+                          </Row>
+                        </Col>
+                        <Col hidden={!hiddenLaborCost}>
+                          <Row>
+                            <Col md="4">
+                              <label>Tên dịch vụ</label>
+                            </Col>
+                            <Col md="4">
+                              <label>Tiền phí (VNĐ)</label>
+                            </Col>
+                          </Row>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col hidden={hiddenLaborCost}>
+                          <Row>
+                            <Col md="6">
+                              <FormGroup>
+                                <Input
+                                  name="select"
+                                  id="exampleSelect"
+                                  type="select"
+                                  defaultValue={"0"}
+                                  onChange={(e) =>
+                                    setSelectedLabor({
+                                      name: e.target.options[
+                                        e.target.selectedIndex
+                                      ].text,
+                                      value: e.target.value,
+                                    })
+                                  }
+                                >
+                                  <option value={"0"}>Không</option>
+                                  {laborCosts.map((laborCost) => (
+                                    <option value={laborCost.value}>
+                                      {laborCost.name}
+                                    </option>
+                                  ))}
+                                </Input>
+                              </FormGroup>
+                            </Col>
+                            <Col md="6">
+                              <h4>
+                                {SelectedLabor != null
+                                  ? SelectedLabor.value
+                                  : "0"}{" "}
+                                VNĐ
+                              </h4>
+                            </Col>
+                          </Row>
+                        </Col>
+                        <Col hidden={!hiddenLaborCost}>
+                          <Row>
+                            <Col className="pr-md-1">
+                              <FormGroup style={{ marginRight: 5 }}>
+                                <Input
+                                  type="text"
+                                  value={laborName}
+                                  onChange={(e) => setLaborName(e.target.value)}
+                                />
+                              </FormGroup>
+                            </Col>
+                            <Col className="pl-md-1" style={{ marginLeft: 10 }}>
+                              <FormGroup style={{ marginLeft: 5 }}>
+                                <Input
+                                  type="text"
+                                  value={laborValue}
+                                  onChange={(e) =>
+                                    setLaborValue(
+                                      e.target.value
+                                        .replace(/\D/, "")
+                                        .replace(/^0+/, "")
+                                    )
+                                  }
+                                />
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                        </Col>
 
-                    <Col md="3">
-                      <FormGroup>
-                        <Checkbox
-                          color="primary"
-                          onChange={(e) => setHiddenLaborCost(e.target.checked)}
-                        ></Checkbox>
-                        <label>Loại phí mới</label>
-                      </FormGroup>
-                    </Col>
-                    <Col
-                      md="1"
-                      style={{ alignItems: "flex-end", display: "flex" }}
-                    >
-                      <Tooltip title="Thêm">
-                        <Fab
-                          size="small"
-                          style={{ marginBottom: 10 }}
-                          onClick={addQDToTable}
+                        <Col md="3">
+                          <FormGroup>
+                            <Checkbox
+                              color="primary"
+                              onChange={(e) =>
+                                setHiddenLaborCost(e.target.checked)
+                              }
+                            ></Checkbox>
+                            <label>Loại phí mới</label>
+                          </FormGroup>
+                        </Col>
+                        <Col
+                          md="1"
+                          style={{ alignItems: "flex-end", display: "flex" }}
                         >
-                          <i className="tim-icons icon-simple-add"></i>
-                        </Fab>
-                      </Tooltip>
-                    </Col>
-                  </Row>
+                          <Tooltip title="Thêm">
+                            <Fab
+                              size="small"
+                              style={{ marginBottom: 10 }}
+                              onClick={addQDToTable}
+                            >
+                              <i className="tim-icons icon-simple-add"></i>
+                            </Fab>
+                          </Tooltip>
+                        </Col>
+                      </Row>
+                    </div>
+                  )}
                   <ColoredLine color="grey" />
                   <table class="table">
                     <thead className="text-primary">
@@ -860,14 +943,19 @@ function RepairedRequestList() {
                               : Number(QD.quantity) * Number(QD.unitPrice)}
                             VNĐ
                           </td>
-                          <Fab
-                            size="small"
-                            onClick={() => {
-                              removeDQFromTable(index);
-                            }}
-                          >
-                            <i className="tim-icons icon-simple-delete"></i>
-                          </Fab>
+                          {selectedRR !== null &&
+                          selectedRR.quotation.state === "confirmed" ? (
+                            <td hidden="true"></td>
+                          ) : (
+                            <Fab
+                              size="small"
+                              onClick={() => {
+                                removeDQFromTable(index);
+                              }}
+                            >
+                              <i className="tim-icons icon-simple-delete"></i>
+                            </Fab>
+                          )}
                         </tr>
                       ))}
                     </tbody>
@@ -876,26 +964,50 @@ function RepairedRequestList() {
                   <Row>
                     <Col>
                       <FormGroup>
-                        <legend>Tổng cộng</legend>
+                        <h3>Tổng cộng</h3>
                       </FormGroup>
                     </Col>
                     <Row>
                       <Col md="auto" style={{ marginRight: 25 }}>
-                        <legend className="title">
+                        <h3 className="title">
                           {calcTempQuotationTotal()} VNĐ
-                        </legend>
+                        </h3>
                       </Col>
                     </Row>
                   </Row>
+                  {selectedRR !== null ? (
+                    <Row>
+                      <Col>
+                        <FormGroup>
+                          <h3>Trạng thái</h3>
+                        </FormGroup>
+                      </Col>
+                      <Row>
+                        <Col md="auto" style={{ marginRight: 25 }}>
+                          {selectedQuotationState === "confirmed" ? (
+                            <h3 className="title">
+                              <font color="green">Đã xác nhận</font>
+                            </h3>
+                          ) : (
+                            <h3 className="title">
+                              <font color="red">Chưa xác nhận</font>
+                            </h3>
+                          )}
+                        </Col>
+                      </Row>
+                    </Row>
+                  ) : (
+                    <div hidden="true"></div>
+                  )}
                 </Form>
               </ModalBody>
-              <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
+              <ModalFooter style={{ margin: 10, justifyContent: "flex-end" }}>
                 <Button
                   onClick={handleClickCloseCQ}
                   className="btn-fill"
                   color="primary"
                   type="submit"
-                  style={{ marginRight: 25 }}
+                  style={{ marginRight: 20 }}
                 >
                   Hủy
                 </Button>
@@ -904,7 +1016,7 @@ function RepairedRequestList() {
                   className="btn-fill"
                   color="primary"
                   type="submit"
-                  style={{ marginRight: 25 }}
+                  style={{ marginRight: 20 }}
                 >
                   In phiếu
                 </Button>
@@ -913,18 +1025,24 @@ function RepairedRequestList() {
                   className="btn-fill"
                   color="primary"
                   type="submit"
-                  style={{ marginRight: 25 }}
                 >
                   Lưu
                 </Button>
-                <Button
-                  onClick={handleClickCloseCQ}
-                  className="btn-fill"
-                  color="primary"
-                  type="submit"
-                >
-                  Xác nhận
-                </Button>
+                {selectedRR === null ||
+                (selectedRR !== null &&
+                  selectedRR.quotation.state !== "confirmed") ? (
+                  <Button
+                    onClick={confirmQuotation}
+                    className="btn-fill"
+                    color="primary"
+                    type="submit"
+                    style={{ marginLeft: 20 }}
+                  >
+                    Xác nhận
+                  </Button>
+                ) : (
+                  <div hidden="true"></div>
+                )}
               </ModalFooter>
             </Modal>
             <Modal isOpen={openInvoice} size="lg">
@@ -1434,7 +1552,10 @@ function RepairedRequestList() {
                         className="btn-fill"
                         color="primary"
                         type="submit"
-                        onClick={handleClickOpen}
+                        onClick={() => {
+                          //setNewRR(true);
+                          handleClickOpen();
+                        }}
                       >
                         Thêm
                       </Button>
@@ -1478,7 +1599,7 @@ function RepairedRequestList() {
                       Không tìm thấy nhân viên phù hợp
                     </p>
                   ) : (
-                    <Table hover className="mb-0">
+                    <table class="table">
                       <thead>
                         <tr>
                           <th>ID</th>
@@ -1499,7 +1620,12 @@ function RepairedRequestList() {
                         ) // o day phai la searchResult
                           .map((RR, index) => {
                             return (
-                              <tr key={index}>
+                              <tr
+                                key={index}
+                                onDoubleClick={() => {
+                                  openRR(RR);
+                                }}
+                              >
                                 <th scope="row">{index + 1}</th>
                                 <td>
                                   {RR.createdDate
@@ -1558,7 +1684,7 @@ function RepairedRequestList() {
                             );
                           })}
                       </tbody>
-                    </Table>
+                    </table>
                   )}
                 </CardBody>
               </Card>
