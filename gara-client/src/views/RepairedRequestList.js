@@ -685,6 +685,18 @@ function RepairedRequestList() {
   const [CarNotExist, setCarNotExist] = useState(false);
   const onDismissCarNotExist = () => setCarNotExist(false);
 
+  useEffect(() => {
+    if (CarByNumberPlate !== null) {
+      setBrand(CarByNumberPlate.brand);
+      setModel(CarByNumberPlate.model);
+      setColor(CarByNumberPlate.color);
+      setOwner(CarByNumberPlate.owner);
+      setRegisterId(CarByNumberPlate.registerId);
+      setDistanceTravelled(CarByNumberPlate.distanceTravelled);
+      setVIN(CarByNumberPlate.vin);
+    }
+  }, [CarByNumberPlate]);
+
   const getCarByNumberPlate = () => {
     if (!numberPlate) {
       console.log("Chưa nhập biển số");
@@ -705,16 +717,8 @@ function RepairedRequestList() {
       .then((response) => {
         console.log(response.data);
         setCarByNumberPlate(response.data);
-        setBrand(CarByNumberPlate.brand);
-        setModel(CarByNumberPlate.model);
-        setColor(CarByNumberPlate.color);
-        setOwner(CarByNumberPlate.owner);
-        setRegisterId(CarByNumberPlate.registerId);
-        setDistanceTravelled(CarByNumberPlate.distanceTravelled);
-        setVIN(CarByNumberPlate.vin);
       })
       .catch((error) => {
-        //setCarByNumberPlate(null);
         console.log(error);
         console.log("Xe khong ton tai");
         setCarNotExist(true);
