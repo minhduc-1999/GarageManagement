@@ -69,7 +69,7 @@ namespace GaraApi.Services
                 CreatedDate = System.DateTime.Now,
                 Creator = creator,
                 Id = model.RepairedRequestId,
-                Details = null,
+                Details = details,
                 Customer = customer,
                 Discount = model.Discount,
                 VAT = model.VAT

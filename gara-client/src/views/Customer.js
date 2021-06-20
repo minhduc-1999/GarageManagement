@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
+import { AuthContext } from "contexts/AuthProvider";
 import {
   Card,
   CardHeader,
@@ -10,6 +11,7 @@ const axios = require("axios");
 const dateFormat = require("dateformat");
 
 function Customer() {
+  const {userAcc} = useContext(AuthContext);
   const [customers, setCustomers] = useState([]);
 
   useEffect(() => {
@@ -32,7 +34,9 @@ function Customer() {
   return (
     <>
       <div className="content">
-        {customers.length < 1 ? (
+        {userAcc.role === "storekeeper" ? 
+        <p>Bạn không có quyền truy cập</p> : 
+        (customers.length < 1 ? (
           <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
         ) : (
           <div>
@@ -70,7 +74,7 @@ function Customer() {
               </Card>
             </Row>
           </div>
-        )}
+        ))}
       </div>
     </>
   );

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { AuthContext } from "contexts/AuthProvider";
 import classNames from "classnames";
 import {
   Card,
@@ -16,10 +17,14 @@ import {
 
 
 function StorageHistory() {
+  const {userAcc} = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState("1");
   return (
     <>
       <div className="content">
+        {userAcc.role === "receptionist" ?
+        <p>Bạn không có quyền truy cập</p> :
+        <div className="content">
           <Card>
             <CardHeader>
               <Row>
@@ -243,6 +248,8 @@ function StorageHistory() {
         </Row>
             </TabPane>
           </TabContent>
+          </div>
+          }
       </div>
     </>
   );

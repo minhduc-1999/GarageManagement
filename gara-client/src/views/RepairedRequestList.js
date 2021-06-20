@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { AuthContext } from "contexts/AuthProvider";
 import {
   Card,
   CardHeader,
   CardBody,
   CardTitle,
-  Table,
   Row,
   Col,
   Button,
@@ -22,8 +22,22 @@ import {
 import { Tooltip, Fab, Checkbox } from "@material-ui/core";
 import "../components/CustomDesign/SuggestList.css";
 const axios = require("axios");
+const dateFormat = require("dateformat");
 
 function RepairedRequestList() {
+  const translateRRState = {
+    init: "Đang sửa chữa",
+    finished: "Đã sửa chữa",
+    canceled: "Đã hủy",
+  };
+
+  const [RRList, setRRList] = useState([]);
+  //const [newRR, setNewRR] = useState(false);
+  const [selectedRR, setSelectedRR] = useState(null);
+  const [selectedRRState, setSelectedRRState] = useState(null);
+  const [disableRRState, setDisableRRState] = useState(true);
+
+  const { userAcc } = useContext(AuthContext);
   const [laborCosts, setLaborCost] = useState(null);
   const [SelectedLabor, setSelectedLabor] = useState(null);
   const [laborName, setLaborName] = useState(null);
@@ -56,31 +70,109 @@ function RepairedRequestList() {
   const [accessoryList, setAccessoryList] = useState([]);
   const [quantity, setQuantity] = useState(0);
 
-  const AddNewCar = () => {
-    if (
-      !brand ||
-      !numberPlate ||
-      !VIN ||
-      !distanceTravelled ||
-      !registerId ||
-      !owner ||
-      !color ||
-      !model
-    ) {
-      setEmptyFieldCarAlert(true);
+  const [canSaveRR, setCanSaveRR] = useState(0); //0 =  false, 2 = true
+
+  const [openCreateInvoice, setOpenCreateInvoice] = useState(false);
+  const [discount, setDiscount] = useState(0);
+  const [vat, setVAT] = useState(0);
+  const [onBillCreated, setBillCreated] = useState(false);
+  const [selectedBill, setSelectedBill] = useState(null);
+
+  const handleClickCreateInvoice = () => {
+    setDiscount(0);
+    setVAT(0);
+    setOpenCreateInvoice(true);
+  };
+
+  const handleCloseCreateInvoice = () => {
+    setOpenCreateInvoice(false);
+  };
+
+  const CreateInvoice = () => {
+    let tempBill = {
+      discount: discount,
+      vat: vat,
+      RepairedRequestId: selectedRR.id,
+      CustomerId: selectedRR.customerId,
+    };
+    console.log(tempBill);
+    let loginToken = localStorage.getItem("LoginToken");
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + loginToken,
+    };
+    axios
+      .post(process.env.REACT_APP_BASE_URL + "api/bills", tempBill, {
+        headers: headers,
+      })
+      .then((response) => {
+        setSelectedBill(response.data);
+        setBillCreated(!onBillCreated);
+      })
+      .catch((error) => {
+        console.log("ERROR" + error);
+      });
+    handleCloseCreateInvoice();
+  };
+
+  const [listBill, setListBill] = useState([]);
+
+  useEffect(() => {
+    let loginToken = localStorage.getItem("LoginToken");
+    async function fetchBillData() {
+      axios
+        .get(process.env.REACT_APP_BASE_URL + "api/bills", {
+          headers: {
+            Authorization: "Bearer " + loginToken,
+          },
+        })
+        .then((response) => {
+          setListBill(response.data);
+        })
+        .catch((error) => console.log(error));
+    }
+    fetchBillData();
+    if (selectedBill !== null) {
+      handleClickOpenInvoice(selectedBill.id);
+      if (open) {
+        handleClose();
+      }
+      console.log(selectedBill);
+    }
+  }, [onBillCreated]);
+
+  const createTempCar = () => {
+    var newCar = {
+      id: "",
+      brand: brand,
+      numberPlate: numberPlate,
+      VIN: VIN,
+      distanceTravelled: distanceTravelled,
+      registerId: registerId,
+      owner: owner,
+      color: color,
+      model: model,
+    };
+    setSelectedCar(newCar);
+    handleCloseNewCar();
+  };
+
+  async function AddNewCar() {
+    //const AddNewCar = () => {
+    if (selectedCar === null) {
+      //setEmptyFieldCarAlert(true);
       return;
     }
     let loginToken = localStorage.getItem("LoginToken");
-    console.log("TOKEN " + loginToken);
     let createCar = new FormData();
-    createCar.append("Brand", brand);
-    createCar.append("NumberPlate", numberPlate);
-    createCar.append("VIN", VIN);
-    createCar.append("DistanceTravelled", distanceTravelled);
-    createCar.append("RegisterId", registerId);
-    createCar.append("Owner", owner);
-    createCar.append("Color", color);
-    createCar.append("Model", model);
+    createCar.append("Brand", selectedCar.brand);
+    createCar.append("NumberPlate", selectedCar.numberPlate);
+    createCar.append("VIN", selectedCar.VIN);
+    createCar.append("DistanceTravelled", selectedCar.distanceTravelled);
+    createCar.append("RegisterId", selectedCar.registerId);
+    createCar.append("Owner", selectedCar.owner);
+    createCar.append("Color", selectedCar.color);
+    createCar.append("Model", selectedCar.model);
     axios
       .post(process.env.REACT_APP_BASE_URL + "api/cars", createCar, {
         headers: {
@@ -88,17 +180,35 @@ function RepairedRequestList() {
         },
       })
       .then((response) => {
+        setSelectedCar(response.data);
         console.log("Add new car oke");
         clearCarInputModal();
+        setCanSaveRR(2);
       })
       .catch((error) => {
         console.log(error);
       });
-  };
+  }
 
   const onDismissCarEmpty = () => setEmptyFieldAlert(!emptyFieldCarAlert);
 
-  const AddNewCustomer = () => {
+  const createTempCustomer = () => {
+    var newCustomer = {
+      id: "",
+      name: name,
+      address: address,
+      phoneNumber: phoneNum,
+      email: email,
+    };
+    setSelectedCustomer(newCustomer);
+    if (openNewCustomer) {
+      setSearch(newCustomer.name);
+      handleCloseNewCustomer();
+    }
+  };
+
+  async function AddNewCustomer() {
+    //const AddNewCustomer = () => {
     if (!name || !address || !phoneNum || !email) {
       setEmptyFieldAlert(true);
       return;
@@ -116,15 +226,18 @@ function RepairedRequestList() {
         },
       })
       .then((response) => {
-        console.log("thanh cong");
-        setOpenNewCustomer(!openNewCustomer);
-        setOnchange(!onChange);
+        setSelectedCustomer(response.data);
+        // if (openNewCustomer) {
+        //   setOpenNewCustomer(false);
+        // }
+        setCanSaveRR(1);
       })
       .catch((error) => {
         console.log(error);
         setAlertVisible(true);
+        throw new Error(error);
       });
-  };
+  }
 
   const onDismiss = () => setAlertVisible(!alertVisible);
   const onDismissEmpty = () => setEmptyFieldAlert(!emptyFieldAlert);
@@ -139,20 +252,19 @@ function RepairedRequestList() {
     />
   );
 
+  const [listCar, setListCar] = useState([]);
+
   useEffect(() => {
     let loginToken = localStorage.getItem("LoginToken");
-    async function fetchLaborCostData() {
+    async function fetchCarData() {
       axios
-        .get(process.env.REACT_APP_BASE_URL + "api/laborcosts", {
+        .get(process.env.REACT_APP_BASE_URL + "api/cars", {
           headers: {
             Authorization: "Bearer " + loginToken,
           },
         })
         .then((response) => {
-          return response.data;
-        })
-        .then((data) => {
-          setLaborCost(data);
+          setListCar(response.data);
         })
         .catch((error) => console.log(error));
     }
@@ -167,7 +279,35 @@ function RepairedRequestList() {
           return response.data;
         })
         .then((data) => {
-          setListName(data.map((dat) => dat.name));
+          setListName(data);
+          //setListName(data.map((dat) => dat.name));
+        })
+        .catch((error) => console.log(error));
+    }
+    async function fetchRRData() {
+      axios
+        .get(process.env.REACT_APP_BASE_URL + "api/repairedrequests", {
+          headers: {
+            Authorization: "Bearer " + loginToken,
+          },
+        })
+        .then((response) => {
+          setRRList(response.data);
+        })
+        .catch((error) => console.log(error));
+    }
+    async function fetchLaborCostData() {
+      axios
+        .get(process.env.REACT_APP_BASE_URL + "api/laborcosts", {
+          headers: {
+            Authorization: "Bearer " + loginToken,
+          },
+        })
+        .then((response) => {
+          return response.data;
+        })
+        .then((data) => {
+          setLaborCost(data);
         })
         .catch((error) => console.log(error));
     }
@@ -186,14 +326,108 @@ function RepairedRequestList() {
         })
         .catch((error) => console.log(error));
     }
+    fetchCarData();
     fetchCustomerData();
+    fetchRRData();
     fetchAccessoriesData();
     fetchLaborCostData();
   }, [onChange]);
 
+  useEffect(() => {
+    if (canSaveRR === 1) {
+      if (selectedCar.id === "") {
+        AddNewCar();
+      } else {
+        setCanSaveRR(2);
+        console.log(canSaveRR);
+      }
+    } else if (canSaveRR === 2) {
+      if (selectedRR !== null) {
+        console.log("[UPDATE]");
+        updateRRInDB();
+      } else {
+        saveRRInDB();
+      }
+      handleClose();
+    }
+  }, [canSaveRR]);
+
+  useEffect(() => {
+    setQDList(QDList);
+  }, [onQDListChange]);
+
+  const updateRRInDB = () => {
+    //RR !== null
+    let loginToken = localStorage.getItem("LoginToken");
+    var quotation = {
+      state: selectedQuotationState,
+      details: selectedQD,
+    };
+    const tempRR = {
+      id: selectedRR.id,
+      carId: selectedCar.id,
+      customerId: selectedCustomer.id,
+      quotation: quotation,
+      rrstate: selectedRRState,
+    };
+
+    console.log(tempRR);
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + loginToken,
+    };
+    axios
+      .put(process.env.REACT_APP_BASE_URL + "api/repairedrequests", tempRR, {
+        headers: headers,
+      })
+      .then((response) => {
+        setOnchange(!onChange);
+      })
+      .catch((error) => {
+        console.log("ERROR" + error);
+      });
+  };
+
+  const saveRRInDB = () => {
+    let loginToken = localStorage.getItem("LoginToken");
+    var quotation = {
+      state: selectedQuotationState,
+      details: selectedQD,
+    };
+    const tempRR = {
+      carId: selectedCar.id,
+      customerId: selectedCustomer.id,
+      quotation: quotation,
+    };
+
+    console.log(quotation);
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + loginToken,
+    };
+    axios
+      .post(process.env.REACT_APP_BASE_URL + "api/repairedrequests", tempRR, {
+        headers: headers,
+      })
+      .then((response) => {
+        setOnchange(!onChange);
+      })
+      .catch((error) => {
+        console.log("ERROR" + error);
+      });
+  };
+
+  const confirmQuotation = () => {
+    setSelectedQuotationState("confirmed");
+    saveQuotationDetails();
+  };
+
+  const [onQDListChange, setOnQDListChange] = useState(false);
+
   const [openNewCustomer, setOpenNewCustomer] = React.useState(false);
 
   const handleClickOpenNewCustomer = () => {
+    setSelectedCustomer(null);
     setOpenNewCustomer(true);
   };
 
@@ -211,6 +445,7 @@ function RepairedRequestList() {
   };
 
   const handleCloseNewCar = () => {
+    setCarByNumberPlate(null);
     setOpenNewCar(false);
     setEmptyFieldCarAlert(false);
     clearCarInputModal();
@@ -218,21 +453,43 @@ function RepairedRequestList() {
 
   const [openInvoice, setOpenInvoice] = React.useState(false);
 
-  const handleClickOpenInvoice = () => {
+  const handleClickOpenInvoice = (billId) => {
+    //billId = rrID
+    let bill = listBill.find((bill) => bill.id === billId);
+    setSelectedBill(bill);
     setOpenInvoice(true);
   };
 
   const handleCloseInvoice = () => {
+    setSelectedBill(null);
     setOpenInvoice(false);
   };
 
   const [open, setOpenModal] = React.useState(false);
 
   const handleClickOpen = () => {
+    setCanSaveRR(0);
     setOpenModal(true);
   };
 
   const handleClose = () => {
+    console.log(selectedRRState);
+    //clearQuotation
+    clearQDFields();
+    setQDList([]);
+    setHiddenLaborCost(false);
+    setSelectedLabor(null);
+    setSelectedQuotationState("not_confirmed");
+
+    //clearRR
+    setSelectedRR(null);
+    setCanSaveRR(0);
+    setSelectedQD(null);
+    setSelectedCustomer(null);
+    setSelectedCar(null);
+    setSelectedRRState(null);
+    setDisableRRState(true);
+    setSearch("");
     setOpenModal(false);
   };
 
@@ -243,43 +500,27 @@ function RepairedRequestList() {
   };
 
   const handleClickCloseCQ = () => {
-    clearQDFields();
-    setTempQuotationTotal(0);
-    setQDList([]);
-    setHiddenLaborCost(false);
-    setSelectedLabor(null);
+    // clearQDFields();
+    // setQDList([]);
+    // setHiddenLaborCost(false);
+    // setSelectedLabor(null);
     setOpenCQModal(false);
+  };
+
+  const saveQuotationDetails = () => {
+    QDList.forEach(function (dt) {
+      delete dt.accessoryName;
+    });
+    setSelectedQD(QDList);
+    handleClickCloseCQ();
   };
 
   const [hiddenLaborCost, setHiddenLaborCost] = React.useState(false);
 
-  // const createNewLaborCost = () => {
-  //   if (!laborName || !laborValue) {
-  //     console.log("Thiếu thông tin tạo phí sửa chữa mới");
-  //     return;
-  //   }
-  //   let loginToken = localStorage.getItem("LoginToken");
-  //   let createLaborCost = new FormData();
-  //   createLaborCost.append("name", laborName);
-  //   createLaborCost.append("value", laborValue);
-  //   axios
-  //     .post(
-  //       process.env.REACT_APP_BASE_URL + "api/laborcosts",
-  //       createLaborCost,
-  //       {
-  //         headers: {
-  //           Authorization: "Bearer " + loginToken,
-  //         },
-  //       }
-  //     )
-  //     .then((response) => {
-  //       console.log(response);
-  //       setOnchange(!onChange);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-  // };
+  const removeDQFromTable = (index) => {
+    QDList.splice(index, 1);
+    setOnQDListChange(!onQDListChange);
+  };
 
   const addQDToTable = () => {
     if (quantity !== 0 && selectedAccessory !== null) {
@@ -296,11 +537,6 @@ function RepairedRequestList() {
               issueName: laborName,
             },
           ]);
-          setTempQuotationTotal(
-            tempQuotationTotal +
-              quantity * Number(selectedAccessory.issuePrice) +
-              Number(laborValue)
-          );
         }
         clearQDFields();
       } else {
@@ -314,9 +550,6 @@ function RepairedRequestList() {
               unitPrice: selectedAccessory.issuePrice,
             },
           ]);
-          setTempQuotationTotal(
-            tempQuotationTotal + quantity * Number(selectedAccessory.issuePrice)
-          );
         } else if (SelectedLabor.name !== "Không") {
           setQDList([
             ...QDList,
@@ -329,11 +562,6 @@ function RepairedRequestList() {
               issueName: SelectedLabor.name,
             },
           ]);
-          setTempQuotationTotal(
-            tempQuotationTotal +
-              quantity * Number(selectedAccessory.issuePrice) +
-              Number(SelectedLabor.value)
-          );
         } else {
           setQDList([
             ...QDList,
@@ -344,12 +572,28 @@ function RepairedRequestList() {
               unitPrice: selectedAccessory.issuePrice,
             },
           ]);
-          setTempQuotationTotal(
-            tempQuotationTotal + quantity * Number(selectedAccessory.issuePrice)
-          );
         }
         clearQDFields();
       }
+    }
+  };
+
+  const calcTempQuotationTotal = () => {
+    if (QDList === null) {
+      return 0;
+    } else {
+      let total = 0;
+      QDList.map((QD) => {
+        if (!QD.hasOwnProperty("laborCosts")) {
+          total = Number(total) + Number(QD.quantity) * Number(QD.unitPrice);
+        } else {
+          total =
+            Number(total) +
+            Number(QD.quantity) * Number(QD.unitPrice) +
+            Number(QD.laborCost);
+        }
+      });
+      return total;
     }
   };
 
@@ -406,8 +650,8 @@ function RepairedRequestList() {
     setSearch(value);
     let temp = [];
     if (value) {
-      temp = listName.filter((name) =>
-        name.toLowerCase().includes(value.toLowerCase())
+      temp = listName.filter((data) =>
+        data.name.toLowerCase().includes(value.toLowerCase())
       );
     }
     setList(temp);
@@ -424,12 +668,13 @@ function RepairedRequestList() {
             key={index}
             className="sugItem"
             onClick={() => {
+              setSelectedCustomer(l);
               console.log(l);
-              setSearch(l);
+              setSearch(l.name);
               setList([]);
             }}
           >
-            {l}
+            {l.name}
           </p>
         ))}
       </div>
@@ -440,34 +685,38 @@ function RepairedRequestList() {
   const [CarNotExist, setCarNotExist] = useState(false);
   const onDismissCarNotExist = () => setCarNotExist(false);
 
+  useEffect(() => {
+    if (CarByNumberPlate !== null) {
+      setBrand(CarByNumberPlate.brand);
+      setModel(CarByNumberPlate.model);
+      setColor(CarByNumberPlate.color);
+      setOwner(CarByNumberPlate.owner);
+      setRegisterId(CarByNumberPlate.registerId);
+      setDistanceTravelled(CarByNumberPlate.distanceTravelled);
+      setVIN(CarByNumberPlate.vin);
+    }
+  }, [CarByNumberPlate]);
+
   const getCarByNumberPlate = () => {
     if (!numberPlate) {
       console.log("Chưa nhập biển số");
       return;
     }
     let loginToken = localStorage.getItem("LoginToken");
-    console.log("[Bien so] " + numberPlate);
+    console.log("[Bien so] " + numberPlate.trim());
     axios
-      .get(
-        process.env.REACT_APP_BASE_URL +
-          "api/cars/search?type=numberplate&value=" +
-          numberPlate.trim(),
-        {
-          headers: {
-            Authorization: "Bearer " + loginToken,
-          },
-        }
-      )
+      .get(process.env.REACT_APP_BASE_URL + "api/cars/search", {
+        params: {
+          type: "numberplate",
+          value: numberPlate.trim(),
+        },
+        headers: {
+          Authorization: "Bearer " + loginToken,
+        },
+      })
       .then((response) => {
+        console.log(response.data);
         setCarByNumberPlate(response.data);
-        console.log(CarByNumberPlate);
-        setBrand(CarByNumberPlate.brand);
-        setModel(CarByNumberPlate.model);
-        setColor(CarByNumberPlate.color);
-        setOwner(CarByNumberPlate.owner);
-        setRegisterId(CarByNumberPlate.registerId);
-        setDistanceTravelled(CarByNumberPlate.distanceTravelled);
-        setVIN(CarByNumberPlate.vin);
       })
       .catch((error) => {
         console.log(error);
@@ -488,12 +737,114 @@ function RepairedRequestList() {
   };
 
   const [QDList, setQDList] = useState([]);
-  const [tempQuotationTotal, setTempQuotationTotal] = useState(0);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
+  const [searchField, setSearchField] = useState(1);
+  const [isDateSearch, setIsDateSearch] = useState(false);
+
+  const getSearchField = (e) => {
+    setSearchResult([]);
+    setSearchTerm("");
+    setSearchField(e.target.value);
+    if (e.target.value === "6") {
+      var today = new Date();
+      var currentDate = today.toISOString().substring(0, 10);
+      document.getElementById("searhDate").value = currentDate;
+      setIsDateSearch(true);
+      filterRRByDate(document.getElementById("searhDate").value);
+    } else {
+      setIsDateSearch(false);
+    }
+  };
+
+  const filterRRByDate = (date) => {
+    if (date !== null) {
+      const newRRList = RRList.filter((RR) => {
+        console.log(
+          "[Ngày của RR] " + dateFormat(RR.createdDate, "dd/mm/yyyy")
+        );
+        console.log("[Ngày chọn] " + dateFormat(date, "dd/mm/yyyy"));
+        return (
+          dateFormat(Object.values(RR)[3].createdDate, "dd/mm/yyyy") ===
+          dateFormat(date, "dd/mm/yyyy")
+        );
+      });
+      console.log(newRRList);
+      setSearchResult(newRRList);
+    } else {
+      setSearchResult(RRList);
+    }
+  };
+
+  const getSearchTerm = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const [selectedCar, setSelectedCar] = useState(null);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [selectedQD, setSelectedQD] = useState(null);
+  const [selectedQuotationState, setSelectedQuotationState] =
+    useState("not_confirmed");
+
+  const saveRR = () => {
+    console.log(selectedCar);
+    console.log(selectedCustomer);
+    console.log(selectedQD);
+    if (
+      selectedCar !== null &&
+      selectedCustomer !== null &&
+      selectedQD !== null
+    ) {
+      console.log("Lưu car and cus vào DB");
+      if (selectedCustomer.id === "") {
+        AddNewCustomer();
+      } else {
+        setCanSaveRR(1);
+        console.log(canSaveRR);
+      }
+    } else {
+      console.log("Chưa đủ dữ kiện để lưu");
+    }
+  };
+
+  const openRR = (RR) => {
+    setSelectedRR(RR);
+
+    setSelectedCustomer(listName.find((cus) => cus.id === RR.customerId));
+    setSearch(listName.find((cus) => cus.id === RR.customerId).name);
+    setSelectedCar(listCar.find((car) => car.id === RR.carId));
+    setQDList(RR.quotation.details);
+
+    setSelectedQuotationState(RR.quotation.state);
+    setSelectedRRState(RR.state);
+    if (RR.state === "init") {
+      setDisableRRState(false);
+    }
+    setSelectedQD(RR.quotation.details);
+    handleClickOpen();
+  };
+
+  const [isRRHasBill, setIsRRHasBill] = useState(false);
+
+  useEffect(() => {
+    if (selectedRR !== null) {
+      if (listBill.find((bill) => bill.id === selectedRR.id)) {
+        setIsRRHasBill(true);
+      } else {
+        setIsRRHasBill(false);
+      }
+    } else {
+      setIsRRHasBill(false);
+    }
+  }, [selectedRR]);
 
   return (
     <>
       <div className="content">
-        {laborCosts === null ? (
+        {userAcc.role === "storekeeper" ? (
+          <p>Bạn không có quyền truy cập</p>
+        ) : RRList === null || laborCosts === null ? (
           <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
         ) : (
           <div>
@@ -505,160 +856,173 @@ function RepairedRequestList() {
               </ModalHeader>
               <ModalBody>
                 <Form>
-                  <Row>
-                    <Col md="4">
-                      <FormGroup>
-                        <label>Tên phụ tùng</label>
-                        <Input
-                          name="select"
-                          id="exampleSelect"
-                          type="search"
-                          value={accessorySearch}
-                          onChange={(e) => onAccessoriesChangeHandler(e)}
-                        ></Input>
-                        {renderAccessoriesSuggestions()}
-                      </FormGroup>
-                    </Col>
-                    <Col md="4">
-                      <FormGroup>
-                        <label>Đơn giá</label>
-                        <h4>
-                          {selectedAccessory != null
-                            ? selectedAccessory.issuePrice
-                            : 0}{" "}
-                          VNĐ
-                        </h4>
-                      </FormGroup>
-                    </Col>
-                    <Col md="4">
-                      <FormGroup>
-                        <label>Số lượng</label>
-                        <Input
-                          type="text"
-                          value={quantity}
-                          onChange={(e) => {
-                            setQuantity(
-                              e.target.value
-                                .replace(/\D/, "")
-                                .replace(/^0+/, "")
-                            );
-                          }}
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col hidden={hiddenLaborCost}>
+                  {(selectedRR !== null &&
+                    selectedRR.quotation.state === "confirmed") ||
+                  selectedQuotationState === "confirmed" ? (
+                    <div hidden="true"></div>
+                  ) : (
+                    <div>
                       <Row>
                         <Col md="4">
-                          <label>Chọn dịch vụ</label>
-                        </Col>
-                        <Col md="4">
-                          <label>Tiền phí</label>
-                        </Col>
-                      </Row>
-                    </Col>
-                    <Col hidden={!hiddenLaborCost}>
-                      <Row>
-                        <Col md="4">
-                          <label>Tên dịch vụ</label>
-                        </Col>
-                        <Col md="4">
-                          <label>Tiền phí (VNĐ)</label>
-                        </Col>
-                      </Row>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col hidden={hiddenLaborCost}>
-                      <Row>
-                        <Col md="6">
                           <FormGroup>
+                            <label>Tên phụ tùng</label>
                             <Input
                               name="select"
-                              id="exampleSelect"
-                              type="select"
-                              defaultValue={"0"}
-                              onChange={(e) =>
-                                setSelectedLabor({
-                                  name: e.target.options[e.target.selectedIndex]
-                                    .text,
-                                  value: e.target.value,
-                                })
-                              }
-                            >
-                              <option value={"0"}>Không</option>
-                              {laborCosts.map((laborCost) => (
-                                <option value={laborCost.value}>
-                                  {laborCost.name}
-                                </option>
-                              ))}
-                            </Input>
+                              //id="exampleSelect"
+                              type="search"
+                              value={accessorySearch}
+                              onChange={(e) => onAccessoriesChangeHandler(e)}
+                            ></Input>
+                            {renderAccessoriesSuggestions()}
                           </FormGroup>
                         </Col>
-                        <Col md="6">
-                          <h4>
-                            {SelectedLabor != null ? SelectedLabor.value : "0"}{" "}
-                            VNĐ
-                          </h4>
-                        </Col>
-                      </Row>
-                    </Col>
-                    <Col hidden={!hiddenLaborCost}>
-                      <Row>
-                        <Col className="pr-md-1">
-                          <FormGroup style={{ marginRight: 5 }}>
-                            <Input
-                              type="text"
-                              value={laborName}
-                              onChange={(e) => setLaborName(e.target.value)}
-                            />
+                        <Col md="4">
+                          <FormGroup>
+                            <label>Đơn giá</label>
+                            <h4>
+                              {selectedAccessory != null
+                                ? selectedAccessory.issuePrice
+                                : 0}{" "}
+                              VNĐ
+                            </h4>
                           </FormGroup>
                         </Col>
-                        <Col className="pl-md-1" style={{ marginLeft: 10 }}>
-                          <FormGroup style={{ marginLeft: 5 }}>
+                        <Col md="4">
+                          <FormGroup>
+                            <label>Số lượng</label>
                             <Input
                               type="text"
-                              value={laborValue}
-                              onChange={(e) =>
-                                setLaborValue(
+                              value={quantity}
+                              onChange={(e) => {
+                                setQuantity(
                                   e.target.value
                                     .replace(/\D/, "")
                                     .replace(/^0+/, "")
-                                )
-                              }
+                                );
+                              }}
                             />
                           </FormGroup>
                         </Col>
                       </Row>
-                    </Col>
+                      <Row>
+                        <Col hidden={hiddenLaborCost}>
+                          <Row>
+                            <Col md="4">
+                              <label>Chọn dịch vụ</label>
+                            </Col>
+                            <Col md="4">
+                              <label>Tiền phí</label>
+                            </Col>
+                          </Row>
+                        </Col>
+                        <Col hidden={!hiddenLaborCost}>
+                          <Row>
+                            <Col md="4">
+                              <label>Tên dịch vụ</label>
+                            </Col>
+                            <Col md="4">
+                              <label>Tiền phí (VNĐ)</label>
+                            </Col>
+                          </Row>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col hidden={hiddenLaborCost}>
+                          <Row>
+                            <Col md="6">
+                              <FormGroup>
+                                <Input
+                                  name="select"
+                                  id="exampleSelect"
+                                  type="select"
+                                  defaultValue={"0"}
+                                  onChange={(e) =>
+                                    setSelectedLabor({
+                                      name: e.target.options[
+                                        e.target.selectedIndex
+                                      ].text,
+                                      value: e.target.value,
+                                    })
+                                  }
+                                >
+                                  <option value={"0"}>Không</option>
+                                  {laborCosts.map((laborCost) => (
+                                    <option value={laborCost.value}>
+                                      {laborCost.name}
+                                    </option>
+                                  ))}
+                                </Input>
+                              </FormGroup>
+                            </Col>
+                            <Col md="6">
+                              <h4>
+                                {SelectedLabor != null
+                                  ? SelectedLabor.value
+                                  : "0"}{" "}
+                                VNĐ
+                              </h4>
+                            </Col>
+                          </Row>
+                        </Col>
+                        <Col hidden={!hiddenLaborCost}>
+                          <Row>
+                            <Col className="pr-md-1">
+                              <FormGroup style={{ marginRight: 5 }}>
+                                <Input
+                                  type="text"
+                                  value={laborName}
+                                  onChange={(e) => setLaborName(e.target.value)}
+                                />
+                              </FormGroup>
+                            </Col>
+                            <Col className="pl-md-1" style={{ marginLeft: 10 }}>
+                              <FormGroup style={{ marginLeft: 5 }}>
+                                <Input
+                                  type="text"
+                                  value={laborValue}
+                                  onChange={(e) =>
+                                    setLaborValue(
+                                      e.target.value
+                                        .replace(/\D/, "")
+                                        .replace(/^0+/, "")
+                                    )
+                                  }
+                                />
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                        </Col>
 
-                    <Col md="3">
-                      <FormGroup>
-                        <Checkbox
-                          color="primary"
-                          onChange={(e) => setHiddenLaborCost(e.target.checked)}
-                        ></Checkbox>
-                        <label>Loại phí mới</label>
-                      </FormGroup>
-                    </Col>
-                    <Col
-                      md="1"
-                      style={{ alignItems: "flex-end", display: "flex" }}
-                    >
-                      <Tooltip title="Thêm">
-                        <Fab
-                          size="small"
-                          style={{ marginBottom: 10 }}
-                          onClick={addQDToTable}
+                        <Col md="3">
+                          <FormGroup>
+                            <Checkbox
+                              color="primary"
+                              onChange={(e) =>
+                                setHiddenLaborCost(e.target.checked)
+                              }
+                            ></Checkbox>
+                            <label>Loại phí mới</label>
+                          </FormGroup>
+                        </Col>
+                        <Col
+                          md="1"
+                          style={{ alignItems: "flex-end", display: "flex" }}
                         >
-                          <i className="tim-icons icon-simple-add"></i>
-                        </Fab>
-                      </Tooltip>
-                    </Col>
-                  </Row>
+                          <Tooltip title="Thêm">
+                            <Fab
+                              size="small"
+                              style={{ marginBottom: 10 }}
+                              onClick={addQDToTable}
+                            >
+                              <i className="tim-icons icon-simple-add"></i>
+                            </Fab>
+                          </Tooltip>
+                        </Col>
+                      </Row>
+                    </div>
+                  )}
                   <ColoredLine color="grey" />
-                  <Table className="tablesorter" responsive>
+                  <table class="table">
                     <thead className="text-primary">
                       <tr>
                         <th>ID</th>
@@ -674,7 +1038,13 @@ function RepairedRequestList() {
                       {QDList.map((QD, index) => (
                         <tr key={index}>
                           <th scope="row">{index + 1}</th>
-                          <td>{QD.accessoryName}</td>
+                          <td>
+                            {
+                              listAccessoryDB.find(
+                                (acc) => acc.id === QD.accessoryId
+                              ).name
+                            }
+                          </td>
                           <td>{QD.quantity}</td>
                           <td>{QD.unitPrice} VNĐ</td>
                           <td>
@@ -688,34 +1058,67 @@ function RepairedRequestList() {
                               : Number(QD.quantity) * Number(QD.unitPrice)}
                             VNĐ
                           </td>
+                          {selectedRR !== null &&
+                          selectedRR.quotation.state === "confirmed" ? (
+                            <td hidden="true"></td>
+                          ) : (
+                            <Fab
+                              size="small"
+                              onClick={() => {
+                                removeDQFromTable(index);
+                              }}
+                            >
+                              <i className="tim-icons icon-simple-delete"></i>
+                            </Fab>
+                          )}
                         </tr>
                       ))}
                     </tbody>
-                  </Table>
+                  </table>
                   <ColoredLine color="grey" />
                   <Row>
                     <Col>
                       <FormGroup>
-                        <legend>Tổng cộng</legend>
+                        <h3>Tổng cộng</h3>
                       </FormGroup>
                     </Col>
                     <Row>
                       <Col md="auto" style={{ marginRight: 25 }}>
-                        <legend className="title">
-                          {tempQuotationTotal} VNĐ
-                        </legend>
+                        <h3 className="title">
+                          {calcTempQuotationTotal()} VNĐ
+                        </h3>
+                      </Col>
+                    </Row>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <FormGroup>
+                        <h3>Trạng thái</h3>
+                      </FormGroup>
+                    </Col>
+                    <Row>
+                      <Col md="auto" style={{ marginRight: 25 }}>
+                        {selectedQuotationState === "confirmed" ? (
+                          <h3 className="title">
+                            <font color="green">Đã xác nhận</font>
+                          </h3>
+                        ) : (
+                          <h3 className="title">
+                            <font color="red">Chưa xác nhận</font>
+                          </h3>
+                        )}
                       </Col>
                     </Row>
                   </Row>
                 </Form>
               </ModalBody>
-              <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
+              <ModalFooter style={{ margin: 10, justifyContent: "flex-end" }}>
                 <Button
                   onClick={handleClickCloseCQ}
                   className="btn-fill"
                   color="primary"
                   type="submit"
-                  style={{ marginRight: 25 }}
+                  style={{ marginRight: 20 }}
                 >
                   Hủy
                 </Button>
@@ -724,27 +1127,33 @@ function RepairedRequestList() {
                   className="btn-fill"
                   color="primary"
                   type="submit"
-                  style={{ marginRight: 25 }}
+                  style={{ marginRight: 20 }}
                 >
                   In phiếu
                 </Button>
                 <Button
-                  onClick={handleClickCloseCQ}
+                  onClick={saveQuotationDetails}
                   className="btn-fill"
                   color="primary"
                   type="submit"
-                  style={{ marginRight: 25 }}
                 >
                   Lưu
                 </Button>
-                <Button
-                  onClick={handleClickCloseCQ}
-                  className="btn-fill"
-                  color="primary"
-                  type="submit"
-                >
-                  Xác nhận
-                </Button>
+                {selectedRR === null ||
+                (selectedRR !== null &&
+                  selectedRR.quotation.state !== "confirmed") ? (
+                  <Button
+                    onClick={confirmQuotation}
+                    className="btn-fill"
+                    color="primary"
+                    type="submit"
+                    style={{ marginLeft: 20 }}
+                  >
+                    Xác nhận
+                  </Button>
+                ) : (
+                  <div hidden="true"></div>
+                )}
               </ModalFooter>
             </Modal>
             <Modal isOpen={openInvoice} size="lg">
@@ -752,73 +1161,127 @@ function RepairedRequestList() {
                 <h3 className="title">Hóa đơn</h3>
               </ModalHeader>
               <ModalBody>
-                <ColoredLine color="gray" />
-                <Row>
-                  <Card>
-                    <CardHeader>
-                      <Row>
-                        <Col>
-                          <CardTitle tag="h4">Danh sách phụ tùng</CardTitle>
-                        </Col>
-                      </Row>
-                    </CardHeader>
-                    <CardBody>
-                      <Table className="tablesorter" responsive>
-                        <thead className="text-primary">
-                          <tr>
-                            <th>ID</th>
-                            <th>Phụ tùng</th>
-                            <th>Số lượng</th>
-                            <th>Đơn giá</th>
-                            <th>Tổng tiền</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <th scope="row">1</th>
-                            <td>abc</td>
-                            <td>50</td>
-                            <td>10000 VNĐ</td>
-                            <td>5000000 VNĐ</td>
-                          </tr>
-                          <tr>
-                            <th scope="row">1</th>
-                            <td>xyz</td>
-                            <td>50</td>
-                            <td>10000 VNĐ</td>
-                            <td>5000000 VNĐ</td>
-                          </tr>
-                          <tr>
-                            <th scope="row">1</th>
-                            <td>binh</td>
-                            <td>50</td>
-                            <td>10000 VNĐ</td>
-                            <td>5000000 VNĐ</td>
-                          </tr>
-                        </tbody>
-                      </Table>
-                    </CardBody>
-                  </Card>
-                </Row>
-                <Row>
-                  <Col>
-                    <h4 className="title">Phí sửa chữa</h4>
-                  </Col>
-                  <Col md="auto">
-                    <h5 className="title">100000 VNĐ</h5>
-                  </Col>
-                </Row>
-                <ColoredLine color="gray" />
-                <Row>
-                  <Col>
-                    <h4 className="title">Thành tiền</h4>
-                  </Col>
-                  <Col md="auto">
-                    <h4 className="title">1000000 VNĐ</h4>
-                  </Col>
-                </Row>
+                {selectedBill !== null ? (
+                  <div>
+                    <Row>
+                      <Col>
+                        <h4 className="title">Khách hàng</h4>
+                      </Col>
+                      <Col md="auto">
+                        <h4>{selectedBill.customer.name}</h4>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col>
+                        <h4 className="title">Địa chỉ</h4>
+                      </Col>
+                      <Col md="auto">
+                        <h4>{selectedBill.customer.address}</h4>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col>
+                        <h4 className="title">Số điện thoại</h4>
+                      </Col>
+                      <Col md="auto">
+                        <h4>{selectedBill.customer.phoneNumber}</h4>
+                      </Col>
+                    </Row>
+                    <ColoredLine color="gray" />
+                    <Row>
+                      <Card>
+                        <CardHeader>
+                          <Row>
+                            <Col>
+                              <p style={{ fontSize: 18 }} className="title">
+                                Danh sách phụ tùng
+                              </p>
+                            </Col>
+                          </Row>
+                        </CardHeader>
+                        <CardBody>
+                          <table class="table" responsive>
+                            <thead className="text-primary">
+                              <tr>
+                                <th>ID</th>
+                                <th>Phụ tùng</th>
+                                <th>Số lượng</th>
+                                <th>Đơn giá</th>
+                                <th>Loại lỗi</th>
+                                <th>Phí sửa chữa</th>
+                                <th>Tổng tiền</th>
+                              </tr>
+                            </thead>
+                            {selectedBill.details.length > 0 ? (
+                              selectedBill.details.map((QD, index) => (
+                                <tbody>
+                                  <tr key={index}>
+                                    <th scope="row">{index + 1}</th>
+                                    <td>
+                                      {
+                                        listAccessoryDB.find(
+                                          (acc) => acc.id === QD.accessoryId
+                                        ).name
+                                      }
+                                    </td>
+                                    <td>{QD.quantity}</td>
+                                    <td>{QD.unitPrice} VNĐ</td>
+                                    <td>
+                                      {QD.issueName != null
+                                        ? QD.issueName
+                                        : "Không có"}
+                                    </td>
+                                    <td>
+                                      {QD.laborCost != null ? QD.laborCost : 0}{" "}
+                                      VNĐ
+                                    </td>
+                                    <td>
+                                      {QD.laborCost != null
+                                        ? Number(QD.quantity) *
+                                            Number(QD.unitPrice) +
+                                          Number(QD.laborCost)
+                                        : Number(QD.quantity) *
+                                          Number(QD.unitPrice)}
+                                      VNĐ
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              ))
+                            ) : (
+                              <tbody></tbody>
+                            )}
+                          </table>
+                        </CardBody>
+                      </Card>
+                    </Row>
+                    <ColoredLine color="gray" />
+                    <Row>
+                      <Col>
+                        <h4 className="title">Thành tiền</h4>
+                      </Col>
+                      <Col md="auto">
+                        <h4 className="title">
+                          {selectedBill.totalAmount} VNĐ
+                        </h4>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col md="auto">
+                        <h4>Nhân viên tạo phiếu:</h4>
+                      </Col>
+                      <Col>
+                        <h4>
+                          {selectedBill.creator.lastName}{" "}
+                          {selectedBill.creator.firstName}
+                        </h4>
+                      </Col>
+                    </Row>
+                  </div>
+                ) : (
+                  <div hidden="true"></div>
+                )}
               </ModalBody>
-              <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
+              <ModalFooter style={{ margin: 10, justifyContent: "flex-end" }}>
                 <Button
                   onClick={handleCloseInvoice}
                   className="btn-fill"
@@ -838,7 +1301,7 @@ function RepairedRequestList() {
                 </Button>
               </ModalFooter>
             </Modal>
-            <Modal isOpen={open} size="sm">
+            <Modal isOpen={open} size="lg">
               <ModalHeader>
                 <p style={{ fontSize: 22 }} className="title">
                   Phiếu tiếp nhận xe
@@ -848,7 +1311,7 @@ function RepairedRequestList() {
                 <Form>
                   <Row>
                     <Col>
-                      <label>Khách hàng</label>
+                      <label style={{ fontWeight: "bold" }}>Khách hàng</label>
                     </Col>
                   </Row>
                   <Row>
@@ -876,39 +1339,74 @@ function RepairedRequestList() {
                       </Tooltip>
                     </Col>
                   </Row>
-                  <Row>
-                    <Col>
-                      <Label style={{ marginTop: 10 }}>Thêm xe mới</Label>
-                    </Col>
-                    <Col sm="auto">
-                      <Tooltip title="Thêm xe mới">
-                        <Fab
-                          onClick={handleClickOpenNewCar}
-                          size="small"
-                          style={{ marginBottom: 10 }}
-                        >
-                          <i className="tim-icons icon-simple-add"></i>
-                        </Fab>
-                      </Tooltip>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col>
-                      <FormGroup>
-                        <label>Nội dung sửa chữa</label>
-                        <Input cols="80" rows="4" type="textarea" />
-                      </FormGroup>
-                    </Col>
-                  </Row>
+                  {selectedCar === null ? (
+                    <Row>
+                      <Col>
+                        <Label style={{ marginTop: 10, fontWeight: "bold" }}>
+                          Thêm xe mới
+                        </Label>
+                      </Col>
+                      <Col sm="auto">
+                        <Tooltip title="Thêm xe mới">
+                          <Fab
+                            onClick={handleClickOpenNewCar}
+                            size="small"
+                            style={{ marginBottom: 10 }}
+                          >
+                            <i className="tim-icons icon-simple-add"></i>
+                          </Fab>
+                        </Tooltip>
+                      </Col>
+                    </Row>
+                  ) : (
+                    <div>
+                      <Row>
+                        <Col>
+                          <Label style={{ marginTop: 10, fontWeight: "bold" }}>
+                            Thông tin xe
+                          </Label>
+                        </Col>
+                        <Col md="auto">
+                          <Label>
+                            Xe: {selectedCar.brand}-{selectedCar.model}
+                          </Label>
+                        </Col>
+                        <Col md="auto">
+                          <Label> Biển số: {selectedCar.numberPlate}</Label>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col>
+                          <label style={{ fontWeight: "bold" }}>
+                            Tình trạng
+                          </label>
+                        </Col>
+                        <Col md="auto">
+                          <Input
+                            value={selectedRRState}
+                            type="select"
+                            disabled={disableRRState}
+                            onChange={(e) => setSelectedRRState(e.target.value)}
+                          >
+                            <option value="init">Đang sửa chữa</option>
+                            <option value="finished">Đã sửa chữa</option>
+                            <option value="canceled">Hủy</option>
+                          </Input>
+                        </Col>
+                      </Row>
+                    </div>
+                  )}
                 </Form>
               </ModalBody>
-              <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
+              <ModalFooter
+                style={{ marginRight: 10, justifyContent: "flex-end" }}
+              >
                 <Button
                   onClick={handleClose}
                   className="btn-fill"
                   color="primary"
                   type="submit"
-                  style={{ marginRight: 20 }}
+                  style={{ marginRight: 10 }}
                 >
                   Hủy
                 </Button>
@@ -917,17 +1415,47 @@ function RepairedRequestList() {
                   className="btn-fill"
                   color="primary"
                   type="submit"
-                  style={{ marginRight: 20 }}
+                  style={{ marginRight: 10 }}
                 >
                   Báo giá
                 </Button>
+                {selectedRR !== null && selectedRR.state === "finished" ? (
+                  <div>
+                    {isRRHasBill ? (
+                      <Button
+                        onClick={() => {
+                          handleClickOpenInvoice(selectedRR.id);
+                        }}
+                        className="btn-fill"
+                        color="primary"
+                        type="submit"
+                        style={{ marginRight: 10 }}
+                      >
+                        Xem hóa đơn
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={handleClickCreateInvoice}
+                        className="btn-fill"
+                        color="primary"
+                        type="submit"
+                        style={{ marginRight: 10 }}
+                      >
+                        Thanh Toán
+                      </Button>
+                    )}
+                  </div>
+                ) : (
+                  <div hidden="true"></div>
+                )}
+
                 <Button
-                  onClick={handleClickOpenInvoice}
+                  onClick={saveRR}
                   className="btn-fill"
                   color="primary"
                   type="submit" /*style={{marginRight:20}}*/
                 >
-                  Thanh toán
+                  Lưu
                 </Button>
               </ModalFooter>
             </Modal>
@@ -1004,7 +1532,7 @@ function RepairedRequestList() {
               </ModalBody>
               <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
                 <Button
-                  onClick={AddNewCustomer}
+                  onClick={createTempCustomer}
                   className="btn-fill"
                   color="primary"
                   type="submit"
@@ -1183,7 +1711,14 @@ function RepairedRequestList() {
               </ModalBody>
               <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
                 <Button
-                  onClick={AddNewCar}
+                  onClick={() => {
+                    if (CarByNumberPlate != null) {
+                      setSelectedCar(CarByNumberPlate);
+                      handleCloseNewCar();
+                    } else {
+                      createTempCar();
+                    }
+                  }}
                   className="btn-fill"
                   color="primary"
                   type="submit"
@@ -1202,6 +1737,58 @@ function RepairedRequestList() {
                 </Button>
               </ModalFooter>
             </Modal>
+            <Modal isOpen={openCreateInvoice} size="sm">
+              <ModalHeader>
+                <p style={{ fontSize: 22 }} className="title">
+                  Thông tin ưu đãi (Nếu có)
+                </p>
+              </ModalHeader>
+              <ModalBody>
+                <Form style={{ marginLeft: 10, marginRight: 10 }}>
+                  <FormGroup>
+                    <label>Discount</label>
+                    <Input
+                      type="text"
+                      value={discount}
+                      onChange={(e) => {
+                        setDiscount(
+                          e.target.value.replace(/(?!-)[^0-9.]/g, "")
+                        );
+                      }}
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <label>VAT</label>
+                    <Input
+                      type="text"
+                      value={vat}
+                      onChange={(e) => {
+                        setVAT(e.target.value.replace(/(?!-)[^0-9.]/g, ""));
+                      }}
+                    />
+                  </FormGroup>
+                </Form>
+              </ModalBody>
+              <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
+                <Button
+                  onClick={handleCloseCreateInvoice}
+                  className="btn-fill"
+                  color="primary"
+                  type="submit"
+                  style={{ marginRight: 25 }}
+                >
+                  Hủy
+                </Button>
+                <Button
+                  onClick={CreateInvoice}
+                  className="btn-fill"
+                  color="primary"
+                  type="submit"
+                >
+                  Tiếp tục
+                </Button>
+              </ModalFooter>
+            </Modal>
             <Row>
               <Card>
                 <CardHeader>
@@ -1216,66 +1803,140 @@ function RepairedRequestList() {
                         className="btn-fill"
                         color="primary"
                         type="submit"
-                        onClick={handleClickOpen}
+                        onClick={() => {
+                          //setNewRR(true);
+                          handleClickOpen();
+                        }}
                       >
                         Thêm
                       </Button>
                     </Col>
                   </Row>
+                  <Row>
+                    <Col md="2">
+                      <Input
+                        type="select"
+                        defaultValue={"1"}
+                        onChange={(e) => getSearchField(e)}
+                      >
+                        <option value="1">Chủ xe</option>
+                        <option value="2">Địa chỉ</option>
+                        <option value="3">Số điện thoại</option>
+                        <option value="4">Xe</option>
+                        <option value="5">Biển số</option>
+                        <option value="6">Ngày tiếp nhận</option>
+                      </Input>
+                    </Col>
+                    <Col md="3" hidden={isDateSearch}>
+                      <Input
+                        value={searchTerm}
+                        type="text"
+                        placeholder="Nội dung tìm kiếm"
+                        onChange={(e) => getSearchTerm(e)}
+                      />
+                    </Col>
+                    <Col md="3" hidden={!isDateSearch}>
+                      <Input
+                        id="searhDate"
+                        type="date"
+                        onChange={(e) => filterRRByDate(e.target.value)}
+                      />
+                    </Col>
+                  </Row>
                 </CardHeader>
                 <CardBody>
-                  <Table className="tablesorter" responsive>
-                    <thead className="text-primary">
-                      <tr>
-                        <th>ID</th>
-                        <th>Ngày tiếp nhận</th>
-                        <th>Chủ xe</th>
-                        <th>Địa chỉ</th>
-                        <th>Số điện thoại</th>
-                        <th>Hiệu xe</th>
-                        <th>Biển số</th>
-                        <th>Tình trạng</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <th scope="row">1</th>
-                        <td>22/04/2021</td>
-                        <td>Nguyen Van A</td>
-                        <td>TP.HCM</td>
-                        <td>0123456789</td>
-                        <td>BMW-350i</td>
-                        <td>92A-12345</td>
-                        <td>
-                          <font color="red">Chưa thanh toán</font>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th scope="row">2</th>
-                        <td>22/04/2021</td>
-                        <td>Nguyen Van B</td>
-                        <td>TP.HCM</td>
-                        <td>0123456789</td>
-                        <td>Mazda 3</td>
-                        <td>92A-54321</td>
-                        <td>
-                          <font color="green">Đã thanh toán</font>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th scope="row">3</th>
-                        <td>22/04/2021</td>
-                        <td>Nguyen Van C</td>
-                        <td>TP.HCM</td>
-                        <td>0123456789</td>
-                        <td>Lexus 570</td>
-                        <td>92A-12346</td>
-                        <td>
-                          <font color="green">Đã thanh toán</font>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </Table>
+                  {RRList.length < 1 ? (
+                    <p style={{ fontSize: 20, marginLeft: 10 }}>
+                      Không tìm thấy nhân viên phù hợp
+                    </p>
+                  ) : (
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Ngày tiếp nhận</th>
+                          <th>Chủ xe</th>
+                          <th>Địa chỉ</th>
+                          <th>Số điện thoại</th>
+                          <th>Hiệu xe</th>
+                          <th>Biển số</th>
+                          <th>Tình trạng</th>
+                        </tr>
+                      </thead>
+                      {/* <tbody>{renderRRList()}</tbody> */}
+                      <tbody>
+                        {(searchTerm.length < 1 && searchField !== "6"
+                          ? RRList
+                          : RRList
+                        ) // o day phai la searchResult
+                          .map((RR, index) => {
+                            return (
+                              <tr
+                                key={index}
+                                onDoubleClick={() => {
+                                  openRR(RR);
+                                }}
+                              >
+                                <th scope="row">{index + 1}</th>
+                                <td>
+                                  {RR.createdDate
+                                    ? dateFormat(RR.createdDate, "dd/mm/yyyy")
+                                    : "-"}
+                                </td>
+                                <td>
+                                  {
+                                    listName.find(
+                                      (cus) => cus.id === RR.customerId
+                                    )?.name
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    listName.find(
+                                      (cus) => cus.id === RR.customerId
+                                    )?.address
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    listName.find(
+                                      (cus) => cus.id === RR.customerId
+                                    )?.phoneNumber
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    listCar.find((car) => car.id === RR.carId)
+                                      ?.model
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    listCar.find((car) => car.id === RR.carId)
+                                      ?.numberPlate
+                                  }
+                                </td>
+                                <td>
+                                  {RR.state === "init" ? (
+                                    <font color="yellow">
+                                      {translateRRState[RR.state]}
+                                    </font>
+                                  ) : RR.state === "finished" ? (
+                                    <font color="green">
+                                      {translateRRState[RR.state]}
+                                    </font>
+                                  ) : (
+                                    <font color="red">
+                                      {translateRRState[RR.state]}
+                                    </font>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                      </tbody>
+                    </table>
+                  )}
                 </CardBody>
               </Card>
             </Row>

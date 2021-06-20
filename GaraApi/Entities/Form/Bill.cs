@@ -6,7 +6,6 @@ namespace GaraApi.Entities.Form
 {
     public class Bill : Form
     {
-        public enum BillState { unpaid, paid }
 
         [BsonIgnoreIfNull]
         public List<QuotationDetail> Details { get; set; }
@@ -18,8 +17,6 @@ namespace GaraApi.Entities.Form
         public double VAT { get; set; }
         [BsonRequired]
         public Customer Customer { get; set; }
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public BillState State { get; set; } = BillState.unpaid;
 
     }
 }
