@@ -15,7 +15,7 @@ import {
   ModalFooter,
   Input,
   FormGroup,
-  Form,
+  Form
 } from "reactstrap";
 import { Tooltip, Fab, TextField } from "@material-ui/core";
 const axios = require("axios");
@@ -26,8 +26,8 @@ function Accessories() {
   const [name, setName] = useState(null);
   const [quantity, setQuantity] = useState(null);
   const [unit, setUnit] = useState(null);
-  const [receipPrice, setReceipPrice] = useState(null);
-  const [expiredDate, setExpiredDate] = useState(null);
+  const [receiptPrice, setReceiptPrice] = useState(null);
+  const [expiredTime, setExpiredTime] = useState(null);
   const [providerId, setProviderId] = useState(null);
   const [accessoryTypeId, setAccessoryTypeId] = useState(null);
   const [description, setDescription] = useState(null);
@@ -158,36 +158,43 @@ function Accessories() {
   };
 
   const CreateAccessory = () => {
-    if (!name || !quantity || !unit || !receipPrice || !expiredDate || !providerId ||!accessoryTypeId) {
-      console.log("Thiếu thông tin" + "\n" + name + "\n" + quantity + "\n" + unit + "\n" + receipPrice + "\n"+ expiredDate + "\n"+ providerId + "\n"+accessoryTypeId+ "\n");
+    if (!name || !quantity || !unit || !receiptPrice || !expiredTime || !providerId ||!accessoryTypeId) {
+      console.log("Thiếu thông tin \n" + name + "\n" + quantity + "\n" + unit + "\n" + receiptPrice + "\n"+ expiredTime + "\n"+ providerId + "\n"+accessoryTypeId+ "\n");
       setEmptyFieldAlert(true);
       return;
     }
-    let loginToken = localStorage.getItem("LoginToken");
-    let createAccessoryReceipt = new FormData();
-    createAccessoryReceipt.append("Name", name);
-    createAccessoryReceipt.append("Quantity", quantity);
-    createAccessoryReceipt.append("Unit", unit);
-    createAccessoryReceipt.append("ReceipPrice", receipPrice);
-    createAccessoryReceipt.append("ExpiredDate", expiredDate);
-    createAccessoryReceipt.append("ProviderId", providerId);
-    createAccessoryReceipt.append("AccessoryTypeId", accessoryTypeId);
-    createAccessoryReceipt.append("Description", description);
+    let loginToken = localStorage.getItem("LoginToken");    
+    const accessoryReceiptData = [{
+      "Name": name,
+      "Quantity": quantity,
+      "Unit": unit,
+      "ReceiptPrice": receiptPrice,
+      "expiredTime": expiredTime,
+      "ProviderId": providerId,
+      "AccessoryTypeId": accessoryTypeId,
+      "Description": description
+    }]
+
     axios
-      .post(
+      .post(    
         process.env.REACT_APP_BASE_URL + "api/accessory-receipts/",
-        createAccessoryReceipt,
+        accessoryReceiptData,
         {
           headers: {
+            "Content-Type":"application/json",
             Authorization: "Bearer " + loginToken,
           },
         }
       )
+      
       .then((response) => {
         console.log(response);
+
       })
       .catch((error) => {
-        console.log(error);
+        console.log(error.response);
+        console.log("\n" + name + "\n" + quantity + "\n" + unit + "\n" + receiptPrice + "\n"+ expiredTime + "\n"+ providerId + "\n"+accessoryTypeId+ "\n");
+
       });
   };
 
@@ -200,15 +207,7 @@ function Accessories() {
       }}
     />
   );
-  const [openExportForm, setOpenEFModal] = React.useState(false);
 
-  const handleClickOpenEF = () => {
-    setOpenEFModal(true);
-  };
-
-  const handleCloseEF = () => {
-    setOpenEFModal(false);
-  };
   const [openImportForm, setOpenIFModal] = React.useState(false);
 
   const handleClickOpenIF = () => {
@@ -232,106 +231,10 @@ function Accessories() {
   return (
     <>
       <div className="content">
-        {(accessories === null || provider ===null || accessoryType ===null) ? (
+        {( accessories===null || provider ===null || accessoryType ===null) ? (
           <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
         ) : (
           <div>
-            <Modal isOpen={openExportForm} size="lg">
-              <ModalHeader style={{ margin: 25, justifyContent: "center" }}>
-                <h3 className="title">Phiếu xuất phụ tùng</h3>
-              </ModalHeader>
-              <ModalBody>
-                <Row>
-                  <Col className="pr-md-1">
-                    <FormGroup>
-                      <label>Phụ tùng</label>
-                      <Input name="select" id="exampleSelect" type="select">
-                        <option>Phụ tùng 1</option>
-                        <option>Phụ tùng 2</option>
-                        <option>Phụ tùng 3</option>
-                        <option>Phụ tùng 4</option>
-                        <option>Phụ tùng 5</option>
-                      </Input>
-                    </FormGroup>
-                  </Col>
-                  <Col className="pr-md-1" md="2">
-                    <FormGroup>
-                      <label>Số lượng</label>
-                      <Input placeholder="Số lượng" type="number" />
-                    </FormGroup>
-                  </Col>
-                  <Col md="auto" style={{ marginTop: 30 }}>
-                    <Tooltip title="Thêm">
-                      <Fab
-                        onClick={openExportForm}
-                        size="small"
-                        style={{ marginBottom: 10 }}
-                      >
-                        <i className="tim-icons icon-simple-add"></i>
-                      </Fab>
-                    </Tooltip>
-                  </Col>
-                </Row>
-                <Row>
-                  <Card style={{ margin: 25 }}>
-                    <Table className="tablesorter" responsive>
-                      <thead className="text-primary">
-                        <tr>
-                          <th>ID</th>
-                          <th>Phụ tùng</th>
-                          <th>Đơn giá</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <th scope="row">1</th>
-                          <td>Phụ tùng 1</td>
-                          <td>100000 VNĐ</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">2</th>
-                          <td>Phụ tùng 3</td>
-                          <td>300000 VNĐ</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">3</th>
-                          <td>Phụ tùng 3</td>
-                          <td>300000 VNĐ</td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                  </Card>
-                </Row>
-                <ColoredLine color="gray" />
-                <Row>
-                  <Col>
-                    <h4 className="title">Thành tiền</h4>
-                  </Col>
-                  <Col md="auto">
-                    <h4 className="title">700000 VNĐ</h4>
-                  </Col>
-                </Row>
-              </ModalBody>
-              <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
-                <Button
-                  onClick={handleCloseEF}
-                  className="btn-fill"
-                  color="primary"
-                  type="submit"
-                  style={{ marginRight: 25 }}
-                >
-                  Hủy
-                </Button>
-                <Button
-                  onClick={handleCloseEF}
-                  className="btn-fill"
-                  color="primary"
-                  type="submit"
-                >
-                  Xuất
-                </Button>
-              </ModalFooter>
-            </Modal>
             <Modal isOpen={openImportForm} size="lg">
               <ModalHeader>
                 <h4 className="title">Phiếu nhập phụ tùng</h4>
@@ -360,7 +263,7 @@ function Accessories() {
                           placeholder="Đơn giá"
                           type="text"
                           onChange={(e) => {
-                            setReceipPrice(e.target.value);
+                            setReceiptPrice(e.target.value);
                           }}
                         />
                       </FormGroup>
@@ -390,11 +293,12 @@ function Accessories() {
                     </Col>
                     <Col md="4" mx="auto">
                       <FormGroup>
-                        <label>Ngày hết hạn</label>
+                        <label>Hạn sử dụng (năm)</label>
                         <Input
-                          type="date"
+                        placeholder="Hạn sử dụng"
+                          type="number"
                           onChange={(e) => {
-                            setExpiredDate(e.target.value);
+                            setExpiredTime(e.target.value);
                           }}
                         />
                       </FormGroup>
@@ -457,7 +361,6 @@ function Accessories() {
                         <Col className="pr-md-1">
                           <FormGroup>
                             <Input
-                             
                           defaultValue={"DEFAULT"}
                           type="select"
                           name="select"
@@ -644,14 +547,6 @@ function Accessories() {
                           >
                             Nhập phụ tùng
                           </Button>
-                          <Button
-                            className="btn-fill"
-                            color="primary"
-                            type="submit"
-                            onClick={handleClickOpenEF}
-                          >
-                            Xuất phụ tùng
-                          </Button>
                         </Col>
                       </Row>
                     </CardHeader>
@@ -664,7 +559,6 @@ function Accessories() {
                             <th>Số lượng</th>
                             <th>Đơn vị</th>
                             <th>Giá nhập vào</th>
-                            <th>Giá bán</th>
                             <th>Ngày hết hạn</th>
                             <th>Nhà cung cấp</th>
                             <th>Loại phụ tùng</th>
@@ -683,11 +577,6 @@ function Accessories() {
                               <td>
                                 {accessory.receiptPrice
                                   ? accessory.receiptPrice
-                                  : "-"}
-                              </td>
-                              <td>
-                                {accessory.issuePrice
-                                  ? accessory.issuePrice
                                   : "-"}
                               </td>
                               <td>
