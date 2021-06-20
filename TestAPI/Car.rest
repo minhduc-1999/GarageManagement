@@ -1,7 +1,8 @@
 // get all
 GET http://localhost:5000/api/cars/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYmFlNTFhMWNiM2NmNjVhYjVhOGU5OCIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyNDE4MTIyNCwiZXhwIjoxNjI2MjU0ODI0LCJpYXQiOjE2MjQxODEyMjR9.M2q9shpJ2LhThlo2c4Ylq6sNsYk_lIzQYjCuyUzMub8
 
-// create 
+### create 
 POST http://localhost:5000/api/cars/
 Content-Type: application/x-www-form-urlencoded
 
@@ -22,13 +23,12 @@ GET http://localhost:5000/api/cars/search?type=vin&value=1234221332322
 // delete
 DELETE http://localhost:5000/api/cars/60bdfcf2bf67fb6dfa3850e2
 
-// update car
+### update car
 PUT http://localhost:5000/api/cars/
-Content-Type: application/raw
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYmFlNTFhMWNiM2NmNjVhYjVhOGU5OCIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyNDE4MTIyNCwiZXhwIjoxNjI2MjU0ODI0LCJpYXQiOjE2MjQxODEyMjR9.M2q9shpJ2LhThlo2c4Ylq6sNsYk_lIzQYjCuyUzMub8
+Content-Type: application/json
+
 {
-    "id": "60bdfcf2bf67fb6dfa3850e2",
-    "numberPlate": "75x-99999",
-    "vin": "12342345123777777",
-    "registerId": "bcdq12421414",
-    "owner": "Pham Nhat Vuong"
+    "id": "60cc402f6b3367a7f24e9211",
+    "owner": "Võ Thanh Bình",
 }
