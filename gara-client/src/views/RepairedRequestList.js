@@ -20,7 +20,6 @@ import {
 
 import { Tooltip, Fab, Checkbox } from "@material-ui/core";
 import "../components/CustomDesign/SuggestList.css";
-import { createNoSubstitutionTemplateLiteral } from "typescript";
 const axios = require("axios");
 const dateFormat = require("dateformat");
 
