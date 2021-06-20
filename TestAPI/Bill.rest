@@ -1,17 +1,16 @@
 // get all
 GET http://localhost:5000/api/bills/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTg5MDcwMjAxZDJkZDg0NWI0ZGNiYiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjg3NjMwMywiZXhwIjoxNjI0OTQ5OTAzLCJpYXQiOjE2MjI4NzYzMDN9.mHKSKMO9cQkg2xQ20B9PUciqMqekijdtJRfjivWs3jE
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYmFlNTFhMWNiM2NmNjVhYjVhOGU5OCIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyNDE1OTA3OCwiZXhwIjoxNjI2MjMyNjc4LCJpYXQiOjE2MjQxNTkwNzh9.s6cdlXBylLVHi91OZndt6FK8HImVDuA9Ik8xEGX7x6s
 ###
 POST http://localhost:5000/api/bills/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTg5MDcwMjAxZDJkZDg0NWI0ZGNiYiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjg3NjMwMywiZXhwIjoxNjI0OTQ5OTAzLCJpYXQiOjE2MjI4NzYzMDN9.mHKSKMO9cQkg2xQ20B9PUciqMqekijdtJRfjivWs3jE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYmFlNTFhMWNiM2NmNjVhYjVhOGU5OCIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyNDE1OTA3OCwiZXhwIjoxNjI2MjMyNjc4LCJpYXQiOjE2MjQxNTkwNzh9.s6cdlXBylLVHi91OZndt6FK8HImVDuA9Ik8xEGX7x6s
 Content-Type: application/json
 
 {
-    "Discount": 0.3,
-    "VAT": 0.1,
-    "RepairedRequestId": "60b6fef1462dd867ab0eaaa5",
-    "CustomerId": "60b6fef9462dd867ab07b4dc"
+    "discount": 0, 
+    "vat": 0, 
+    "RepairedRequestId": "60ccba963e00cb1ee680bef1", 
+    "CustomerId": "60cc47f26b3367a7f24e9218"
 }
 
 ###

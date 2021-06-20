@@ -45,28 +45,29 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYmI4NWRhN
 ###
 //update
 PUT http://localhost:5000/api/repairedrequests/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYmI4NWRhNDg3OWY5ZTZlNTZhNjBjMiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjk1MDg2NywiZXhwIjoxNjI1MDI0NDY3LCJpYXQiOjE2MjI5NTA4Njd9.HgBbivniOsfKpVjy17MvmVR57FEHqWOQgX6hPVXkngw
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYmFlNTFhMWNiM2NmNjVhYjVhOGU5OCIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyNDE1OTA3OCwiZXhwIjoxNjI2MjMyNjc4LCJpYXQiOjE2MjQxNTkwNzh9.s6cdlXBylLVHi91OZndt6FK8HImVDuA9Ik8xEGX7x6s
 Content-Type: application/json
+
 {
-    "id": "60c5c9a1a813009987a3ddbb",
-    "carid" : "aacascs",
-    "customerid" : "60c5c9a1a813009987a3ddaa",
+    "id": "60ce9ab9e1483e40a0111d09",
+    "carid" : "60ce9ab9e1483e40a0111d08",
+    "customerid" : "60ce9ab9e1483e40a0111d07",
     "quotation" :{  
-            "state" : "not_confirmed", //{confirmed,not_confirmed}
+            "state" : "confirmed",
             "details": [
                     {
-                        "accessoryid" : "faa",
+                        "accessoryid" : "60c72349d72af5bd6802c0af",
                         "quantity" : 5,
                         "unitprice": 20,
                         "laborcost": 200
                     },
                     {
-                        "accessoryid" : "saffa",
+                        "accessoryid" : "60c72349d72af5bd6802c0af",
                         "quantity" : 5,
                         "unitprice": 20,
                         "laborcost": 10000
                     }
                 ]
     },
-    "rrstate" : "finished" // repairedRequestState {init,finished,canceled}
+    "rrstate" : "canceled"
 }

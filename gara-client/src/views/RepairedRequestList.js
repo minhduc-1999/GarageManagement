@@ -21,19 +21,22 @@ import {
 
 import { Tooltip, Fab, Checkbox } from "@material-ui/core";
 import "../components/CustomDesign/SuggestList.css";
+import { createNoSubstitutionTemplateLiteral } from "typescript";
 const axios = require("axios");
 const dateFormat = require("dateformat");
 
 function RepairedRequestList() {
   const translateRRState = {
-    init: "Chưa hoàn thành",
-    finished: "Đã hoàn thành",
+    init: "Đang sửa chữa",
+    finished: "Đã sửa chữa",
     canceled: "Đã hủy",
   };
 
   const [RRList, setRRList] = useState([]);
   //const [newRR, setNewRR] = useState(false);
   const [selectedRR, setSelectedRR] = useState(null);
+  const [selectedRRState, setSelectedRRState] = useState(null);
+  const [disableRRState, setDisableRRState] = useState(true);
 
   const [laborCosts, setLaborCost] = useState(null);
   const [SelectedLabor, setSelectedLabor] = useState(null);
@@ -68,6 +71,75 @@ function RepairedRequestList() {
   const [quantity, setQuantity] = useState(0);
 
   const [canSaveRR, setCanSaveRR] = useState(0); //0 =  false, 2 = true
+
+  const [openCreateInvoice, setOpenCreateInvoice] = useState(false);
+  const [discount, setDiscount] = useState(0);
+  const [vat, setVAT] = useState(0);
+  const [onBillCreated, setBillCreated] = useState(false);
+  const [selectedBill, setSelectedBill] = useState(null);
+
+  const handleClickCreateInvoice = () => {
+    setDiscount(0);
+    setVAT(0);
+    setOpenCreateInvoice(true);
+  };
+
+  const handleCloseCreateInvoice = () => {
+    setOpenCreateInvoice(false);
+  };
+
+  const CreateInvoice = () => {
+    let tempBill = {
+      discount: discount,
+      vat: vat,
+      RepairedRequestId: selectedRR.id,
+      CustomerId: selectedRR.customerId,
+    };
+    console.log(tempBill);
+    let loginToken = localStorage.getItem("LoginToken");
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + loginToken,
+    };
+    axios
+      .post(process.env.REACT_APP_BASE_URL + "api/bills", tempBill, {
+        headers: headers,
+      })
+      .then((response) => {
+        setSelectedBill(response.data);
+        setBillCreated(!onBillCreated);
+      })
+      .catch((error) => {
+        console.log("ERROR" + error);
+      });
+    handleCloseCreateInvoice();
+  };
+
+  const [listBill, setListBill] = useState([]);
+
+  useEffect(() => {
+    let loginToken = localStorage.getItem("LoginToken");
+    async function fetchBillData() {
+      axios
+        .get(process.env.REACT_APP_BASE_URL + "api/bills", {
+          headers: {
+            Authorization: "Bearer " + loginToken,
+          },
+        })
+        .then((response) => {
+          setListBill(response.data);
+        })
+        .catch((error) => console.log(error));
+    }
+    fetchBillData();
+    if (selectedBill !== null) {
+      handleClickOpenInvoice(selectedBill.id);
+      if (open) {
+        handleClose();
+      }
+      console.log(selectedBill);
+    }
+  }, [onBillCreated]);
 
   const createTempCar = () => {
     var newCar = {
@@ -271,6 +343,7 @@ function RepairedRequestList() {
       }
     } else if (canSaveRR === 2) {
       if (selectedRR !== null) {
+        console.log("[UPDATE]");
         updateRRInDB();
       } else {
         saveRRInDB();
@@ -295,9 +368,10 @@ function RepairedRequestList() {
       carId: selectedCar.id,
       customerId: selectedCustomer.id,
       quotation: quotation,
+      rrstate: selectedRRState,
     };
 
-    console.log(quotation);
+    console.log(tempRR);
     const headers = {
       "Content-Type": "application/json",
       Authorization: "Bearer " + loginToken,
@@ -379,11 +453,15 @@ function RepairedRequestList() {
 
   const [openInvoice, setOpenInvoice] = React.useState(false);
 
-  const handleClickOpenInvoice = () => {
+  const handleClickOpenInvoice = (billId) => {
+    //billId = rrID
+    let bill = listBill.find((bill) => bill.id === billId);
+    setSelectedBill(bill);
     setOpenInvoice(true);
   };
 
   const handleCloseInvoice = () => {
+    setSelectedBill(null);
     setOpenInvoice(false);
   };
 
@@ -395,6 +473,7 @@ function RepairedRequestList() {
   };
 
   const handleClose = () => {
+    console.log(selectedRRState);
     //clearQuotation
     clearQDFields();
     setQDList([]);
@@ -408,6 +487,8 @@ function RepairedRequestList() {
     setSelectedQD(null);
     setSelectedCustomer(null);
     setSelectedCar(null);
+    setSelectedRRState(null);
+    setDisableRRState(true);
     setSearch("");
     setOpenModal(false);
   };
@@ -703,6 +784,9 @@ function RepairedRequestList() {
     useState("not_confirmed");
 
   const saveRR = () => {
+    console.log(selectedCar);
+    console.log(selectedCustomer);
+    console.log(selectedQD);
     if (
       selectedCar !== null &&
       selectedCustomer !== null &&
@@ -729,9 +813,27 @@ function RepairedRequestList() {
     setQDList(RR.quotation.details);
 
     setSelectedQuotationState(RR.quotation.state);
-
+    setSelectedRRState(RR.state);
+    if (RR.state === "init") {
+      setDisableRRState(false);
+    }
+    setSelectedQD(RR.quotation.details);
     handleClickOpen();
   };
+
+  const [isRRHasBill, setIsRRHasBill] = useState(false);
+
+  useEffect(() => {
+    if (selectedRR !== null) {
+      if (listBill.find((bill) => bill.id === selectedRR.id)) {
+        setIsRRHasBill(true);
+      } else {
+        setIsRRHasBill(false);
+      }
+    } else {
+      setIsRRHasBill(false);
+    }
+  }, [selectedRR]);
 
   return (
     <>
@@ -748,8 +850,9 @@ function RepairedRequestList() {
               </ModalHeader>
               <ModalBody>
                 <Form>
-                  {selectedRR !== null &&
-                  selectedRR.quotation.state === "confirmed" ? (
+                  {(selectedRR !== null &&
+                    selectedRR.quotation.state === "confirmed") ||
+                  selectedQuotationState === "confirmed" ? (
                     <div hidden="true"></div>
                   ) : (
                     <div>
@@ -929,7 +1032,13 @@ function RepairedRequestList() {
                       {QDList.map((QD, index) => (
                         <tr key={index}>
                           <th scope="row">{index + 1}</th>
-                          <td>{QD.accessoryName}</td>
+                          <td>
+                            {
+                              listAccessoryDB.find(
+                                (acc) => acc.id === QD.accessoryId
+                              ).name
+                            }
+                          </td>
                           <td>{QD.quantity}</td>
                           <td>{QD.unitPrice} VNĐ</td>
                           <td>
@@ -975,30 +1084,26 @@ function RepairedRequestList() {
                       </Col>
                     </Row>
                   </Row>
-                  {selectedRR !== null ? (
+                  <Row>
+                    <Col>
+                      <FormGroup>
+                        <h3>Trạng thái</h3>
+                      </FormGroup>
+                    </Col>
                     <Row>
-                      <Col>
-                        <FormGroup>
-                          <h3>Trạng thái</h3>
-                        </FormGroup>
+                      <Col md="auto" style={{ marginRight: 25 }}>
+                        {selectedQuotationState === "confirmed" ? (
+                          <h3 className="title">
+                            <font color="green">Đã xác nhận</font>
+                          </h3>
+                        ) : (
+                          <h3 className="title">
+                            <font color="red">Chưa xác nhận</font>
+                          </h3>
+                        )}
                       </Col>
-                      <Row>
-                        <Col md="auto" style={{ marginRight: 25 }}>
-                          {selectedQuotationState === "confirmed" ? (
-                            <h3 className="title">
-                              <font color="green">Đã xác nhận</font>
-                            </h3>
-                          ) : (
-                            <h3 className="title">
-                              <font color="red">Chưa xác nhận</font>
-                            </h3>
-                          )}
-                        </Col>
-                      </Row>
                     </Row>
-                  ) : (
-                    <div hidden="true"></div>
-                  )}
+                  </Row>
                 </Form>
               </ModalBody>
               <ModalFooter style={{ margin: 10, justifyContent: "flex-end" }}>
@@ -1050,73 +1155,127 @@ function RepairedRequestList() {
                 <h3 className="title">Hóa đơn</h3>
               </ModalHeader>
               <ModalBody>
-                <ColoredLine color="gray" />
-                <Row>
-                  <Card>
-                    <CardHeader>
-                      <Row>
-                        <Col>
-                          <CardTitle tag="h4">Danh sách phụ tùng</CardTitle>
-                        </Col>
-                      </Row>
-                    </CardHeader>
-                    <CardBody>
-                      <Table className="tablesorter" responsive>
-                        <thead className="text-primary">
-                          <tr>
-                            <th>ID</th>
-                            <th>Phụ tùng</th>
-                            <th>Số lượng</th>
-                            <th>Đơn giá</th>
-                            <th>Tổng tiền</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <th scope="row">1</th>
-                            <td>abc</td>
-                            <td>50</td>
-                            <td>10000 VNĐ</td>
-                            <td>5000000 VNĐ</td>
-                          </tr>
-                          <tr>
-                            <th scope="row">1</th>
-                            <td>xyz</td>
-                            <td>50</td>
-                            <td>10000 VNĐ</td>
-                            <td>5000000 VNĐ</td>
-                          </tr>
-                          <tr>
-                            <th scope="row">1</th>
-                            <td>binh</td>
-                            <td>50</td>
-                            <td>10000 VNĐ</td>
-                            <td>5000000 VNĐ</td>
-                          </tr>
-                        </tbody>
-                      </Table>
-                    </CardBody>
-                  </Card>
-                </Row>
-                <Row>
-                  <Col>
-                    <h4 className="title">Phí sửa chữa</h4>
-                  </Col>
-                  <Col md="auto">
-                    <h5 className="title">100000 VNĐ</h5>
-                  </Col>
-                </Row>
-                <ColoredLine color="gray" />
-                <Row>
-                  <Col>
-                    <h4 className="title">Thành tiền</h4>
-                  </Col>
-                  <Col md="auto">
-                    <h4 className="title">1000000 VNĐ</h4>
-                  </Col>
-                </Row>
+                {selectedBill !== null ? (
+                  <div>
+                    <Row>
+                      <Col>
+                        <h4 className="title">Khách hàng</h4>
+                      </Col>
+                      <Col md="auto">
+                        <h4>{selectedBill.customer.name}</h4>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col>
+                        <h4 className="title">Địa chỉ</h4>
+                      </Col>
+                      <Col md="auto">
+                        <h4>{selectedBill.customer.address}</h4>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col>
+                        <h4 className="title">Số điện thoại</h4>
+                      </Col>
+                      <Col md="auto">
+                        <h4>{selectedBill.customer.phoneNumber}</h4>
+                      </Col>
+                    </Row>
+                    <ColoredLine color="gray" />
+                    <Row>
+                      <Card>
+                        <CardHeader>
+                          <Row>
+                            <Col>
+                              <p style={{ fontSize: 18 }} className="title">
+                                Danh sách phụ tùng
+                              </p>
+                            </Col>
+                          </Row>
+                        </CardHeader>
+                        <CardBody>
+                          <table class="table" responsive>
+                            <thead className="text-primary">
+                              <tr>
+                                <th>ID</th>
+                                <th>Phụ tùng</th>
+                                <th>Số lượng</th>
+                                <th>Đơn giá</th>
+                                <th>Loại lỗi</th>
+                                <th>Phí sửa chữa</th>
+                                <th>Tổng tiền</th>
+                              </tr>
+                            </thead>
+                            {selectedBill.details.length > 0 ? (
+                              selectedBill.details.map((QD, index) => (
+                                <tbody>
+                                  <tr key={index}>
+                                    <th scope="row">{index + 1}</th>
+                                    <td>
+                                      {
+                                        listAccessoryDB.find(
+                                          (acc) => acc.id === QD.accessoryId
+                                        ).name
+                                      }
+                                    </td>
+                                    <td>{QD.quantity}</td>
+                                    <td>{QD.unitPrice} VNĐ</td>
+                                    <td>
+                                      {QD.issueName != null
+                                        ? QD.issueName
+                                        : "Không có"}
+                                    </td>
+                                    <td>
+                                      {QD.laborCost != null ? QD.laborCost : 0}{" "}
+                                      VNĐ
+                                    </td>
+                                    <td>
+                                      {QD.laborCost != null
+                                        ? Number(QD.quantity) *
+                                            Number(QD.unitPrice) +
+                                          Number(QD.laborCost)
+                                        : Number(QD.quantity) *
+                                          Number(QD.unitPrice)}
+                                      VNĐ
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              ))
+                            ) : (
+                              <tbody></tbody>
+                            )}
+                          </table>
+                        </CardBody>
+                      </Card>
+                    </Row>
+                    <ColoredLine color="gray" />
+                    <Row>
+                      <Col>
+                        <h4 className="title">Thành tiền</h4>
+                      </Col>
+                      <Col md="auto">
+                        <h4 className="title">
+                          {selectedBill.totalAmount} VNĐ
+                        </h4>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col md="auto">
+                        <h4>Nhân viên tạo phiếu:</h4>
+                      </Col>
+                      <Col>
+                        <h4>
+                          {selectedBill.creator.lastName}{" "}
+                          {selectedBill.creator.firstName}
+                        </h4>
+                      </Col>
+                    </Row>
+                  </div>
+                ) : (
+                  <div hidden="true"></div>
+                )}
               </ModalBody>
-              <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
+              <ModalFooter style={{ margin: 10, justifyContent: "flex-end" }}>
                 <Button
                   onClick={handleCloseInvoice}
                   className="btn-fill"
@@ -1136,7 +1295,7 @@ function RepairedRequestList() {
                 </Button>
               </ModalFooter>
             </Modal>
-            <Modal isOpen={open} size="sm">
+            <Modal isOpen={open} size="lg">
               <ModalHeader>
                 <p style={{ fontSize: 22 }} className="title">
                   Phiếu tiếp nhận xe
@@ -1194,29 +1353,42 @@ function RepairedRequestList() {
                       </Col>
                     </Row>
                   ) : (
-                    <Row>
-                      <Col>
-                        <Row>
-                          <Col>
-                            <Label
-                              style={{ marginTop: 10, fontWeight: "bold" }}
-                            >
-                              Thông tin xe
-                            </Label>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col>
-                            <Label>
-                              {selectedCar.brand} {selectedCar.model}
-                            </Label>
-                          </Col>
-                          <Col>
-                            <Label>{selectedCar.numberPlate}</Label>
-                          </Col>
-                        </Row>
-                      </Col>
-                    </Row>
+                    <div>
+                      <Row>
+                        <Col>
+                          <Label style={{ marginTop: 10, fontWeight: "bold" }}>
+                            Thông tin xe
+                          </Label>
+                        </Col>
+                        <Col md="auto">
+                          <Label>
+                            Xe: {selectedCar.brand}-{selectedCar.model}
+                          </Label>
+                        </Col>
+                        <Col md="auto">
+                          <Label> Biển số: {selectedCar.numberPlate}</Label>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col>
+                          <label style={{ fontWeight: "bold" }}>
+                            Tình trạng
+                          </label>
+                        </Col>
+                        <Col md="auto">
+                          <Input
+                            value={selectedRRState}
+                            type="select"
+                            disabled={disableRRState}
+                            onChange={(e) => setSelectedRRState(e.target.value)}
+                          >
+                            <option value="init">Đang sửa chữa</option>
+                            <option value="finished">Đã sửa chữa</option>
+                            <option value="canceled">Hủy</option>
+                          </Input>
+                        </Col>
+                      </Row>
+                    </div>
                   )}
                 </Form>
               </ModalBody>
@@ -1241,15 +1413,36 @@ function RepairedRequestList() {
                 >
                   Báo giá
                 </Button>
-                <Button
-                  onClick={handleClickOpenInvoice}
-                  className="btn-fill"
-                  color="primary"
-                  type="submit"
-                  style={{ marginRight: 10 }}
-                >
-                  Hóa đơn
-                </Button>
+                {selectedRR !== null && selectedRR.state === "finished" ? (
+                  <div>
+                    {isRRHasBill ? (
+                      <Button
+                        onClick={() => {
+                          handleClickOpenInvoice(selectedRR.id);
+                        }}
+                        className="btn-fill"
+                        color="primary"
+                        type="submit"
+                        style={{ marginRight: 10 }}
+                      >
+                        Xem hóa đơn
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={handleClickCreateInvoice}
+                        className="btn-fill"
+                        color="primary"
+                        type="submit"
+                        style={{ marginRight: 10 }}
+                      >
+                        Thanh Toán
+                      </Button>
+                    )}
+                  </div>
+                ) : (
+                  <div hidden="true"></div>
+                )}
+
                 <Button
                   onClick={saveRR}
                   className="btn-fill"
@@ -1535,6 +1728,58 @@ function RepairedRequestList() {
                   style={{ marginRight: 10 }}
                 >
                   Hủy
+                </Button>
+              </ModalFooter>
+            </Modal>
+            <Modal isOpen={openCreateInvoice} size="sm">
+              <ModalHeader>
+                <p style={{ fontSize: 22 }} className="title">
+                  Thông tin ưu đãi (Nếu có)
+                </p>
+              </ModalHeader>
+              <ModalBody>
+                <Form style={{ marginLeft: 10, marginRight: 10 }}>
+                  <FormGroup>
+                    <label>Discount</label>
+                    <Input
+                      type="text"
+                      value={discount}
+                      onChange={(e) => {
+                        setDiscount(
+                          e.target.value.replace(/(?!-)[^0-9.]/g, "")
+                        );
+                      }}
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <label>VAT</label>
+                    <Input
+                      type="text"
+                      value={vat}
+                      onChange={(e) => {
+                        setVAT(e.target.value.replace(/(?!-)[^0-9.]/g, ""));
+                      }}
+                    />
+                  </FormGroup>
+                </Form>
+              </ModalBody>
+              <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
+                <Button
+                  onClick={handleCloseCreateInvoice}
+                  className="btn-fill"
+                  color="primary"
+                  type="submit"
+                  style={{ marginRight: 25 }}
+                >
+                  Hủy
+                </Button>
+                <Button
+                  onClick={CreateInvoice}
+                  className="btn-fill"
+                  color="primary"
+                  type="submit"
+                >
+                  Tiếp tục
                 </Button>
               </ModalFooter>
             </Modal>
