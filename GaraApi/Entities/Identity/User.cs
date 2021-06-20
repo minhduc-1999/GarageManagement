@@ -20,7 +20,6 @@ namespace GaraApi.Entities.Identity
         public int AccessFailCount { get; set; }
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
         public bool IsLock { get; set; }
-        [BsonRepresentation(BsonType.ObjectId)]
         [BsonRequired]
         public string Role { get; set; }
         [BsonIgnoreIfNull]

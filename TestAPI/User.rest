@@ -1,42 +1,31 @@
-//GET all
-GET http://localhost:5000/api/customers/
+//GET ALL ROLES
+GET http://localhost:5000/api/users/roles/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTg5MDcwMjAxZDJkZDg0NWI0ZGNiYiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjg3NjMwMywiZXhwIjoxNjI0OTQ5OTAzLCJpYXQiOjE2MjI4NzYzMDN9.mHKSKMO9cQkg2xQ20B9PUciqMqekijdtJRfjivWs3jE
 
-
 ###
-
-//Get 1 customer
-GET http://localhost:5000/api/customers/60b6fef9462dd867ab07b4dc
+//GET ALL USERS
+GET http://localhost:5000/api/users/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTg5MDcwMjAxZDJkZDg0NWI0ZGNiYiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjg3NjMwMywiZXhwIjoxNjI0OTQ5OTAzLCJpYXQiOjE2MjI4NzYzMDN9.mHKSKMO9cQkg2xQ20B9PUciqMqekijdtJRfjivWs3jE
 
+###
+//GET 1 USER
+GET http://localhost:5000/api/users/60b65754dc49e4c97a55c39b
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTg5MDcwMjAxZDJkZDg0NWI0ZGNiYiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjg3NjMwMywiZXhwIjoxNjI0OTQ5OTAzLCJpYXQiOjE2MjI4NzYzMDN9.mHKSKMO9cQkg2xQ20B9PUciqMqekijdtJRfjivWs3jE
 
 ###
-
-//create customer
-POST http://localhost:5000/api/customers/
+//CREATE USER
+POST http://localhost:5000/api/users/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTg5MDcwMjAxZDJkZDg0NWI0ZGNiYiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjg3NjMwMywiZXhwIjoxNjI0OTQ5OTAzLCJpYXQiOjE2MjI4NzYzMDN9.mHKSKMO9cQkg2xQ20B9PUciqMqekijdtJRfjivWs3jE
 Content-Type: application/x-www-form-urlencoded
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTg5MDcwMjAxZDJkZDg0NWI0ZGNiYiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjg3NjMwMywiZXhwIjoxNjI0OTQ5OTAzLCJpYXQiOjE2MjI4NzYzMDN9.mHKSKMO9cQkg2xQ20B9PUciqMqekijdtJRfjivWs3jE
 
-name=Trương Bá Cường
-&address=Quảng Bình
-&phoneNumber=049111838232
-&email=cuong@gmail.com
-
-###
-//delete customer
-
-DELETE  http://localhost:5000/api/customers/60befc1bbd639ffa5044ac18
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTg5MDcwMjAxZDJkZDg0NWI0ZGNiYiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjg3NjMwMywiZXhwIjoxNjI0OTQ5OTAzLCJpYXQiOjE2MjI4NzYzMDN9.mHKSKMO9cQkg2xQ20B9PUciqMqekijdtJRfjivWs3jE
+username=admin4
+&password=admin
+&roleid=60a8898b2f7d4ec5e6c3951d
+&phoneNumber=0391932193
+&email=admin@gmail.com
+&fullname=Admin 2 dep trai
+&dateOB=21-12-1999
+&address=Việt Nam
 
 
-###
-//update customer
 
-PUT http://localhost:5000/api/customers/60b6fef9462dd867ab07b4dc
-Content-Type: application/x-www-form-urlencoded
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTg5MDcwMjAxZDJkZDg0NWI0ZGNiYiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjg3NjMwMywiZXhwIjoxNjI0OTQ5OTAzLCJpYXQiOjE2MjI4NzYzMDN9.mHKSKMO9cQkg2xQ20B9PUciqMqekijdtJRfjivWs3jE
-
-name=Phan Quốc An
-&address=Long An
-&phoneNumber=0928118233
-&email=AnOhmygod@gmail.com

@@ -22,12 +22,12 @@ namespace GaraApi.Controllers
         }
 
         [HttpGet]
-        [Authorize("admin, manager, storekeeper, employee, receptionist")]
+        [Authorize("admin, manager, storekeeper, receptionist")]
         public ActionResult<List<Accessory>> Get() =>
             _accessoryService.Get();
 
         [HttpGet("{id:length(24)}", Name = "GetAccessory")]
-        [Authorize("admin, manager, storekeeper, employee, receptionist")]
+        [Authorize("admin, manager, storekeeper, receptionist")]
         public ActionResult<Accessory> Get(string id)
         {
             var accessory = _accessoryService.Get(id);
@@ -76,7 +76,7 @@ namespace GaraApi.Controllers
         }
 
         [HttpDelete("{id:length(24)}")]
-        [Authorize("admin, manager, storekeeper")]
+        [Authorize("admin")]
         public IActionResult Delete(string id)
         {
             var exist = _accessoryService.isExisted(id);
