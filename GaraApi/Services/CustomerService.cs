@@ -68,7 +68,7 @@ namespace GaraApi.Services
             return true;
         }
 
-        public IEnumerable<ReportElement> Accept(IReportVisitor visitor)
+        public IEnumerable<Object> Accept(IReportVisitor visitor)
         {
             return visitor.ExportCustomerReport(this._customer);
         }

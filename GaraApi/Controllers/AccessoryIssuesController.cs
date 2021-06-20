@@ -1,9 +1,12 @@
 using System.Collections.Generic;
+using garaapi.Models.ReportModel;
 using GaraApi.Entities.Form;
 using GaraApi.Entities.Identity;
 using GaraApi.Services;
 using GaraApi.Utils;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using garaapi.Services.ReportService;
 
 namespace GaraApi.Controllers
 {
@@ -12,10 +15,14 @@ namespace GaraApi.Controllers
     public class AccessoryIssuesController : ControllerBase
     {
         private readonly AccessoryIssueService _accIssueService;
+        private readonly RepairedRequestService _rrService;
+        private readonly AccessoryService _accessoryService;
 
-        public AccessoryIssuesController(AccessoryIssueService accIssueService)
+        public AccessoryIssuesController(AccessoryIssueService accIssueService, RepairedRequestService rrService, AccessoryService accessoryService)
         {
             _accIssueService = accIssueService;
+            _rrService = rrService;
+            _accessoryService = accessoryService;
         }
 
         [HttpGet]
@@ -36,7 +43,39 @@ namespace GaraApi.Controllers
 
             return accIssue;
         }
+        [HttpGet("/api/report/accessory-issue")]
+        [Authorize("admin, manager")]
+        public ActionResult<List<Object>> GetReport([FromQuery] string option, [FromQuery] int year, [FromQuery] int month)
+        {
+            IEnumerable<Object> res = null;
+            switch (option)
+            {
+                case "annual":
+                    res = _accIssueService.Accept(new AnnualReportVisitor(new DateTime(year, 1, 1), new DateTime(year + 1, 1, 1), _rrService, _accessoryService));
+                    break;
+                case "monthly":
+                    int endMonth = month + 1;
+                    int endYear = year;
+                    if (month == 12)
+                    {
+                        endMonth = 1;
+                        endYear++;
+                    }
+                    res = _accIssueService.Accept(new MonthlyReportVisitor(new DateTime(year, month, 1), new DateTime(endYear, endMonth, 1), _rrService, _accessoryService));
+                    break;
+                default:
+                    break;
+            }
 
+            return new List<Object>(res);
+        }
+        // [HttpGet("/api/test")]
+        // [Authorize("admin, manager")]
+        // public ActionResult<List<Object>> GetReportTest()
+        // {
+        //     var res = _accIssueService.Get()
+        //     return BadRequest();
+        // }
         [HttpPost]
         [Authorize("admin, manager, storekeeper")]
         public ActionResult<AccessoryIssue> Create([FromBody] AccessoryIssue accIssue)

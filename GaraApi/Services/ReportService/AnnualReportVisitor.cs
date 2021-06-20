@@ -12,8 +12,42 @@ namespace garaapi.Services.ReportService
 {
     public class AnnualReportVisitor : BaseReportVisitor
     {
+        private readonly RepairedRequestService _rrService;
+        private readonly AccessoryService _accessoryService;
+
+        public AnnualReportVisitor(DateTime start, DateTime end, RepairedRequestService rrService, AccessoryService accessoryService) : base(start, end)
+        {
+            _rrService = rrService;
+            _accessoryService = accessoryService;
+        }
         public AnnualReportVisitor(DateTime start, DateTime end) : base(start, end)
         {
+
+        }
+        public override IEnumerable<AccessoryIssueModel> ExportAccessoryIssueReport(IMongoCollection<AccessoryIssue> _accessoryIssue)
+        {
+            List<AccessoryIssueModel> res = new List<AccessoryIssueModel>();
+            List<Tuple<DateTime,string,double,int>> temp = new List<Tuple<DateTime,string,double,int>>();
+            var accessoryIssueFilterBuilder = Builders<AccessoryIssue>.Filter;
+            var accessoryIssueFilter = accessoryIssueFilterBuilder.Gte("CreatedDate", _start)
+             & accessoryIssueFilterBuilder.Lt("CreatedDate", _end);
+            var dataRepairedRequestId = _accessoryIssue.Find(accessoryIssueFilter)
+            .Project(a => new {a.CreatedDate, a.RepairedRequestId})
+            .ToList();
+            
+            foreach (var data in dataRepairedRequestId){
+                List<QuotationDetail> details = _rrService.GetQuotationDetails(data.RepairedRequestId);
+                foreach(var quotationDetail in details){
+                    temp.Add(new Tuple<DateTime, string, double, int>(data.CreatedDate,quotationDetail.AccessoryId,quotationDetail.UnitPrice,quotationDetail.Quantity));
+                }
+            }
+
+            foreach (var accessory in temp){
+                var dataAccessory = _accessoryService.Get(accessory.Item2);
+                AccessoryIssueModel a = new AccessoryIssueModel(accessory.Item1,dataAccessory.Name,accessory.Item3,dataAccessory.Provider.Name,accessory.Item4);
+                res.Add(a);
+            }
+            return res;
         }
 
         public override IEnumerable<ReportElement> ExportCustomerReport(IMongoCollection<Customer> _customers)
@@ -47,5 +81,43 @@ namespace garaapi.Services.ReportService
             });
             return data;
         }
+
+        // public override IEnumerable<AccessoryIssueModel> ExportAccessoryIssueReport(IMongoCollection<RepairedRequest> _rrRequest,
+        //  IMongoCollection<AccessoryIssue> _accessoryIssue, IMongoCollection<Accessory> _accessory,IMongoCollection<Provider> _provider)
+        // {
+        // List<Tuple<DateTime,String>> temp = new List<Tuple<DateTime, string>>(); // use to get datetime and accessoryId
+
+        // // Get repaired request id which include accessory issue in year
+        // var accessoryIssueFilterBuilder = Builders<AccessoryIssue>.Filter;
+        // var accessoryIssueFilter = accessoryIssueFilterBuilder.Gte("CreatedDate", _start)
+        //  & accessoryIssueFilterBuilder.Lt("CreatedDate", _end);
+        // var dataRepairedRequestId = _accessoryIssue.Find(accessoryIssueFilter)
+        //  .Project(a => new {a.CreatedDate, a.RepairedRequestId}).ToList();
+
+        // // Get quotation details of repaired request
+        // foreach (var data in dataRepairedRequestId){
+        //     List<QuotationDetail> details = _rrService.GetQuotationDetails(data.RepairedRequestId);
+        //     foreach(var quotationDetail in details){
+        //         temp.Add(new Tuple<DateTime, string>(data.CreatedDate,quotationDetail.AccessoryId));
+        //     }
+        // }
+        // foreach (var accessory in temp){
+
+        //     // get accessory name, issue price, provider id
+        //     //var accessoryFilterBuilder = Builders<Accessory>.Filter;
+        //     //var accessoryFilter = accessoryFilterBuilder.Eq("Id", accessory.Item2);
+        //     var dataAccessory = _accessory.Find(acc => acc.Id == accessory.Item2)
+        //     .Project(a => new {accessory.Item1,a.Name, a.IssuePrice, a.Provider}).ToList();
+
+        //     // get provider name
+        //     var providerFilterBuilder = Builders<Provider>.Filter;
+        //     var providerFilter = providerFilterBuilder.Eq("Id",dataAccessory[0].Provider);
+        //     var dataProvider = _provider.Find(providerFilter)
+        //     .Project(provider => new {dataAccessory[0].Item1,dataAccessory[0].Name,dataAccessory[0].IssuePrice,provider.Name}).ToList();
+
+        //     //res.Add(new AccessoryIssueModel(accessory.Item1,dataAccessory[0].Name,dataAccessory[0].IssuePrice,dataProvider[0].Name));
+
+        // }
+
     }
 }

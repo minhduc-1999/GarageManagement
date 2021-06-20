@@ -56,8 +56,8 @@ namespace GaraApi.Controllers
             var curCar = _carService.GetCarByNumberPlate(car.NumberPlate);
             if (curCar != null)
                 return BadRequest(new { message = "Car has been used" });
-            _carService.Create(car);
-            return CreatedAtRoute("GetCarByNumberPlate", new { id = car.Id.ToString() }, car);
+            var res = _carService.Create(car);
+            return CreatedAtRoute("GetCar", new { id = res.Id.ToString() }, car);
         }
 
         [HttpPut]

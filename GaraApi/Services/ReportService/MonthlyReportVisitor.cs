@@ -4,16 +4,49 @@ using System.Linq;
 using garaapi.Models.ReportModel;
 using GaraApi.Entities;
 using GaraApi.Entities.Form;
+using GaraApi.Services;
 using MongoDB.Driver;
 
 namespace garaapi.Services.ReportService
 {
     public class MonthlyReportVisitor : BaseReportVisitor
     {
+        private readonly RepairedRequestService _rrService;
+        private readonly AccessoryService _accessoryService;
         public MonthlyReportVisitor(DateTime start, DateTime end) : base(start, end)
         {
         }
+        public MonthlyReportVisitor(DateTime start, DateTime end, RepairedRequestService rrService, AccessoryService accessoryService) : base(start, end)
+        {
+            _rrService = rrService;
+            _accessoryService = accessoryService;
+        }
 
+        public override IEnumerable<AccessoryIssueModel> ExportAccessoryIssueReport(IMongoCollection<AccessoryIssue> _accessoryIssue)
+        {
+            List<AccessoryIssueModel> res = new List<AccessoryIssueModel>();
+            List<Tuple<DateTime,string,double,int>> temp = new List<Tuple<DateTime,string,double,int>>();
+            var accessoryIssueFilterBuilder = Builders<AccessoryIssue>.Filter;
+            var accessoryIssueFilter = accessoryIssueFilterBuilder.Gte("CreatedDate", _start)
+             & accessoryIssueFilterBuilder.Lt("CreatedDate", _end);
+            var dataRepairedRequestId = _accessoryIssue.Find(accessoryIssueFilter)
+            .Project(a => new {a.CreatedDate, a.RepairedRequestId})
+            .ToList();
+            
+            foreach (var data in dataRepairedRequestId){
+                List<QuotationDetail> details = _rrService.GetQuotationDetails(data.RepairedRequestId);
+                foreach(var quotationDetail in details){
+                    temp.Add(new Tuple<DateTime, string, double, int>(data.CreatedDate,quotationDetail.AccessoryId,quotationDetail.UnitPrice,quotationDetail.Quantity));
+                }
+            }
+
+            foreach (var accessory in temp){
+                var dataAccessory = _accessoryService.Get(accessory.Item2);
+                AccessoryIssueModel a = new AccessoryIssueModel(accessory.Item1,dataAccessory.Name,accessory.Item3,dataAccessory.Provider.Name,accessory.Item4);
+                res.Add(a);
+            }
+            return res;
+        }
         public override IEnumerable<ReportElement> ExportCustomerReport(IMongoCollection<Customer> _customers)
         {
             var filterBuilder = Builders<Customer>.Filter;
@@ -45,5 +78,10 @@ namespace garaapi.Services.ReportService
             });
             return data;
         }
+
+        // public override IEnumerable<ReportElement> ExportAccessoryIssueReport(IMongoCollection<RepairedRequest> _rrRequest, IMongoCollection<AccessoryIssue> _accessoryIssue, IMongoCollection<Accessory> _accessory)
+        // {
+        //     throw new NotImplementedException();
+        // }
     }
 }

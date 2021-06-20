@@ -13,5 +13,6 @@ namespace garaapi.Interfaces.Report
         IEnumerable<ReportElement> ExportCustomerReport(IMongoCollection<Customer> _customers);
         IEnumerable<ReportElement> ExportRevenueReport(IMongoCollection<Bill> _bills);
 
+        IEnumerable<AccessoryIssueModel> ExportAccessoryIssueReport(IMongoCollection<AccessoryIssue> _accessoryIssue);
     }
 }
