@@ -45,6 +45,9 @@ function Employee() {
   const [searchResult, setSearchResult] = useState([]);
   const [isDateSearch, setIsDateSearch] = useState(false);
   const [searchField, setSearchField] = useState("1");
+  const [onConfirmDelete, setOnConfirmDelete] = useState(false);
+  const [alertDelete, setAlertDelete] = useState(false)
+  const [alertPasswordEmpty, setAlertPasswordEmpty] = useState(false);
 
   const getSearchField = (e) => {
     setSearchResult([]);
@@ -133,6 +136,10 @@ function Employee() {
   };
 
   const handleResetPass = () => {
+    if (!newPass) {
+      setAlertPasswordEmpty(true);
+      return;
+    }
     let loginToken = localStorage.getItem("LoginToken");
     let resetPassForm = new FormData();
     resetPassForm.append("id", onResetPassUser);
@@ -245,15 +252,40 @@ function Employee() {
             <td>{user.username}</td>
             <td>
               {
-                translateRoles[
-                  userRoles.find((role) => role.id === user.role)?.roleName
-                ]
+                translateRoles[user.role]
               }
             </td>
           </tr>
         );
       }
     );
+
+  const checkUserDelete = () => {
+    if (selectUser === userAcc.username) {
+      setAlertDelete(true);
+      return;
+    }
+    setOnConfirmDelete(true);
+  }
+
+  const handleDeleteUser = () => {
+    let loginToken = localStorage.getItem('LoginToken');
+    axios.delete(process.env.REACT_APP_BASE_URL + 'api/users/' + onResetPassUser, {
+      headers: {
+        Authorization: 'Bearer ' + loginToken,
+      },
+    })
+    .then(res => {
+      setOnConfirmDelete(false);
+      setOnResetPass(false);
+      setNewPass('');
+      setOnchange(!onChange);
+    })
+    .catch(err => console.log(err));
+  }
+
+  const onDismissDeleteAlert = () => setAlertDelete(false);
+  const onDismissEmptyAlert = () => setAlertPasswordEmpty(false);
 
   return (
     <>
@@ -444,14 +476,70 @@ function Employee() {
                     onChange={(e) => setNewPass(e.target.value)}
                   ></Input>
                 </Form>
+                <Alert
+                  className="alert-error"
+                  color="warning"
+                  isOpen={alertDelete}
+                  toggle={onDismissDeleteAlert}
+                  style={{width: 330}}
+                >
+                  Bạn không thể xóa chính mình
+                </Alert>
+                <Alert
+                  className="alert-error"
+                  color="warning"
+                  isOpen={alertPasswordEmpty}
+                  toggle={onDismissEmptyAlert}
+                  style={{width: 330}}
+                >
+                  Mật khẩu mới không được để trống
+                </Alert>
               </ModalBody>
-              <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
+              <ModalFooter>
+                <Row>
+                  <Col sm="4">
+                    <Button
+                      className="btn-fill"
+                      color="primary"
+                      onClick={checkUserDelete}
+                    >
+                      Xóa user
+                    </Button>
+                  </Col>
+                  <Col sm="4">
+                    <Button
+                      className="btn-fill"
+                      color="primary"
+                      type="submit"
+                      onClick={handleResetPass}
+                    >
+                      Xác nhận
+                    </Button>
+                  </Col>
+                  <Col sm="4">
+                    <Button
+                      className="btn-fill"
+                      color="secondary"
+                      type="submit"
+                      onClick={() => {setOnResetPass(false); setAlertDelete(false); setAlertPasswordEmpty(false)}}
+                    >
+                      Hủy
+                    </Button>
+                  </Col>
+                </Row>
+              </ModalFooter>
+            </Modal>
+
+            <Modal isOpen={onConfirmDelete} size="sm">
+              <ModalBody>
+                <p>Bạn có muốn xóa user: {selectUser}</p>
+              </ModalBody>
+              <ModalFooter>
                 <Button
                   className="btn-fill"
                   color="primary"
                   type="submit"
-                  style={{ marginRight: 25 }}
-                  onClick={handleResetPass}
+                  onClick={handleDeleteUser}
                 >
                   Xác nhận
                 </Button>
@@ -459,7 +547,7 @@ function Employee() {
                   className="btn-fill"
                   color="secondary"
                   type="submit"
-                  onClick={() => setOnResetPass(false)}
+                  onClick={() => setOnConfirmDelete(false)}
                 >
                   Hủy
                 </Button>
