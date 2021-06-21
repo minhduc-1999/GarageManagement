@@ -1,3 +1,4 @@
+using garaapi.Interfaces.Report;
 using GaraApi.Entities;
 using GaraApi.Entities.Form;
 using GaraApi.Entities.Identity;
@@ -93,7 +94,10 @@ namespace GaraApi.Services
             }
 
         }
-
+        public IEnumerable<Object> Accept(IReportVisitor visitor)
+        {
+            return visitor.ExportAccessoryReceiptReport(this._accessoryReceipt);
+        }
         public void Update(string id, AccessoryReceipt accessoryReceiptIn) =>
             _accessoryReceipt.ReplaceOne(accessoryReceipt => accessoryReceipt.Id == id, accessoryReceiptIn);
 

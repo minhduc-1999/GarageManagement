@@ -13,6 +13,7 @@ namespace garaapi.Services.ReportService
     {
         private readonly RepairedRequestService _rrService;
         private readonly AccessoryService _accessoryService;
+        private readonly AccessoryReceiptService _accessoryReceiptService;
         public MonthlyReportVisitor(DateTime start, DateTime end) : base(start, end)
         {
         }
@@ -21,7 +22,11 @@ namespace garaapi.Services.ReportService
             _rrService = rrService;
             _accessoryService = accessoryService;
         }
-
+        public MonthlyReportVisitor(DateTime start, DateTime end, AccessoryReceiptService accessoryReceiptService, AccessoryService accessoryService) : base(start, end)
+        {
+            _accessoryService = accessoryService;
+            _accessoryReceiptService = accessoryReceiptService;
+        }
         public override IEnumerable<AccessoryIssueModel> ExportAccessoryIssueReport(IMongoCollection<AccessoryIssue> _accessoryIssue)
         {
             List<AccessoryIssueModel> res = new List<AccessoryIssueModel>();
@@ -47,6 +52,31 @@ namespace garaapi.Services.ReportService
             }
             return res;
         }
+
+        public override IEnumerable<AccessoryReceiptModel> ExportAccessoryReceiptReport(IMongoCollection<AccessoryReceipt> _accessoryReceipt)
+        {
+            List<AccessoryReceiptModel> res = new List<AccessoryReceiptModel>();
+            List<Tuple<DateTime,string,int,string,double>> temp = new List<Tuple<DateTime,string,int,string,double>>();
+            var accessoryReceiptFilterBuilder = Builders<AccessoryReceipt>.Filter;
+            var accessoryReceiptFilter = accessoryReceiptFilterBuilder.Gte("CreatedDate", _start)
+             & accessoryReceiptFilterBuilder.Lt("CreatedDate", _end);
+            var dataAccessoryReceipt = _accessoryReceipt.Find(accessoryReceiptFilter)
+            .ToList();
+            foreach (var data in dataAccessoryReceipt){
+                AccessoryReceiptDetail[] details = _accessoryReceiptService.GetDetails(data.Id);
+                foreach (var accDetail in details){
+                    temp.Add(new Tuple<DateTime,string,int,string,double>(data.CreatedDate,accDetail.AccessoryId,accDetail.Quantity
+                    ,accDetail.Unit,accDetail.UnitPrice));
+                }
+            }
+            foreach (var acc in temp){
+                var dataAccessory = _accessoryService.Get(acc.Item2);
+                AccessoryReceiptModel a = new AccessoryReceiptModel(acc.Item1,dataAccessory.Name,acc.Item3,acc.Item4,acc.Item5,dataAccessory.Provider.Name);
+                res.Add(a);
+            }
+            return res;
+        }
+
         public override IEnumerable<ReportElement> ExportCustomerReport(IMongoCollection<Customer> _customers)
         {
             var filterBuilder = Builders<Customer>.Filter;
