@@ -221,7 +221,9 @@ function Quotations() {
   return (
     <>
       <div className="content">
-        {confirmedRRList.length < 1 ? (
+        {confirmedRRList.length < 1 ||
+        listCar.length < 1 ||
+        listAccessoryDB.length < 1 ? (
           <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
         ) : (
           <div>

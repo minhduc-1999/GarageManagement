@@ -38,7 +38,7 @@ function RepairedRequestList() {
   const [disableRRState, setDisableRRState] = useState(true);
 
   const { userAcc } = useContext(AuthContext);
-  const [laborCosts, setLaborCost] = useState(null);
+  const [laborCosts, setLaborCost] = useState([]);
   const [SelectedLabor, setSelectedLabor] = useState(null);
   const [laborName, setLaborName] = useState(null);
   const [laborValue, setLaborValue] = useState("");
@@ -50,7 +50,7 @@ function RepairedRequestList() {
   const [email, setEmail] = useState(null);
   const [alertVisible, setAlertVisible] = useState(false);
   const [emptyFieldAlert, setEmptyFieldAlert] = useState(false);
-  const [listName, setListName] = useState(null);
+  const [listName, setListName] = useState([]);
   const [search, setSearch] = useState("");
   const [list, setList] = useState([]);
 
@@ -309,10 +309,7 @@ function RepairedRequestList() {
           },
         })
         .then((response) => {
-          return response.data;
-        })
-        .then((data) => {
-          setLaborCost(data);
+          setLaborCost(response.data);
         })
         .catch((error) => console.log(error));
     }
@@ -898,7 +895,11 @@ function RepairedRequestList() {
       <div className="content">
         {userAcc.role === "storekeeper" ? (
           <p>Bạn không có quyền truy cập</p>
-        ) : RRList === null || laborCosts === null ? (
+        ) : RRList === null ||
+          laborCosts === null ||
+          listName === null ||
+          listCar === null ||
+          listAccessoryDB === null ? (
           <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
         ) : (
           <div>
