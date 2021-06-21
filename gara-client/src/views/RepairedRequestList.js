@@ -95,7 +95,7 @@ function RepairedRequestList() {
       RepairedRequestId: selectedRR.id,
       CustomerId: selectedRR.customerId,
     };
-    console.log(tempBill);
+    console.log("[TEMP BILL] " + tempBill);
     let loginToken = localStorage.getItem("LoginToken");
     const headers = {
       "Content-Type": "application/json",
@@ -132,14 +132,19 @@ function RepairedRequestList() {
         .catch((error) => console.log(error));
     }
     fetchBillData();
+  }, [onBillCreated]);
+
+  useEffect(() => {
     if (selectedBill !== null) {
+      console.log("BILL VUA MOI TAO");
+      console.log(selectedBill);
       handleClickOpenInvoice(selectedBill.id);
       if (open) {
         handleClose();
       }
       console.log(selectedBill);
     }
-  }, [onBillCreated]);
+  }, [listBill]);
 
   const createTempCar = () => {
     var newCar = {
@@ -455,7 +460,11 @@ function RepairedRequestList() {
 
   const handleClickOpenInvoice = (billId) => {
     //billId = rrID
+    console.log("LIST BILL DEM SS");
+    console.log(listBill);
     let bill = listBill.find((bill) => bill.id === billId);
+    console.log("BILL DISPLAY");
+    console.log(bill);
     setSelectedBill(bill);
     setOpenInvoice(true);
   };
@@ -1270,10 +1279,7 @@ function RepairedRequestList() {
                         <h4>Nhân viên tạo phiếu:</h4>
                       </Col>
                       <Col>
-                        <h4>
-                          {selectedBill.creator.lastName}{" "}
-                          {selectedBill.creator.firstName}
-                        </h4>
+                        <h4>{selectedBill.creator.fullName}</h4>
                       </Col>
                     </Row>
                   </div>
@@ -1847,7 +1853,7 @@ function RepairedRequestList() {
                 <CardBody>
                   {RRList.length < 1 ? (
                     <p style={{ fontSize: 20, marginLeft: 10 }}>
-                      Không tìm thấy nhân viên phù hợp
+                      Không tìm thấy phiếu tiếp nhận phù hợp
                     </p>
                   ) : (
                     <table class="table">
