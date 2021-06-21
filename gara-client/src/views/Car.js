@@ -1,4 +1,3 @@
-import { number } from "prop-types";
 import React, { useEffect, useState, useContext } from "react";
 import { AuthContext } from "contexts/AuthProvider";
 import {
@@ -22,6 +21,99 @@ import {
 const axios = require("axios");
 
 function Car() {
+  //searchCombo-start
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
+  const [searchField, setSearchField] = useState("1");
+
+  const getSearchField = (e) => {
+    setSearchResult([]);
+    setSearchTerm("");
+    setSearchField(e.target.value);
+  };
+
+  const getSearchTerm = (e) => {
+    setSearchTerm(e.target.value);
+    if (e.target.value !== "") {
+      console.log(e.target.value);
+      let newCarList = [];
+      switch (searchField) {
+        case "1":
+          newCarList = cars.filter((car) => {
+            return (car.numberPlate + "").includes(e.target.value);
+          });
+          break;
+        case "2":
+          newCarList = cars.filter((car) => {
+            return (car.owner + "")
+              .toLowerCase()
+              .includes(e.target.value.toLowerCase());
+          });
+          break;
+        case "3":
+          newCarList = cars.filter((car) => {
+            return (car.brand + "")
+              .toLowerCase()
+              .includes(e.target.value.toLowerCase());
+          });
+          break;
+        case "4":
+          newCarList = cars.filter((car) => {
+            return (car.model + "")
+              .toLowerCase()
+              .includes(e.target.value.toLowerCase());
+          });
+          break;
+        case "5":
+          newCarList = cars.filter((car) => {
+            return (car.distanceTravelled + "").includes(e.target.value);
+          });
+          break;
+        case "6":
+          newCarList = cars.filter((car) => {
+            return (car.registerId + "").includes(e.target.value);
+          });
+          break;
+        case "7":
+          newCarList = cars.filter((car) => {
+            return (car.vin + "").includes(e.target.value);
+          });
+          break;
+        case "8":
+          newCarList = cars.filter((car) => {
+            return (car.color + "")
+              .toLowerCase()
+              .includes(e.target.value.toLowerCase());
+          });
+          break;
+
+        default:
+          break;
+      }
+      setSearchResult(newCarList);
+    } else {
+      setSearchResult(cars);
+    }
+  };
+  //searchCombo-end
+
+  const renderCars = () =>
+    (searchTerm.length < 1 ? cars : searchResult).map((car, index) => {
+      return (
+        <tr key={index} onDoubleClick={() => selectCarToEdit(car)}>
+          <th scope="row">{index + 1}</th>
+          <td>{car.numberPlate}</td>
+          <td>{car.owner}</td>
+          <td>{car.brand}</td>
+          <td>{car.model}</td>
+          <td>{car.distanceTravelled} KM</td>
+          <td>{car.registerId}</td>
+          <td>{car.vin}</td>
+          <td>{car.color}</td>
+        </tr>
+      );
+    });
+
   const { userAcc } = useContext(AuthContext);
   const [cars, setCars] = useState(null);
   const [onChange, setOnchange] = useState(false);
@@ -307,43 +399,58 @@ function Car() {
                     <Row style={{ margin: 0, justifyContent: "space-between" }}>
                       <CardTitle tag="h4">Danh sách xe</CardTitle>
                     </Row>
+                    <Row>
+                      <Col md="2">
+                        <Input
+                          type="select"
+                          defaultValue={"1"}
+                          onChange={(e) => getSearchField(e)}
+                        >
+                          <option value="1">Biển số</option>
+                          <option value="2">Chủ xe</option>
+                          <option value="3">Hãng</option>
+                          <option value="4">Model</option>
+                          <option value="5">Khoảng cách di chuyển</option>
+                          <option value="6">Mã đăng kiểm</option>
+                          <option value="7">VIN</option>
+                          <option value="8">Màu xe</option>
+                        </Input>
+                      </Col>
+                      <Col md="3">
+                        <Input
+                          value={searchTerm}
+                          type="text"
+                          placeholder="Tìm kiếm hóa đơn"
+                          onChange={(e) => getSearchTerm(e)}
+                        />
+                      </Col>
+                    </Row>
                   </CardHeader>
                   <CardBody>
-                    <table class="table">
-                      <thead>
-                        <tr>
-                          <th className="text-center" width={50}>
-                            ID
-                          </th>
-                          <th>Biển số</th>
-                          <th>Chủ xe</th>
-                          <th>Hãng</th>
-                          <th>Model</th>
-                          <th>Khoảng cách di chuyển</th>
-                          <th>Mã đăng kiểm</th>
-                          <th>VIN</th>
-                          <th>Màu xe</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {cars.map((car, index) => (
-                          <tr
-                            key={index}
-                            onDoubleClick={() => selectCarToEdit(car)}
-                          >
-                            <th scope="row">{index + 1}</th>
-                            <td>{car.numberPlate}</td>
-                            <td>{car.owner}</td>
-                            <td>{car.brand}</td>
-                            <td>{car.model}</td>
-                            <td>{car.distanceTravelled} KM</td>
-                            <td>{car.registerId}</td>
-                            <td>{car.vin}</td>
-                            <td>{car.color}</td>
+                    {renderCars().length <= 0 ? (
+                      <p style={{ fontSize: 20, marginLeft: 10 }}>
+                        Không tìm thấy xe phù hợp
+                      </p>
+                    ) : (
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th className="text-center" width={50}>
+                              ID
+                            </th>
+                            <th>Biển số</th>
+                            <th>Chủ xe</th>
+                            <th>Hãng</th>
+                            <th>Model</th>
+                            <th>Khoảng cách di chuyển</th>
+                            <th>Mã đăng kiểm</th>
+                            <th>VIN</th>
+                            <th>Màu xe</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>{renderCars()}</tbody>
+                      </table>
+                    )}
                   </CardBody>
                 </Card>
               </Col>
