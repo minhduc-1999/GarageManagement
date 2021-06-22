@@ -38,7 +38,7 @@ function RepairedRequestList() {
   const [disableRRState, setDisableRRState] = useState(true);
 
   const { userAcc } = useContext(AuthContext);
-  const [laborCosts, setLaborCost] = useState(null);
+  const [laborCosts, setLaborCost] = useState([]);
   const [SelectedLabor, setSelectedLabor] = useState(null);
   const [laborName, setLaborName] = useState(null);
   const [laborValue, setLaborValue] = useState("");
@@ -50,7 +50,7 @@ function RepairedRequestList() {
   const [email, setEmail] = useState(null);
   const [alertVisible, setAlertVisible] = useState(false);
   const [emptyFieldAlert, setEmptyFieldAlert] = useState(false);
-  const [listName, setListName] = useState(null);
+  const [listName, setListName] = useState([]);
   const [search, setSearch] = useState("");
   const [list, setList] = useState([]);
 
@@ -95,7 +95,7 @@ function RepairedRequestList() {
       RepairedRequestId: selectedRR.id,
       CustomerId: selectedRR.customerId,
     };
-    console.log(tempBill);
+    console.log("[TEMP BILL] " + tempBill);
     let loginToken = localStorage.getItem("LoginToken");
     const headers = {
       "Content-Type": "application/json",
@@ -132,14 +132,19 @@ function RepairedRequestList() {
         .catch((error) => console.log(error));
     }
     fetchBillData();
+  }, [onBillCreated]);
+
+  useEffect(() => {
     if (selectedBill !== null) {
+      console.log("BILL VUA MOI TAO");
+      console.log(selectedBill);
       handleClickOpenInvoice(selectedBill.id);
       if (open) {
         handleClose();
       }
       console.log(selectedBill);
     }
-  }, [onBillCreated]);
+  }, [listBill]);
 
   const createTempCar = () => {
     var newCar = {
@@ -304,10 +309,7 @@ function RepairedRequestList() {
           },
         })
         .then((response) => {
-          return response.data;
-        })
-        .then((data) => {
-          setLaborCost(data);
+          setLaborCost(response.data);
         })
         .catch((error) => console.log(error));
     }
@@ -455,7 +457,11 @@ function RepairedRequestList() {
 
   const handleClickOpenInvoice = (billId) => {
     //billId = rrID
+    console.log("LIST BILL DEM SS");
+    console.log(listBill);
     let bill = listBill.find((bill) => bill.id === billId);
+    console.log("BILL DISPLAY");
+    console.log(bill);
     setSelectedBill(bill);
     setOpenInvoice(true);
   };
@@ -747,6 +753,7 @@ function RepairedRequestList() {
     setSearchResult([]);
     setSearchTerm("");
     setSearchField(e.target.value);
+    console.log("[SEARCH FIELD] " + e.target.value);
     if (e.target.value === "6") {
       var today = new Date();
       var currentDate = today.toISOString().substring(0, 10);
@@ -761,16 +768,11 @@ function RepairedRequestList() {
   const filterRRByDate = (date) => {
     if (date !== null) {
       const newRRList = RRList.filter((RR) => {
-        console.log(
-          "[Ngày của RR] " + dateFormat(RR.createdDate, "dd/mm/yyyy")
-        );
-        console.log("[Ngày chọn] " + dateFormat(date, "dd/mm/yyyy"));
         return (
-          dateFormat(Object.values(RR)[3].createdDate, "dd/mm/yyyy") ===
-          dateFormat(date, "dd/mm/yyyy")
+          (dateFormat(RR.createdDate, "dd/mm/yyyy") + "").toString() ===
+          (dateFormat(date, "dd/mm/yyyy") + "").toString()
         );
       });
-      console.log(newRRList);
       setSearchResult(newRRList);
     } else {
       setSearchResult(RRList);
@@ -779,6 +781,55 @@ function RepairedRequestList() {
 
   const getSearchTerm = (e) => {
     setSearchTerm(e.target.value);
+    if (e.target.value !== "") {
+      console.log(e.target.value);
+      let newRRList = [];
+      switch (searchField) {
+        case "1":
+          newRRList = RRList.filter((RR) => {
+            return (listName.find((cus) => cus.id === RR.customerId)?.name + "")
+              .toLowerCase()
+              .includes(e.target.value.toLowerCase());
+          });
+          break;
+        case "2":
+          newRRList = RRList.filter((RR) => {
+            return (
+              listName.find((cus) => cus.id === RR.customerId)?.address + ""
+            )
+              .toLowerCase()
+              .includes(e.target.value.toLowerCase());
+          });
+          break;
+        case "3":
+          newRRList = RRList.filter((RR) => {
+            return (
+              listName.find((cus) => cus.id === RR.customerId)?.phoneNumber + ""
+            ).includes(e.target.value);
+          });
+          break;
+        case "4":
+          newRRList = RRList.filter((RR) => {
+            return (listCar.find((car) => car.id === RR.carId)?.model + "")
+              .toLowerCase()
+              .includes(e.target.value.toLowerCase());
+          });
+          break;
+        case "5":
+          newRRList = RRList.filter((RR) => {
+            return (
+              listCar.find((car) => car.id === RR.carId)?.numberPlate + ""
+            ).includes(e.target.value);
+          });
+          break;
+
+        default:
+          break;
+      }
+      setSearchResult(newRRList);
+    } else {
+      setSearchResult(RRList);
+    }
   };
 
   const [selectedCar, setSelectedCar] = useState(null);
@@ -844,7 +895,11 @@ function RepairedRequestList() {
       <div className="content">
         {userAcc.role === "storekeeper" ? (
           <p>Bạn không có quyền truy cập</p>
-        ) : RRList === null || laborCosts === null ? (
+        ) : RRList === null ||
+          laborCosts === null ||
+          listName === null ||
+          listCar === null ||
+          listAccessoryDB === null ? (
           <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
         ) : (
           <div>
@@ -1270,10 +1325,7 @@ function RepairedRequestList() {
                         <h4>Nhân viên tạo phiếu:</h4>
                       </Col>
                       <Col>
-                        <h4>
-                          {selectedBill.creator.lastName}{" "}
-                          {selectedBill.creator.firstName}
-                        </h4>
+                        <h4>{selectedBill.creator.fullName}</h4>
                       </Col>
                     </Row>
                   </div>
@@ -1847,7 +1899,7 @@ function RepairedRequestList() {
                 <CardBody>
                   {RRList.length < 1 ? (
                     <p style={{ fontSize: 20, marginLeft: 10 }}>
-                      Không tìm thấy nhân viên phù hợp
+                      Không tìm thấy phiếu tiếp nhận phù hợp
                     </p>
                   ) : (
                     <table class="table">
@@ -1863,77 +1915,75 @@ function RepairedRequestList() {
                           <th>Tình trạng</th>
                         </tr>
                       </thead>
-                      {/* <tbody>{renderRRList()}</tbody> */}
                       <tbody>
                         {(searchTerm.length < 1 && searchField !== "6"
                           ? RRList
-                          : RRList
-                        ) // o day phai la searchResult
-                          .map((RR, index) => {
-                            return (
-                              <tr
-                                key={index}
-                                onDoubleClick={() => {
-                                  openRR(RR);
-                                }}
-                              >
-                                <th scope="row">{index + 1}</th>
-                                <td>
-                                  {RR.createdDate
-                                    ? dateFormat(RR.createdDate, "dd/mm/yyyy")
-                                    : "-"}
-                                </td>
-                                <td>
-                                  {
-                                    listName.find(
-                                      (cus) => cus.id === RR.customerId
-                                    )?.name
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    listName.find(
-                                      (cus) => cus.id === RR.customerId
-                                    )?.address
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    listName.find(
-                                      (cus) => cus.id === RR.customerId
-                                    )?.phoneNumber
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    listCar.find((car) => car.id === RR.carId)
-                                      ?.model
-                                  }
-                                </td>
-                                <td>
-                                  {
-                                    listCar.find((car) => car.id === RR.carId)
-                                      ?.numberPlate
-                                  }
-                                </td>
-                                <td>
-                                  {RR.state === "init" ? (
-                                    <font color="yellow">
-                                      {translateRRState[RR.state]}
-                                    </font>
-                                  ) : RR.state === "finished" ? (
-                                    <font color="green">
-                                      {translateRRState[RR.state]}
-                                    </font>
-                                  ) : (
-                                    <font color="red">
-                                      {translateRRState[RR.state]}
-                                    </font>
-                                  )}
-                                </td>
-                              </tr>
-                            );
-                          })}
+                          : searchResult
+                        ).map((RR, index) => {
+                          return (
+                            <tr
+                              key={index}
+                              onDoubleClick={() => {
+                                openRR(RR);
+                              }}
+                            >
+                              <th scope="row">{index + 1}</th>
+                              <td>
+                                {RR.createdDate
+                                  ? dateFormat(RR.createdDate, "dd/mm/yyyy")
+                                  : "-"}
+                              </td>
+                              <td>
+                                {
+                                  listName.find(
+                                    (cus) => cus.id === RR.customerId
+                                  )?.name
+                                }
+                              </td>
+                              <td>
+                                {
+                                  listName.find(
+                                    (cus) => cus.id === RR.customerId
+                                  )?.address
+                                }
+                              </td>
+                              <td>
+                                {
+                                  listName.find(
+                                    (cus) => cus.id === RR.customerId
+                                  )?.phoneNumber
+                                }
+                              </td>
+                              <td>
+                                {
+                                  listCar.find((car) => car.id === RR.carId)
+                                    ?.model
+                                }
+                              </td>
+                              <td>
+                                {
+                                  listCar.find((car) => car.id === RR.carId)
+                                    ?.numberPlate
+                                }
+                              </td>
+                              <td>
+                                {RR.state === "init" ? (
+                                  <font color="yellow">
+                                    {translateRRState[RR.state]}
+                                  </font>
+                                ) : RR.state === "finished" ? (
+                                  <font color="green">
+                                    {translateRRState[RR.state]}
+                                  </font>
+                                ) : (
+                                  <font color="red">
+                                    {translateRRState[RR.state]}
+                                  </font>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   )}
