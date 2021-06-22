@@ -1,3 +1,5 @@
+using garaapi.Interfaces.Report;
+using garaapi.Models.ReportModel;
 using GaraApi.Entities;
 using GaraApi.Entities.Form;
 using GaraApi.Entities.Identity;
@@ -8,7 +10,7 @@ using System.Linq;
 
 namespace GaraApi.Services
 {
-    public class AccessoryIssueService
+    public class AccessoryIssueService : IReportService
     {
         private readonly IMongoCollection<AccessoryIssue> _accessoryIssue;
 
@@ -26,8 +28,7 @@ namespace GaraApi.Services
 
         public List<AccessoryIssue> Get() =>
             _accessoryIssue.Find(accessoryIssue => true).ToList();
-
-
+        
         public AccessoryIssue Get(string id) =>
             _accessoryIssue.Find<AccessoryIssue>(accessoryIssue => accessoryIssue.Id == id).FirstOrDefault();
 
@@ -48,6 +49,11 @@ namespace GaraApi.Services
                 return null;
             }
 
+        }
+
+        public IEnumerable<Object> Accept(IReportVisitor visitor)
+        {
+            return visitor.ExportAccessoryIssueReport(this._accessoryIssue);
         }
 
         // public void Update(string id, AccessoryIssue accessoryIssueIn) =>

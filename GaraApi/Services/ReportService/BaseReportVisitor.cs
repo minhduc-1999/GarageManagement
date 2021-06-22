@@ -18,8 +18,15 @@ namespace garaapi.Services.ReportService
             _end = end;
         }
 
+        public abstract IEnumerable<AccessoryIssueModel> ExportAccessoryIssueReport(IMongoCollection<AccessoryIssue> _accessoryIssue);
+
+        public abstract IEnumerable<AccessoryReceiptModel> ExportAccessoryReceiptReport(IMongoCollection<AccessoryReceipt> _accessoryReceipt);
         public abstract IEnumerable<ReportElement> ExportCustomerReport(IMongoCollection<Customer> _customers);
 
         public abstract IEnumerable<ReportElement> ExportRevenueReport(IMongoCollection<Bill> _bills);
+
+        // public abstract IEnumerable<AccessoryIssueModel> ExportAccessoryIssueReport(IMongoCollection<RepairedRequest> _rrRequest
+        // , IMongoCollection<AccessoryIssue> _accessoryIssue, IMongoCollection<Accessory> _accessory, IMongoCollection<Provider> _provider );
+    
     }
 }

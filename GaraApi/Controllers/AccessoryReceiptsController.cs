@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using garaapi.Services.ReportService;
 using GaraApi.Entities.Form;
 using GaraApi.Entities.Identity;
 using GaraApi.Models;
@@ -13,10 +15,12 @@ namespace GaraApi.Controllers
     public class AccessoryReceiptsController : ControllerBase
     {
         private readonly AccessoryReceiptService _accReceiptService;
+        private readonly AccessoryService _accessoryService;
 
-        public AccessoryReceiptsController(AccessoryReceiptService accReceiptService)
+        public AccessoryReceiptsController(AccessoryReceiptService accReceiptService, AccessoryService accessoryService)
         {
             _accReceiptService = accReceiptService;
+            _accessoryService = accessoryService;
         }
 
         [HttpGet]
@@ -37,7 +41,32 @@ namespace GaraApi.Controllers
 
             return accReceipt;
         }
+        [HttpGet("/api/report/accessory-receipt")]
+        [Authorize("admin, manager")]
+        public ActionResult<List<Object>> GetReport([FromQuery] string option, [FromQuery] int year, [FromQuery] int month)
+        {
+            IEnumerable<Object> res = null;
+            switch (option)
+            {
+                case "annual":
+                    res = _accReceiptService.Accept(new AnnualReportVisitor(new DateTime(year, 1, 1), new DateTime(year + 1, 1, 1), _accReceiptService, _accessoryService));
+                    break;
+                case "monthly":
+                    int endMonth = month + 1;
+                    int endYear = year;
+                    if (month == 12)
+                    {
+                        endMonth = 1;
+                        endYear++;
+                    }
+                    res = _accReceiptService.Accept(new MonthlyReportVisitor(new DateTime(year, month, 1), new DateTime(endYear, endMonth, 1), _accReceiptService, _accessoryService));
+                    break;
+                default:
+                    break;
+            }
 
+            return new List<Object>(res);
+        }
         [HttpPost]
         [Authorize("admin, manager, storekeeper")]
         public ActionResult<string> Create([FromBody] List<AccessoryInputModel> model)

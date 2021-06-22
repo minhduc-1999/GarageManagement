@@ -57,9 +57,9 @@ namespace GaraApi.Controllers
 
         [HttpGet("/api/report/revenue")]
         [Authorize("admin, manager")]
-        public ActionResult<List<ReportElement>> GetReport([FromQuery] string option, [FromQuery] int year, [FromQuery] int month)
+        public ActionResult<List<Object>> GetReport([FromQuery] string option, [FromQuery] int year, [FromQuery] int month)
         {
-            IEnumerable<ReportElement> res = null;
+            IEnumerable<Object> res = null;
             if (option == "annual")
             {
                 res = _billService.Accept(new AnnualReportVisitor(new DateTime(year, 1, 1), new DateTime(year + 1, 1, 1)));
@@ -79,7 +79,7 @@ namespace GaraApi.Controllers
 
             if (res == null)
                 return BadRequest();
-            return new List<ReportElement>(res);
+            return new List<Object>(res);
         }
 
         // [HttpPut("{id:length(24)}")]
