@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { AuthContext } from "contexts/AuthProvider";
 import classNames from "classnames";
 import {
@@ -14,17 +14,64 @@ import {
   TabContent,
   TabPane,
 } from "reactstrap";
+const axios = require("axios");
+
 
 
 function StorageHistory() {
   const {userAcc} = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState("1");
+  const [accessoryReceipts, setAccessoryReceipts] = useState(null);
+  const [accessoryReceiptsDetails, setARDetails] = useState(null);
+  const [accessories, setAccessories] = useState(null);
+  const [accessoryName, setAccessoryName] = useState(null);
+
+  useEffect(() => {
+    let loginToken = localStorage.getItem("LoginToken");
+    async function fetchAccessoryReceiptsData() {
+      axios
+        .get(process.env.REACT_APP_BASE_URL +"api/accessory-receipts/", {
+          headers: {
+            Authorization: "Bearer " + loginToken,
+          },
+        })
+        .then((response) => {
+          return response.data;
+        })
+        .then((data) => {
+          setAccessoryReceipts(data);
+        })
+        .catch((error) => console.log(error));
+    }
+    async function fetchAccessoryData() {
+      axios
+        .get( process.env.REACT_APP_BASE_URL +"api/accessories/", {
+          headers: {
+            Authorization: "Bearer " + loginToken,
+          },
+        })
+        .then((response) => {
+          return response.data;
+        })
+        .then((data) => {
+          setAccessories(data);
+        })
+        .catch((error) => console.log(error));
+    }
+    fetchAccessoryReceiptsData();
+    fetchAccessoryData();
+  });
+
   return (
     <>
       <div className="content">
         {userAcc.role === "receptionist" ?
         <p>Bạn không có quyền truy cập</p> :
         <div className="content">
+        {( accessoryReceipts===null || accessories===null) ? (
+          <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
+        ) : (
+          <div className="content"> 
           <Card>
             <CardHeader>
               <Row>
@@ -88,31 +135,27 @@ function StorageHistory() {
                 <Table className="tablesorter" responsive>
                   <thead className="text-primary">
                     <tr>
-                      <th>ID</th>
-                      <th>Ngày nhập</th>
+                      <th>STT</th>
+                      <th>Thời gian nhập</th>
                       <th>Nhân viên nhập kho</th>
                       <th>Chi phí (VNĐ)</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <th className="text-center badge-focus"  scope="row">1</th>
-                      <td>12/06/2020</td>
-                      <td>NTN</td>
-                      <td>20.000.000</td>
-                    </tr>
-                    <tr>
-                      <th className="text-center badge-focus"  scope="row">2</th>
-                      <td>30/04/1945</td>
-                      <td>TNT</td>
-                      <td>5.000.000</td>
-                    </tr>
-                    <tr>
-                      <th className="text-center badge-danger" scope="row">3</th>
-                      <td>12/08/2019</td>
-                      <td>NBK</td>
-                      <td>16.800.000</td>
-                    </tr>
+                  {accessoryReceipts.map((data, index) => (
+                            <tr key={index}
+                            onClick={() => {setARDetails(data.details)}
+                          
+                          }
+                            >
+                              <th scope="row">{index + 1}</th>
+                              <td>{data.createdDate}</td>
+                              <td>
+                                {data.creator.fullName}
+                              </td>
+                              <td>{data.totalAmount}</td>
+                            </tr>
+                          ))}
                   </tbody>
                 </Table>
               </CardBody>
@@ -120,6 +163,9 @@ function StorageHistory() {
           </Col>
           <Col md="7">
             <Card>
+            {( accessoryReceiptsDetails===null) ? (
+          <p>Chọn một phiếu để xem thông tin chi tiết ...</p>
+        ) : ( <div>
               <CardHeader>
                 <CardTitle tag="h4">Chi tiết phiếu nhập phụ tùng</CardTitle>
               </CardHeader>
@@ -127,9 +173,8 @@ function StorageHistory() {
                 <Table className="tablesorter" responsive>
                   <thead className="text-primary">
                     <tr>
-                      <th>ID</th>
+                      <th>STT</th>
                       <th>Tên phụ tùng</th>
-                      <th>Thương hiệu</th>
                       <th>Nhà cung cấp</th>
                       <th>Số lượng</th>
                       <th>Đơn vị</th>
@@ -138,29 +183,29 @@ function StorageHistory() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <th scope="row">1</th>
-                      <td>Vỏ xe</td>
-                      <th>BMW</th>
-                      <td>Long Enterprise</td>
-                      <td>4</td>
-                      <td>cái</td>
-                      <td>4.000.000</td>
-                      <td>16.000.000</td>
-                    </tr>
-                    <tr>
-                      <th scope="row">2</th>
-                      <td>Kính chiếu hậu</td>
-                      <th>Ford</th>
-                      <td>Long Enterprise</td>
-                      <td>2</td>
-                      <td>cặp</td>
-                      <td>400.000</td>
-                      <td>800.000</td>
-                    </tr>
+                  {accessoryReceiptsDetails.map((data, index) => { 
+                    return (
+                  <tr key={index} >
+                  <th scope="row">{index + 1}</th>
+                  <td>{ accessories.find((accessory) => accessory.id === data.accessoryId).name?
+                  accessories.find((accessory) => accessory.id === data.accessoryId).name : "-"}
+                </td>
+                  <td>
+                    {accessories.find((accessory) => accessory.id === data.accessoryId).provider.name?
+                  accessories.find((accessory) => accessory.id === data.accessoryId).provider.name : "-"}
+                  </td>
+                  <td>{data.quantity}</td>
+                  <td>{data.unit}</td>
+                  <td>{data.unitPrice}</td>
+                  <td>{data.unitPrice*data.quantity}</td>
+                </tr>
+                );
+                })}
                   </tbody>
                 </Table>
               </CardBody>
+              </div>
+        )}
             </Card>
           </Col>
         </Row>
@@ -249,6 +294,8 @@ function StorageHistory() {
             </TabPane>
           </TabContent>
           </div>
+          )}
+        </div>
           }
       </div>
     </>
