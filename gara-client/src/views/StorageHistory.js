@@ -25,10 +25,6 @@ function StorageHistory() {
   const [accessoryIssues, setaccessoryIssues] = useState(null);
   const [accessoryIssuesDetails, setAIDetails] = useState(null);
 
-
-  const [accessories, setAccessories] = useState(null);
-  const [RRList, setRRList] = useState([]);
-
   useEffect(() => {
     let loginToken = localStorage.getItem("LoginToken");
     async function fetchAccessoryReceiptsData() {
@@ -61,47 +57,51 @@ function StorageHistory() {
         })
         .catch((error) => console.log(error));
     }
-    async function fetchAccessoryData() {
-      axios
-        .get( process.env.REACT_APP_BASE_URL +"api/accessories/", {
-          headers: {
-            Authorization: "Bearer " + loginToken,
-          },
-        })
-        .then((response) => {
-          return response.data;
-        })
-        .then((data) => {
-          setAccessories(data);
-        })
-        .catch((error) => console.log(error));
-    }
-    async function fetchRRData() {
-      axios
-        .get(process.env.REACT_APP_BASE_URL + "api/repairedrequests", {
-          headers: {
-            Authorization: "Bearer " + loginToken,
-          },
-        })
-        .then((response) => {
-          //console.log(response.data);
-          setRRList(response.data);
-        })
-        .catch((error) => console.log(error));
-    }
     fetchAccessoryReceiptsData();
     fetchAccessoryIssuesData();
-    fetchAccessoryData();
-    fetchRRData();
   },[]);
-
+  
+  function getAccessoryIssueDetailsData(accessoryIssuesId) {
+    let loginToken = localStorage.getItem("LoginToken");
+  axios
+    .get( process.env.REACT_APP_BASE_URL +"api/accessory-issues/details/" + accessoryIssuesId, {
+      headers: {
+        Authorization: "Bearer " + loginToken,
+      },
+    })
+    .then((response) => {
+      return response.data;
+    })
+    .then((data) => {
+      console.log(data);
+      setAIDetails(data);
+    })
+    .catch((error) => console.log(error));
+}
+function getAccessoryReceiptsDetailsData(accessoryReceiptsId) {
+  let loginToken = localStorage.getItem("LoginToken");
+axios
+  .get( process.env.REACT_APP_BASE_URL +"api/accessory-receipts/details/" + accessoryReceiptsId, {
+    headers: {
+      Authorization: "Bearer " + loginToken,
+    },
+  })
+  .then((response) => {
+    return response.data;
+  })
+  .then((data) => {
+    console.log(data);
+    setARDetails(data);
+  })
+  .catch((error) => console.log(error));
+}
   return (
     <>
       <div className="content">
         {userAcc.role === "receptionist" ?
         <p>Bạn không có quyền truy cập</p> :
         <div className="content">
-        {( accessoryReceipts===null || accessories===null || accessoryIssues===null) ? (
+        {( accessoryReceipts===null || accessoryIssues===null) ? (
           <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
         ) : (
           <div className="content"> 
@@ -168,23 +168,23 @@ function StorageHistory() {
                   <thead className="text-primary">
                     <tr>
                       <th>STT</th>
-                      <th>Thời gian nhập</th>
                       <th>Nhân viên nhập kho</th>
-                      <th>Chi phí (VNĐ)</th>
+                      <th>Tổng chi phí (VNĐ)</th>
+                      <th>Thời gian nhập</th>
                     </tr>
                   </thead>
                   <tbody>
                   {accessoryReceipts.map((data, index) => (
                             <tr key={index}
-                            onDoubleClick={() => {setARDetails(data.details)}
+                            onDoubleClick={() => {getAccessoryReceiptsDetailsData(data.id)}
                           }
                             >
                               <th scope="row">{index + 1}</th>
-                              <td>{data.createdDate}</td>
                               <td>
                                 {data.creator.fullName}
                               </td>
                               <td>{data.totalAmount} VNĐ</td>
+                              <td>{data.createdDate}</td>
                             </tr>
                   ))}
                   </tbody>
@@ -207,6 +207,7 @@ function StorageHistory() {
                       <th>STT</th>
                       <th>Tên phụ tùng</th>
                       <th>Nhà cung cấp</th>
+                      <th>Phân loại</th>
                       <th>Số lượng</th>
                       <th>Đơn vị</th>
                       <th>Đơn giá</th>
@@ -218,16 +219,15 @@ function StorageHistory() {
                     return (
                   <tr key={index} >
                   <th scope="row">{index + 1}</th>
-                  <td>{ accessories.find((accessory) => accessory.id === data.accessoryId).name?
-                  accessories.find((accessory) => accessory.id === data.accessoryId).name : "-"}
+                  <td>{data.name}
                 </td>
                   <td>
-                    {accessories.find((accessory) => accessory.id === data.accessoryId).provider.name?
-                  accessories.find((accessory) => accessory.id === data.accessoryId).provider.name : "-"}
+                    {data.providerName}
                   </td>
+                  <td>{data.typeName}</td>
                   <td>{data.quantity}</td>
                   <td>{data.unit}</td>
-                  <td>{data.unitPrice}VNĐ</td>
+                  <td>{data.unitPrice} VNĐ</td>
                   <td>{data.unitPrice*data.quantity} VNĐ</td>
                 </tr>
                 );
@@ -253,25 +253,25 @@ function StorageHistory() {
                   <thead className="text-primary">
                     <tr>
                       <th>ID</th>
-                      <th>Ngày lập</th>
                       <th>Nhân viên lập</th>
                       <th>Người tiếp nhận</th>
+                      <th>Thời gian lập</th>
                     </tr>
                   </thead>
                   <tbody>
                   {accessoryIssues.map((data, index) => (
                             <tr key={index}
-                            onDoubleClick={() => {setAIDetails(RRList.find((RR) => RR.id === data.repairedRequestId).quotation.details)}
+                            onDoubleClick={() => {getAccessoryIssueDetailsData(data.id)}
                           }
                             >
                               <th scope="row">{index + 1}</th>
-                              <td>{data.createdDate}</td>
                               <td>
                                 {data.creator.fullName}
                               </td>
                               <td>
                                 {data.receiver}
                               </td>
+                              <td>{data.createdDate}</td>
                             </tr>
                           ))}
                   </tbody>
@@ -294,8 +294,7 @@ function StorageHistory() {
                       <th>ID</th>
                       <th>Tên phụ tùng</th>
                       <th>Số lượng</th>
-                      <th>Đơn giá</th>
-                      <th>Thành tiền</th>
+                      <th>Đơn vị</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -303,13 +302,11 @@ function StorageHistory() {
                   return (
                   <tr key={index} >
                   <th scope="row">{index + 1}</th>
-                  <td>{ accessories.find((accessory) => accessory.id === data.accessoryId).name?
-                  accessories.find((accessory) => accessory.id === data.accessoryId).name : "-"}
-                </td>
+                <td>{data.name}</td>
                 <td>{data.quantity}</td>
-                <td>{data.unitPrice} VNĐ</td>
-                <td>{data.unitPrice*data.quantity} VNĐ</td>
+                <td>{data.unit}</td>
                 </tr>
+                
                 );
                 })}
                   </tbody>
