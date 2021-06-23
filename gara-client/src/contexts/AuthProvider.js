@@ -13,7 +13,6 @@ const AuthProvider = ({children}) => {
         setUserAcc,
         login: (username, password) => {
           try {
-            console.log('username: ' + username + ', password: ' + password);
             let loginFormData = new FormData();
             loginFormData.append('Username', username);
             loginFormData.append('Password', password);

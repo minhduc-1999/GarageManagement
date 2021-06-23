@@ -8,7 +8,7 @@ function Login() {
   const [password, setPassword] = useState();
   const [alertVisible, setAlertVisible] = useState(false);
 
-  const {userAcc, login} = useContext(AuthContext);
+  const {login} = useContext(AuthContext);
 
   const handleSubmit = e => {
     e.preventDefault();

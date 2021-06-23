@@ -496,17 +496,14 @@ function Employee() {
                 </Alert>
               </ModalBody>
               <ModalFooter>
-                <Row>
-                  <Col sm="4">
                     <Button
+                      style={{marginLeft: 7}}
                       className="btn-fill"
                       color="primary"
                       onClick={checkUserDelete}
                     >
                       Xóa user
                     </Button>
-                  </Col>
-                  <Col sm="4">
                     <Button
                       className="btn-fill"
                       color="primary"
@@ -515,9 +512,8 @@ function Employee() {
                     >
                       Xác nhận
                     </Button>
-                  </Col>
-                  <Col sm="4">
                     <Button
+                      style={{marginRight: 7}}
                       className="btn-fill"
                       color="secondary"
                       type="submit"
@@ -525,8 +521,6 @@ function Employee() {
                     >
                       Hủy
                     </Button>
-                  </Col>
-                </Row>
               </ModalFooter>
             </Modal>
 

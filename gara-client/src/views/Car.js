@@ -420,7 +420,7 @@ function Car() {
                         <Input
                           value={searchTerm}
                           type="text"
-                          placeholder="Tìm kiếm hóa đơn"
+                          placeholder="Tìm kiếm xe"
                           onChange={(e) => getSearchTerm(e)}
                         />
                       </Col>
