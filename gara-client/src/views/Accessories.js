@@ -5,7 +5,6 @@ import {
   CardHeader,
   CardBody,
   CardTitle,
-  Table,
   Row,
   Col,
   Button,
@@ -16,7 +15,7 @@ import {
   Input,
   FormGroup,
   Form,
-  Alert
+  Alert,
 } from "reactstrap";
 import { Tooltip, Fab, TextField } from "@material-ui/core";
 const axios = require("axios");
@@ -24,7 +23,7 @@ const axios = require("axios");
 function Accessories() {
   const [onChange, setOnchange] = useState(false);
   const [accessories, setAccessories] = useState(null);
-  const [newAccessories, setNewAccessories] = useState([])
+  const [newAccessories, setNewAccessories] = useState([]);
   const [name, setName] = useState(null);
   const [quantity, setQuantity] = useState(null);
   const [unit, setUnit] = useState(null);
@@ -47,14 +46,11 @@ function Accessories() {
   const [addSuccessNoti, setAddSuccessNoti] = useState(false);
   const [emptyAlert, setEmptyAlert] = useState(false);
 
-
-
-
   useEffect(() => {
     let loginToken = localStorage.getItem("LoginToken");
     async function fetchAccessoryData() {
       axios
-        .get( process.env.REACT_APP_BASE_URL +"api/accessories/", {
+        .get(process.env.REACT_APP_BASE_URL + "api/accessories/", {
           headers: {
             Authorization: "Bearer " + loginToken,
           },
@@ -109,55 +105,61 @@ function Accessories() {
     setReceiptPrice(null);
     setExpiredTime(null);
     setProviderId(null);
-    setAccessoryTypeId (null);
+    setAccessoryTypeId(null);
     setDescription(null);
   };
   const createNewProvider = () => {
-    if (!providerName || !providerNum || !providerAddress)
-    {
+    if (!providerName || !providerNum || !providerAddress) {
       return;
     }
     {
-    let loginToken = localStorage.getItem("LoginToken");
-    let createNewProvider = new FormData();
-    createNewProvider.append("Name", providerName);
-    createNewProvider.append("PhoneNumber", providerNum);
-    createNewProvider.append("Address", providerAddress);
-    axios
-      .post(process.env.REACT_APP_BASE_URL + "api/providers", createNewProvider, {
-        headers: {
-          Authorization: "Bearer " + loginToken,
-        },
-      })
-      .then((response) => {
-        console.log(response); 
-        setEmptyFieldAlertProvider(false);
-        setOnchange(!onChange);
-      })
-      .catch((error) => {
-        console.log(error);
-        console.error(error.response.data);   
-        console.error(error.response.status); 
-        console.error(error.response.headers); 
-        setEmptyFieldAlertProvider(true);
-      });
+      let loginToken = localStorage.getItem("LoginToken");
+      let createNewProvider = new FormData();
+      createNewProvider.append("Name", providerName);
+      createNewProvider.append("PhoneNumber", providerNum);
+      createNewProvider.append("Address", providerAddress);
+      axios
+        .post(
+          process.env.REACT_APP_BASE_URL + "api/providers",
+          createNewProvider,
+          {
+            headers: {
+              Authorization: "Bearer " + loginToken,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response);
+          setEmptyFieldAlertProvider(false);
+          setOnchange(!onChange);
+        })
+        .catch((error) => {
+          console.log(error);
+          console.error(error.response.data);
+          console.error(error.response.status);
+          console.error(error.response.headers);
+          setEmptyFieldAlertProvider(true);
+        });
     }
   };
 
   const createNewType = () => {
-    if (!typeName)
-    {
+    if (!typeName) {
       return;
     }
     let loginToken = localStorage.getItem("LoginToken");
     let createNewType = new FormData();
     createNewType.append("Name", typeName);
     axios
-      .post(process.env.REACT_APP_BASE_URL + "api/accessorytypes", createNewType, {
-        headers: {
-          Authorization: "Bearer " + loginToken,
-        },
-      })
+      .post(
+        process.env.REACT_APP_BASE_URL + "api/accessorytypes",
+        createNewType,
+        {
+          headers: {
+            Authorization: "Bearer " + loginToken,
+          },
+        }
+      )
       .then((response) => {
         console.log(response);
         setOnchange(!onChange);
@@ -170,59 +172,61 @@ function Accessories() {
   };
 
   const CreateAccessory = () => {
-    if (newAccessories)
-    {
-    let loginToken = localStorage.getItem("LoginToken");    
-    const accessoryReceiptData = newAccessories;
-    axios
-      .post(    
-        process.env.REACT_APP_BASE_URL + "api/accessory-receipts/",
-        accessoryReceiptData,
-        {
-          headers: {
-            "Content-Type":"application/json",
-            Authorization: "Bearer " + loginToken,
-          },
-        }
-      )
-      
-      .then((response) => {
-        console.log(response);
-        setAddSuccessNoti(true);
-        setEmptyAlert(false);
-      })
-      .catch((error) => {
-        console.log(error.response);
-        setAddSuccessNoti(false);
-        setEmptyAlert(true);
-      });
+    if (newAccessories) {
+      let loginToken = localStorage.getItem("LoginToken");
+      const accessoryReceiptData = newAccessories;
+      axios
+        .post(
+          process.env.REACT_APP_BASE_URL + "api/accessory-receipts/",
+          accessoryReceiptData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + loginToken,
+            },
+          }
+        )
+
+        .then((response) => {
+          console.log(response);
+          setAddSuccessNoti(true);
+          setEmptyAlert(false);
+        })
+        .catch((error) => {
+          console.log(error.response);
+          setAddSuccessNoti(false);
+          setEmptyAlert(true);
+        });
       setNewAccessories([]);
     }
   };
-  const addNewAccessory = () => 
-  {
-    if (!name || !quantity || !unit || !receiptPrice || !expiredTime || !providerId ||!accessoryTypeId) {
+  const addNewAccessory = () => {
+    if (
+      !name ||
+      !quantity ||
+      !unit ||
+      !receiptPrice ||
+      !expiredTime ||
+      !providerId ||
+      !accessoryTypeId
+    ) {
       setEmptyFieldAlert(true);
+    } else {
+      setNewAccessories([
+        ...newAccessories,
+        {
+          Name: name,
+          Quantity: quantity,
+          Unit: unit,
+          ReceiptPrice: receiptPrice,
+          expiredTime: expiredTime,
+          ProviderId: providerId,
+          AccessoryTypeId: accessoryTypeId,
+          Description: description,
+        },
+      ]);
+      clearIFFields();
     }
-    else
-    {
-    setNewAccessories(
-    [
-      ...newAccessories,
-      {
-        "Name": name,
-        "Quantity": quantity,
-        "Unit": unit,
-        "ReceiptPrice": receiptPrice,
-        "expiredTime": expiredTime,
-        "ProviderId": providerId,
-        "AccessoryTypeId": accessoryTypeId,
-        "Description": description
-      },
-    ]
-    )
-    clearIFFields();
-  }
   };
 
   const ColoredLine = ({ color }) => (
@@ -238,7 +242,7 @@ function Accessories() {
   const [openImportForm, setOpenIFModal] = React.useState(false);
 
   const handleClickOpenIF = () => {
-    setEmptyFieldAlert(false);  
+    setEmptyFieldAlert(false);
     setAddSuccessNoti(false);
     setEmptyAlert(false);
     setOpenIFModal(true);
@@ -249,7 +253,8 @@ function Accessories() {
   };
 
   const [openAddProviderForm, setOpenProviderModal] = React.useState(false);
-  const [openAddAccessoryTypeForm, setOpenAddAccessoryTypeModal] = React.useState(false);
+  const [openAddAccessoryTypeForm, setOpenAddAccessoryTypeModal] =
+    React.useState(false);
 
   const handleOpenProviderForm = () => {
     setEmptyFieldAlertProvider(false);
@@ -272,7 +277,7 @@ function Accessories() {
   return (
     <>
       <div className="content">
-        {( accessories===null || provider ===null || accessoryType ===null) ? (
+        {accessories === null || provider === null || accessoryType === null ? (
           <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
         ) : (
           <div>
@@ -301,7 +306,7 @@ function Accessories() {
                       <FormGroup>
                         <label>Đơn giá</label>
                         <Input
-                          value={receiptPrice ? receiptPrice :""}
+                          value={receiptPrice ? receiptPrice : ""}
                           placeholder="Đơn giá"
                           type="text"
                           onChange={(e) => {
@@ -314,7 +319,7 @@ function Accessories() {
                       <FormGroup>
                         <label>Số lượng</label>
                         <Input
-                          value={quantity? quantity :""}
+                          value={quantity ? quantity : ""}
                           placeholder="Số lượng"
                           type="number"
                           onChange={(e) => {
@@ -327,7 +332,7 @@ function Accessories() {
                       <FormGroup>
                         <label>Thành tiền</label>
                         <Input
-                          value={receiptPrice*quantity}
+                          value={receiptPrice * quantity}
                           placeholder="Thành tiền"
                           disabled
                           type="text"
@@ -338,9 +343,9 @@ function Accessories() {
                       <FormGroup>
                         <label>Hạn sử dụng (năm)</label>
                         <Input
-                        value={expiredTime ? expiredTime:""}
-                        placeholder="Hạn sử dụng"
-                          type="number"
+                          value={expiredTime ? expiredTime : ""}
+                          placeholder="Hạn sử dụng"
+                          type="date"
                           onChange={(e) => {
                             setExpiredTime(e.target.value);
                           }}
@@ -353,7 +358,7 @@ function Accessories() {
                       <FormGroup>
                         <label>Đơn vị</label>
                         <Input
-                          value={unit ? unit:""}
+                          value={unit ? unit : ""}
                           name="select"
                           onChange={(e) => {
                             setUnit(e.target.value);
@@ -370,7 +375,9 @@ function Accessories() {
                           <FormGroup>
                             <Input
                               defaultValue={"DEFAULT"}
-                              value={accessoryTypeId ? accessoryTypeId : "DEFAULT"}
+                              value={
+                                accessoryTypeId ? accessoryTypeId : "DEFAULT"
+                              }
                               type="select"
                               name="select"
                               id="exampleSelect"
@@ -391,7 +398,10 @@ function Accessories() {
                         </Col>
                         <Col md="auto">
                           <Tooltip title="Thêm loại phụ tùng">
-                            <Fab size="small" onClick={handleOpenAddAccessoryTypeModal}>
+                            <Fab
+                              size="small"
+                              onClick={handleOpenAddAccessoryTypeModal}
+                            >
                               <i className="tim-icons icon-simple-add"></i>
                             </Fab>
                           </Tooltip>
@@ -406,12 +416,11 @@ function Accessories() {
                         <Col className="pr-md-1">
                           <FormGroup>
                             <Input
-                          type="select"
-                          name="select"
-                          id="exampleSelect"
-                          value={providerId ? providerId : "DEFAULT"}
-                          onChange={(e) => setProviderId(e.target.value)}
-                              
+                              type="select"
+                              name="select"
+                              id="exampleSelect"
+                              value={providerId ? providerId : "DEFAULT"}
+                              onChange={(e) => setProviderId(e.target.value)}
                             >
                               <option value="DEFAULT" disabled>
                                 Nhà cung cấp
@@ -453,64 +462,62 @@ function Accessories() {
                   type="submit"
                   style={{ marginRight: 25 }}
                   onClick={addNewAccessory}
-                >Thêm phụ tùng</Button>
-                  <Alert color="danger"
-                  isOpen={emptyFieldAlert}
-                  >
-         Bạn chưa nhập đủ các trường!
-        </Alert>
-                  <ColoredLine></ColoredLine>
+                >
+                  Thêm phụ tùng
+                </Button>
+                <Alert color="danger" isOpen={emptyFieldAlert}>
+                  Bạn chưa nhập đủ các trường!
+                </Alert>
+                <ColoredLine></ColoredLine>
 
-{!newAccessories ? ( <p>Chưa có dữ liệu...</p>) : (
-<Row>
-  <Card style={{margin:25}}>
-    <table class="table">
-      <thead className="text-primary">
-        <tr>
-          <th>Số thứ tự</th>
-          <th>Tên Phụ tùng</th>
-          <th>Số lượng</th>
-          <th>Đơn vị</th>
-          <th>Đơn giá</th>
-          <th>Thành tiền</th>
-        </tr>
-      </thead>
-      <tbody>
-        {newAccessories.map((accessory, index) => (
-          <tr key={index}>
-            <th scope="row">{index + 1}</th>
-            <td>{accessory.Name}</td>
-            <td>
-              {accessory.Quantity ? accessory.Quantity : "-"}
-            </td>
-            <td>{accessory.Unit ? accessory.Unit : "-"}</td>
-            <td>
-              {accessory.ReceiptPrice
-                ? accessory.ReceiptPrice
-                : "-"}
-            </td>
-            <td>
-              {(accessory.ReceiptPrice&&accessory.Quantity)
-                ? accessory.ReceiptPrice*accessory.Quantity
-                : "-"}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-    <Alert color="success"
-                  isOpen={addSuccessNoti}
-                  >
-         Nhập phụ tùng thành công!
-        </Alert>
-        <Alert color="danger"
-                  isOpen={emptyAlert}
-                  >
-         Danh sách phụ tùng trống!
-        </Alert>
-  </Card>
-</Row>)}
-
+                {!newAccessories ? (
+                  <p>Chưa có dữ liệu...</p>
+                ) : (
+                  <Row>
+                    <Card style={{ margin: 25 }}>
+                      <table className="table table-borderless table-hover">
+                        <thead className="text-primary">
+                          <tr>
+                            <th>Số thứ tự</th>
+                            <th>Tên Phụ tùng</th>
+                            <th>Số lượng</th>
+                            <th>Đơn vị</th>
+                            <th>Đơn giá</th>
+                            <th>Thành tiền</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {newAccessories.map((accessory, index) => (
+                            <tr key={index}>
+                              <th scope="row">{index + 1}</th>
+                              <td>{accessory.Name}</td>
+                              <td>
+                                {accessory.Quantity ? accessory.Quantity : "-"}
+                              </td>
+                              <td>{accessory.Unit ? accessory.Unit : "-"}</td>
+                              <td>
+                                {accessory.ReceiptPrice
+                                  ? accessory.ReceiptPrice
+                                  : "-"}
+                              </td>
+                              <td>
+                                {accessory.ReceiptPrice && accessory.Quantity
+                                  ? accessory.ReceiptPrice * accessory.Quantity
+                                  : "-"}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      <Alert color="success" isOpen={addSuccessNoti}>
+                        Nhập phụ tùng thành công!
+                      </Alert>
+                      <Alert color="danger" isOpen={emptyAlert}>
+                        Danh sách phụ tùng trống!
+                      </Alert>
+                    </Card>
+                  </Row>
+                )}
               </ModalBody>
               <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
                 <Button
@@ -552,11 +559,10 @@ function Accessories() {
                   </FormGroup>
                 </Form>
               </ModalBody>
-              <Alert color="danger"
-                  isOpen={emptyFieldAlertType}
-                  >
-         Bạn chưa nhập đủ các trường hoặc loại phụ tùng đã tồn tại!
-        </Alert>              <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
+              <Alert color="danger" isOpen={emptyFieldAlertType}>
+                Bạn chưa nhập đủ các trường hoặc loại phụ tùng đã tồn tại!
+              </Alert>{" "}
+              <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
                 <Button
                   onClick={createNewType}
                   className="btn-fill"
@@ -617,11 +623,9 @@ function Accessories() {
                   </FormGroup>
                 </Form>
               </ModalBody>
-              <Alert color="danger"
-                  isOpen={emptyFieldAlertProvider}
-                  >
-         Bạn chưa nhập đủ các trường hoặc nhà cung cấp đã tồn tại!
-        </Alert>
+              <Alert color="danger" isOpen={emptyFieldAlertProvider}>
+                Bạn chưa nhập đủ các trường hoặc nhà cung cấp đã tồn tại!
+              </Alert>
               <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
                 <Button
                   onClick={createNewProvider}
@@ -666,7 +670,7 @@ function Accessories() {
                       </Row>
                     </CardHeader>
                     <CardBody>
-                      <table class="table">
+                      <table className="table table-borderless table-hover">
                         <thead className="text-primary">
                           <tr>
                             <th>STT</th>

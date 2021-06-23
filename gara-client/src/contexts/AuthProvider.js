@@ -11,25 +11,24 @@ const AuthProvider = ({children}) => {
       value={{
         userAcc,
         setUserAcc,
-        login: async (username, password) => {
+        login: (username, password) => {
           try {
-            console.log('username: ' + username + ', password: ' + password);
             let loginFormData = new FormData();
             loginFormData.append('Username', username);
             loginFormData.append('Password', password);
-            axios.post(process.env.REACT_APP_BASE_URL + 'api/login', loginFormData)
+            return axios.post(process.env.REACT_APP_BASE_URL + 'api/login', loginFormData)
               .then(response => {
-                return response.data;
-              }).then(data => {
-                console.log(data);
-                setUserAcc(data);
-                localStorage.setItem('UserId', data.id);
-                localStorage.setItem('LoginToken', data.token);
+                setUserAcc(response.data);
+                localStorage.setItem('UserId', response.data.id);
+                localStorage.setItem('LoginToken', response.data.token);
+                return true;
               }).catch(error => {
                 console.log(error.response.data);
+                return false;
               });
           } catch (error) {
             console.error(error);
+            return false;
           }
         },
         logout: async () => {

@@ -176,7 +176,7 @@ function Customer() {
                       Không tìm thấy khách hàng phù hợp
                     </p>
                   ) : (
-                    <table class="table">
+                    <table class="table table-borderless table-hover">
                       <thead className="text-primary">
                         <tr>
                           <th>STT</th>

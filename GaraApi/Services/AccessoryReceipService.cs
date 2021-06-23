@@ -52,7 +52,7 @@ namespace GaraApi.Services
                         Provider = provider,
                         AccessoryType = type,
                         ReceiptPrice = input.ReceiptPrice,
-                        ExpiredDate = DateTime.Now.AddYears(input.ExpiredTime),
+                        ExpiredDate = input.ExpiredTime,
                         Description = input.Description
                     };
                 });

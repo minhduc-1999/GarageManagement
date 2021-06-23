@@ -420,7 +420,7 @@ function Car() {
                         <Input
                           value={searchTerm}
                           type="text"
-                          placeholder="Tìm kiếm hóa đơn"
+                          placeholder="Tìm kiếm xe"
                           onChange={(e) => getSearchTerm(e)}
                         />
                       </Col>
@@ -432,7 +432,7 @@ function Car() {
                         Không tìm thấy xe phù hợp
                       </p>
                     ) : (
-                      <table class="table">
+                      <table class="table table-borderless table-hover">
                         <thead>
                           <tr>
                             <th className="text-center" width={50}>

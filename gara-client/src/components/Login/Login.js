@@ -8,17 +8,15 @@ function Login() {
   const [password, setPassword] = useState();
   const [alertVisible, setAlertVisible] = useState(false);
 
-  const {userAcc, login} = useContext(AuthContext);
+  const {login} = useContext(AuthContext);
 
   const handleSubmit = e => {
     e.preventDefault();
-    login(username, password).then(function() { checkError(); });
-  }
-
-  function checkError() {
-    if (!userAcc) {
-      setAlertVisible(true);
-    }
+    login(username, password).then(res => {
+      if (!res) {
+        setAlertVisible(true);
+      }
+    });
   }
 
   const onDismiss = () => setAlertVisible(false);

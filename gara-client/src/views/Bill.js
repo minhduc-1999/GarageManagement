@@ -23,7 +23,6 @@ function Bill() {
 
   const [listBill, setListBill] = useState([]);
   const [listAccessoryDB, setListAccessoryDB] = useState(null);
-  const [onChange, setOnChange] = useState(false);
 
   const [openInvoice, setOpenInvoice] = useState(false);
 
@@ -88,8 +87,6 @@ function Bill() {
             return (bill.totalAmount + "").includes(e.target.value);
           });
           break;
-          break;
-
         default:
           break;
       }
@@ -157,7 +154,8 @@ function Bill() {
     }
     fetchBillData();
     fetchAccessoriesData();
-  }, [onChange]);
+    // eslint-disable-next-line
+  }, []);
 
   const ColoredLine = ({ color }) => (
     <hr
@@ -218,7 +216,7 @@ function Bill() {
                       Không tìm thấy hóa đơn phù hợp
                     </p>
                   ) : (
-                    <table class="table">
+                    <table class="table table-borderless table-hover">
                       <thead className="text-primary">
                         <tr>
                           <th>ID</th>
@@ -278,7 +276,7 @@ function Bill() {
                           </Row>
                         </CardHeader>
                         <CardBody>
-                          <table class="table" responsive>
+                          <table class="table table-borderless table-hover">
                             <thead className="text-primary">
                               <tr>
                                 <th>ID</th>
@@ -357,15 +355,6 @@ function Bill() {
                 )}
               </ModalBody>
               <ModalFooter style={{ margin: 10, justifyContent: "flex-end" }}>
-                <Button
-                  onClick={handleCloseInvoice}
-                  className="btn-fill"
-                  color="primary"
-                  type="submit"
-                  style={{ marginRight: 25 }}
-                >
-                  In hóa đơn
-                </Button>
                 <Button
                   onClick={handleCloseInvoice}
                   className="btn-fill"
