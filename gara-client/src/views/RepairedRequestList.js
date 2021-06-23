@@ -69,6 +69,7 @@ function RepairedRequestList() {
   const [accessorySearch, setAccessorySearch] = useState("");
   const [accessoryList, setAccessoryList] = useState([]);
   const [quantity, setQuantity] = useState(0);
+  const [issuePrice, setIssuePrice] = useState(0);
 
   const [canSaveRR, setCanSaveRR] = useState(0); //0 =  false, 2 = true
 
@@ -538,7 +539,8 @@ function RepairedRequestList() {
               accessoryId: selectedAccessory.id,
               accessoryName: selectedAccessory.name,
               quantity: quantity,
-              unitPrice: selectedAccessory.issuePrice,
+              unitPrice:
+                issuePrice === 0 ? selectedAccessory.receiptPrice : issuePrice,
               laborCost: laborValue,
               issueName: laborName,
             },
@@ -553,7 +555,8 @@ function RepairedRequestList() {
               accessoryId: selectedAccessory.id,
               accessoryName: selectedAccessory.name,
               quantity: quantity,
-              unitPrice: selectedAccessory.issuePrice,
+              unitPrice:
+                issuePrice === 0 ? selectedAccessory.receiptPrice : issuePrice,
             },
           ]);
         } else if (SelectedLabor.name !== "Không") {
@@ -563,7 +566,8 @@ function RepairedRequestList() {
               accessoryId: selectedAccessory.id,
               accessoryName: selectedAccessory.name,
               quantity: quantity,
-              unitPrice: selectedAccessory.issuePrice,
+              unitPrice:
+                issuePrice === 0 ? selectedAccessory.receiptPrice : issuePrice,
               laborCost: SelectedLabor.value,
               issueName: SelectedLabor.name,
             },
@@ -575,7 +579,8 @@ function RepairedRequestList() {
               accessoryId: selectedAccessory.id,
               accessoryName: selectedAccessory.name,
               quantity: quantity,
-              unitPrice: selectedAccessory.issuePrice,
+              unitPrice:
+                issuePrice === 0 ? selectedAccessory.receiptPrice : issuePrice,
             },
           ]);
         }
@@ -604,6 +609,7 @@ function RepairedRequestList() {
   };
 
   const clearQDFields = () => {
+    setIssuePrice(0);
     setAccessorySearch("");
     setSelectedAccessory(null);
     setQuantity(0);
@@ -746,7 +752,7 @@ function RepairedRequestList() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResult, setSearchResult] = useState([]);
-  const [searchField, setSearchField] = useState(1);
+  const [searchField, setSearchField] = useState("1");
   const [isDateSearch, setIsDateSearch] = useState(false);
 
   const getSearchField = (e) => {
@@ -933,13 +939,22 @@ function RepairedRequestList() {
                         </Col>
                         <Col md="4">
                           <FormGroup>
-                            <label>Đơn giá</label>
-                            <h4>
-                              {selectedAccessory != null
-                                ? selectedAccessory.issuePrice
-                                : 0}{" "}
-                              VNĐ
-                            </h4>
+                            <label>Đơn giá (VNĐ)</label>
+                            <Input
+                              type="text"
+                              value={
+                                issuePrice === 0 && selectedAccessory !== null
+                                  ? selectedAccessory.receiptPrice
+                                  : issuePrice
+                              }
+                              onChange={(e) => {
+                                setIssuePrice(
+                                  e.target.value
+                                    .replace(/\D/, "")
+                                    .replace(/^0+/, "")
+                                );
+                              }}
+                            />
                           </FormGroup>
                         </Col>
                         <Col md="4">
@@ -1178,15 +1193,6 @@ function RepairedRequestList() {
                   Hủy
                 </Button>
                 <Button
-                  onClick={handleClickCloseCQ}
-                  className="btn-fill"
-                  color="primary"
-                  type="submit"
-                  style={{ marginRight: 20 }}
-                >
-                  In phiếu
-                </Button>
-                <Button
                   onClick={saveQuotationDetails}
                   className="btn-fill"
                   color="primary"
@@ -1334,15 +1340,6 @@ function RepairedRequestList() {
                 )}
               </ModalBody>
               <ModalFooter style={{ margin: 10, justifyContent: "flex-end" }}>
-                <Button
-                  onClick={handleCloseInvoice}
-                  className="btn-fill"
-                  color="primary"
-                  type="submit"
-                  style={{ marginRight: 25 }}
-                >
-                  In hóa đơn
-                </Button>
                 <Button
                   onClick={handleCloseInvoice}
                   className="btn-fill"
