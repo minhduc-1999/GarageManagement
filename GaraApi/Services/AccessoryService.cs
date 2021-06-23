@@ -19,7 +19,7 @@ namespace GaraApi.Services
         }
 
         public List<Accessory> Get() =>
-            _accessory.Find(accessory => true).ToList();
+            _accessory.Find(accessory => accessory.Quantity > 0).ToList();
 
 
         public Accessory Get(string id) =>
@@ -69,6 +69,20 @@ namespace GaraApi.Services
             if (num == 0)
                 return false;
             return true;
+        }
+
+        public int Take(string id, int amount)
+        {
+            var acc = _accessory.Find(acc => acc.Id == id).Project(acc => new { acc.Quantity, acc.Name }).SingleOrDefault();
+            if (acc.Quantity < amount)
+                throw new Exception($"Số lượng {acc.Name} còn lại không đủ");
+            var update = Builders<Accessory>.Update.Set("Quantity", acc.Quantity - amount);
+            var res = _accessory.UpdateOne(acc => acc.Id == id, update);
+            if (res.ModifiedCount >= 1)
+            {
+                return amount;
+            }
+            return -1;
         }
     }
 }

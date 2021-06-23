@@ -13,10 +13,11 @@ namespace GaraApi.Services
     public class AccessoryIssueService : IReportService
     {
         private readonly IMongoCollection<AccessoryIssue> _accessoryIssue;
+        private readonly AccessoryService _accessoryService;
 
         private readonly RepairedRequestService _rrService;
 
-        public AccessoryIssueService(IGaraDatabaseSettings settings, RepairedRequestService rrService)
+        public AccessoryIssueService(IGaraDatabaseSettings settings, RepairedRequestService rrService, AccessoryService accessoryService)
         {
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
@@ -24,19 +25,39 @@ namespace GaraApi.Services
             _accessoryIssue = database.GetCollection<AccessoryIssue>(settings.AccessoryIssueCollectionName);
 
             _rrService = rrService;
+            _accessoryService = accessoryService;
         }
 
         public List<AccessoryIssue> Get() =>
             _accessoryIssue.Find(accessoryIssue => true).ToList();
-        
+
         public AccessoryIssue Get(string id) =>
             _accessoryIssue.Find<AccessoryIssue>(accessoryIssue => accessoryIssue.Id == id).FirstOrDefault();
 
         public AccessoryIssue Create(UserClaim creator, AccessoryIssue accessoryIssue)
         {
-            if (_rrService.GetQuotationtState(accessoryIssue.RepairedRequestId) != Quotation.QuotationtState.confirmed)
-                return null;
-            Console.WriteLine(_rrService.GetQuotationtState(accessoryIssue.RepairedRequestId));
+            var rrForm = _rrService.Get(accessoryIssue.RepairedRequestId);
+            if (rrForm == null)
+            {
+                throw new Exception("Không tìm thấy phiếu sửa chữa");
+            }
+            if (rrForm.Quotation.State != Quotation.QuotationtState.confirmed)
+                throw new Exception("Phiếu báo giá chưa được xác nhận");
+            try
+            {
+                foreach (var detail in rrForm.Quotation.Details)
+                {
+                    var r = _accessoryService.Take(detail.AccessoryId, detail.Quantity);
+                    if (r < 0)
+                        return null;
+                }
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+
+
             accessoryIssue.Creator = creator;
             accessoryIssue.CreatedDate = System.DateTime.Now;
             try

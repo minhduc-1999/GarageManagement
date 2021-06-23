@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
@@ -20,6 +21,6 @@ namespace GaraApi.Entities
         public string AccessoryId { get; set; }
         [Required]
         [BsonRequired]
-        public int ExpiredTime { get; set; }
+        public DateTime ExpiredTime { get; set; }
     }
 }

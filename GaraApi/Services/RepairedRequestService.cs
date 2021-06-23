@@ -86,7 +86,6 @@ namespace GaraApi.Services
         public Quotation.QuotationtState? GetQuotationtState(string id)
         {
             return _repairedRequest.Find(rr => rr.Id == id).Project(rr => rr.Quotation.State).FirstOrDefault();
-
         }
     }
 }

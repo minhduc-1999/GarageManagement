@@ -12,7 +12,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTg5MDcwM
 ###
 //create
 POST http://localhost:5000/api/accessory-receipts/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYmI4MWI4MjM0ZjIwZmFkN2E3MTdlNyIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMzk0NDY0MiwiZXhwIjoxNjI2MDE4MjQyLCJpYXQiOjE2MjM5NDQ2NDJ9.tWrmNJuX8UE1w3geCpTl26ArLd86x5vUbGykeE-1RtQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTg5MDcwMjAxZDJkZDg0NWI0ZGNiYiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyNDQzNjg3MywiZXhwIjoxNjI2NTEwNDczLCJpYXQiOjE2MjQ0MzY4NzN9.2MkfFjkQjFLHHpFNGF6DDBuPJMCanlG-EtjgYLdQBwQ
 Content-Type: application/json
 
 [
@@ -21,7 +21,7 @@ Content-Type: application/json
         "quantity": 15,
         "unit": "Thùng",
         "receiptPrice": 4000000,
-        "expiredTime": 4,
+        "expiredTime": "2030-01-30T17:16:40",
         "providerId": "60bb97450325b6fff4b63067",
         "accessoryTypeId": "60c23193ea09602510dca3fd",
         "description": "Nhớt"
@@ -31,7 +31,7 @@ Content-Type: application/json
         "quantity": 10,
         "unit": "Cái",
         "receiptPrice": 5000000,
-        "expiredTime": 4,
+        "expiredTime": "2025-02-28T00:00:00",
         "providerId": "60bb97450325b6fff4b63067", 
         "accessoryTypeId": "60bf9781a352eee743e6b3f0",  
         "description": "Ắc quy 250V, dùng cho xe 16 chỗ"  
