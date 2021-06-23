@@ -3,10 +3,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTg5MDcwM
 
 ###
 POST http://localhost:5000/api/accessory-issues/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYmI4MWI4MjM0ZjIwZmFkN2E3MTdlNyIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMzk0NDY0MiwiZXhwIjoxNjI2MDE4MjQyLCJpYXQiOjE2MjM5NDQ2NDJ9.tWrmNJuX8UE1w3geCpTl26ArLd86x5vUbGykeE-1RtQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTg5MDcwMjAxZDJkZDg0NWI0ZGNiYiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyNDQ0MDk0OSwiZXhwIjoxNjI2NTE0NTQ5LCJpYXQiOjE2MjQ0NDA5NDl9.i39xFhUvxFKH_0TTl4bNlDvHzAsFKs-SQoeqDSbc3Mc
 Content-Type: application/json
 
 {
     "Receiver": "Nguyen van A",
-    "RepairedRequestId": "60cf91106320e3a7165524d2"
+    "RepairedRequestId": "60d2fda70e06e9b8196c4e22"
 }
