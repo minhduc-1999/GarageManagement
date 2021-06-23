@@ -7,6 +7,7 @@ using GaraApi.Utils;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using garaapi.Services.ReportService;
+using GaraApi.Models.AccessoryIssueModel;
 
 namespace GaraApi.Controllers
 {
@@ -96,6 +97,23 @@ namespace GaraApi.Controllers
                 return BadRequest(e.Message);
             }
 
+
+        }
+
+        [HttpGet("details/{id:length(24)}", Name = "GetIssueDetail")]
+        [Authorize("admin, manager, storekeeper")]
+        public ActionResult<List<IssueDetailModel>> GetIssueDetails(string id)
+        {
+            try
+            {
+                var res = _accIssueService.GetIssueDetails(id);
+
+                return res;
+            }
+            catch (Exception e)
+            {
+                return StatusCode(404, e.Message);
+            }
 
         }
 

@@ -12,24 +12,24 @@ namespace GaraApi.Utils
     {
         public static IServiceCollection AddDatabaseService(this IServiceCollection services)
         {
-            services.AddSingleton<IGaraDatabaseSettings>(sp =>
+            services.AddScoped<IGaraDatabaseSettings>(sp =>
                 sp.GetRequiredService<IOptions<GaraDatabaseSettings>>().Value);
 
-            services.AddSingleton<AccessoryService>();
-            //services.AddSingleton<QuotationService>();
-            services.AddSingleton<BillService>();
-            services.AddSingleton<AccessoryIssueService>();
-            services.AddSingleton<AccessoryReceiptService>();
-            services.AddSingleton<RepairedRequestService>();
-            services.AddSingleton<CustomerService>();
-            services.AddSingleton<CarService>();
-            services.AddSingleton<AccessoryTypeService>();
-            services.AddSingleton<LaborCostService>();
-            services.AddSingleton<ProviderService>();
-            services.AddSingleton<ReferenceService>();
+            services.AddScoped<AccessoryService>();
+            //services.AddScoped<QuotationService>();
+            services.AddScoped<BillService>();
+            services.AddScoped<AccessoryIssueService>();
+            services.AddScoped<AccessoryReceiptService>();
+            services.AddScoped<RepairedRequestService>();
+            services.AddScoped<CustomerService>();
+            services.AddScoped<CarService>();
+            services.AddScoped<AccessoryTypeService>();
+            services.AddScoped<LaborCostService>();
+            services.AddScoped<ProviderService>();
+            services.AddScoped<ReferenceService>();
 
-            services.AddSingleton<UserService>();
-            services.AddSingleton<UserRoleService>();
+            services.AddScoped<UserService>();
+            services.AddScoped<UserRoleService>();
 
             services.AddScoped<IAuthentication, AuthenticateService>();
             services.AddScoped<IAccountService, AccountService>();

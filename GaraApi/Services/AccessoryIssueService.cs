@@ -3,6 +3,7 @@ using garaapi.Models.ReportModel;
 using GaraApi.Entities;
 using GaraApi.Entities.Form;
 using GaraApi.Entities.Identity;
+using GaraApi.Models.AccessoryIssueModel;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,28 @@ namespace GaraApi.Services
 
         public List<AccessoryIssue> Get() =>
             _accessoryIssue.Find(accessoryIssue => true).ToList();
+
+        public List<IssueDetailModel> GetIssueDetails(string id)
+        {
+            List<IssueDetailModel> result = new List<IssueDetailModel>();
+            var rrId = _accessoryIssue.Find(acc => acc.Id == id).Project(acc => acc.RepairedRequestId).FirstOrDefault();
+            if (rrId == null)
+                throw new Exception("Không tìm thấy phiếu xuất phụ tùng");
+            var details = _rrService.GetQuotationDetails(rrId);
+            foreach (var detail in details)
+            {
+                var acc = _accessoryService.Get(detail.AccessoryId);
+                result.Add(new IssueDetailModel()
+                {
+                    Name = acc.Name,
+                    Quantity = detail.Quantity,
+                    Unit = acc.Unit,
+                });
+            }
+
+            return result;
+        }
+
 
         public AccessoryIssue Get(string id) =>
             _accessoryIssue.Find<AccessoryIssue>(accessoryIssue => accessoryIssue.Id == id).FirstOrDefault();
@@ -71,6 +94,8 @@ namespace GaraApi.Services
             }
 
         }
+
+
 
         public IEnumerable<Object> Accept(IReportVisitor visitor)
         {
