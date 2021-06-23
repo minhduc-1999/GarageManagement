@@ -362,15 +362,6 @@ function Bill() {
                   className="btn-fill"
                   color="primary"
                   type="submit"
-                  style={{ marginRight: 25 }}
-                >
-                  In hóa đơn
-                </Button>
-                <Button
-                  onClick={handleCloseInvoice}
-                  className="btn-fill"
-                  color="primary"
-                  type="submit"
                 >
                   OK
                 </Button>
