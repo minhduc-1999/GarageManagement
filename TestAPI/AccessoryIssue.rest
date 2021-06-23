@@ -10,3 +10,7 @@ Content-Type: application/json
     "Receiver": "Nguyen van A",
     "RepairedRequestId": "60d2fda70e06e9b8196c4e22"
 }
+
+### 
+GET http://localhost:5000/api/accessory-issues/details/60d30688a9163c1707901344
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTg5MDcwMjAxZDJkZDg0NWI0ZGNiYiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjg3NjMwMywiZXhwIjoxNjI0OTQ5OTAzLCJpYXQiOjE2MjI4NzYzMDN9.mHKSKMO9cQkg2xQ20B9PUciqMqekijdtJRfjivWs3jE
