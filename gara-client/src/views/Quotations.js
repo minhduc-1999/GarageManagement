@@ -20,7 +20,6 @@ const axios = require("axios");
 const dateFormat = require("dateformat");
 
 function Quotations() {
-  const [onChange, setOnchange] = useState(false);
   const [RRList, setRRList] = useState([]);
   const [confirmedRRList, setConfirmedRRList] = useState([]);
   const [listCar, setListCar] = useState([]);
@@ -87,8 +86,6 @@ function Quotations() {
             return (RR.totalAmount + "").includes(e.target.value);
           });
           break;
-          break;
-
         default:
           break;
       }
@@ -187,7 +184,8 @@ function Quotations() {
     fetchCarData();
     fetchAccessoriesData();
     fetchRRData();
-  }, [onChange]);
+    // eslint-disable-next-line
+  }, []);
 
   const OpenQuotation = (RR) => {
     setOpenQuotation(true);
@@ -204,7 +202,7 @@ function Quotations() {
       return 0;
     } else {
       let total = 0;
-      selectedRR.quotation.details.map((QD) => {
+      selectedRR.quotation.details.forEach((QD) => {
         if (!QD.hasOwnProperty("laborCosts")) {
           total = Number(total) + Number(QD.quantity) * Number(QD.unitPrice);
         } else {
@@ -236,7 +234,7 @@ function Quotations() {
               <ModalBody>
                 <Form>
                   <ColoredLine color="grey" />
-                  <table class="table">
+                  <table class="table table-borderless table-hover">
                     <thead className="text-primary">
                       <tr>
                         <th>ID</th>
@@ -362,7 +360,7 @@ function Quotations() {
                         Không tìm thấy báo giá phù hợp
                       </p>
                     ) : (
-                      <table className="table">
+                      <table className="table table-borderless table-hover">
                         <thead>
                           <tr>
                             <th width={50}>ID</th>

@@ -143,8 +143,8 @@ function RepairedRequestList() {
       if (open) {
         handleClose();
       }
-      console.log(selectedBill);
     }
+    // eslint-disable-next-line
   }, [listBill]);
 
   const createTempCar = () => {
@@ -353,10 +353,12 @@ function RepairedRequestList() {
       }
       handleClose();
     }
+    // eslint-disable-next-line
   }, [canSaveRR]);
 
   useEffect(() => {
     setQDList(QDList);
+    // eslint-disable-next-line
   }, [onQDListChange]);
 
   const updateRRInDB = () => {
@@ -594,7 +596,7 @@ function RepairedRequestList() {
       return 0;
     } else {
       let total = 0;
-      QDList.map((QD) => {
+      QDList.forEach(QD => {
         if (!QD.hasOwnProperty("laborCosts")) {
           total = Number(total) + Number(QD.quantity) * Number(QD.unitPrice);
         } else {
@@ -894,6 +896,7 @@ function RepairedRequestList() {
     } else {
       setIsRRHasBill(false);
     }
+    // eslint-disable-next-line
   }, [selectedRR]);
 
   return (
@@ -1092,7 +1095,7 @@ function RepairedRequestList() {
                     </div>
                   )}
                   <ColoredLine color="grey" />
-                  <table class="table">
+                  <table class="table table-borderless table-hover">
                     <thead className="text-primary">
                       <tr>
                         <th>ID</th>
@@ -1261,7 +1264,7 @@ function RepairedRequestList() {
                           </Row>
                         </CardHeader>
                         <CardBody>
-                          <table class="table" responsive>
+                          <table class="table table-borderless table-hover">
                             <thead className="text-primary">
                               <tr>
                                 <th>ID</th>

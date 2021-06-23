@@ -606,7 +606,7 @@ function Employee() {
                         Không tìm thấy nhân viên phù hợp
                       </p>
                     ) : (
-                      <table class="table">
+                      <table class="table table-borderless table-hover">
                         <thead>
                           <tr>
                             <th>STT</th>

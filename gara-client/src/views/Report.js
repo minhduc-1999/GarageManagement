@@ -11,7 +11,6 @@ import {
   CardHeader,
   CardBody,
   CardTitle,
-  Table,
   Row,
   Col,
   Input,
@@ -220,7 +219,7 @@ function Report() {
                   <CardTitle tag="h4">Báo cáo phụ tùng</CardTitle>
                 </CardHeader>
                 <CardBody>
-                <Table hover className="mb-0">
+                <table className="table table-borderless table-hover">
                   <thead>
                     <tr>
                       <th className="text-center" width={50}>ID</th>
@@ -261,7 +260,7 @@ function Report() {
                       <td>QuocAn Cor.</td>
                     </tr>
                   </tbody>
-                </Table>
+                </table>
                 </CardBody>
               </Card>
             </Col>

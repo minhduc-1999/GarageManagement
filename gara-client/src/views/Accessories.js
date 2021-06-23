@@ -5,7 +5,6 @@ import {
   CardHeader,
   CardBody,
   CardTitle,
-  Table,
   Row,
   Col,
   Button,
@@ -476,7 +475,7 @@ function Accessories() {
                 ) : (
                   <Row>
                     <Card style={{ margin: 25 }}>
-                      <Table className="tablesorter" responsive>
+                      <table className="table table-borderless table-hover">
                         <thead className="text-primary">
                           <tr>
                             <th>Số thứ tự</th>
@@ -509,7 +508,7 @@ function Accessories() {
                             </tr>
                           ))}
                         </tbody>
-                      </Table>
+                      </table>
                       <Alert color="success" isOpen={addSuccessNoti}>
                         Nhập phụ tùng thành công!
                       </Alert>
@@ -671,7 +670,7 @@ function Accessories() {
                       </Row>
                     </CardHeader>
                     <CardBody>
-                      <Table className="tablesorter" responsive>
+                      <table className="table table-borderless table-hover">
                         <thead className="text-primary">
                           <tr>
                             <th>STT</th>
@@ -722,7 +721,7 @@ function Accessories() {
                             </tr>
                           ))}
                         </tbody>
-                      </Table>
+                      </table>
                     </CardBody>
                   </Card>
                 </Col>

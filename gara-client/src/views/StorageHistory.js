@@ -24,7 +24,6 @@ function StorageHistory() {
   const [accessoryReceipts, setAccessoryReceipts] = useState(null);
   const [accessoryReceiptsDetails, setARDetails] = useState(null);
   const [accessories, setAccessories] = useState(null);
-  const [accessoryName, setAccessoryName] = useState(null);
 
   useEffect(() => {
     let loginToken = localStorage.getItem("LoginToken");
