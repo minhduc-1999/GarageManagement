@@ -467,7 +467,7 @@ function Employee() {
               <ModalBody>
                 <Form>
                   <Label>
-                    Đổi mật khẩu cho user: <strong>{selectUser}</strong>
+                    Tạo lại mật khẩu cho user: <strong>{selectUser}</strong>
                   </Label>
                   <Input
                     type="text"

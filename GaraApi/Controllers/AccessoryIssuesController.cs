@@ -81,12 +81,22 @@ namespace GaraApi.Controllers
         public ActionResult<AccessoryIssue> Create([FromBody] AccessoryIssue accIssue)
         {
             var creator = (HttpContext.Items["User"] as User).UserClaims;
-            var res = _accIssueService.Create(creator, accIssue);
-            if (res == null)
+
+            try
             {
-                return StatusCode(400);
+                var res = _accIssueService.Create(creator, accIssue);
+                if (res == null)
+                {
+                    return StatusCode(500);
+                }
+                return CreatedAtRoute("GetAccessoryIssue", new { id = res.Id.ToString() }, res);
             }
-            return CreatedAtRoute("GetAccessoryIssue", new { id = res.Id.ToString() }, res);
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+
+
         }
 
         // [HttpPut("{id:length(24)}")]

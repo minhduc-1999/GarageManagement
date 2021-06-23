@@ -14,7 +14,7 @@ namespace GaraApi.Models
         [Required]
         public double ReceiptPrice { get; set; }
         [Required]
-        public int ExpiredTime { get; set; }
+        public DateTime ExpiredTime { get; set; }
         [Required]
         public string ProviderId { get; set; }
         [Required]
