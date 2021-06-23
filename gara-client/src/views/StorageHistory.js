@@ -6,7 +6,6 @@ import {
   CardHeader,
   CardBody,
   CardTitle,
-  Table,
   Row,
   Col,
   Button,
@@ -23,8 +22,12 @@ function StorageHistory() {
   const [activeTab, setActiveTab] = useState("1");
   const [accessoryReceipts, setAccessoryReceipts] = useState(null);
   const [accessoryReceiptsDetails, setARDetails] = useState(null);
+  const [accessoryIssues, setaccessoryIssues] = useState(null);
+  const [accessoryIssuesDetails, setAIDetails] = useState(null);
+
+
   const [accessories, setAccessories] = useState(null);
-  const [accessoryName, setAccessoryName] = useState(null);
+  const [RRList, setRRList] = useState([]);
 
   useEffect(() => {
     let loginToken = localStorage.getItem("LoginToken");
@@ -43,6 +46,21 @@ function StorageHistory() {
         })
         .catch((error) => console.log(error));
     }
+    async function fetchAccessoryIssuesData() {
+      axios
+        .get(process.env.REACT_APP_BASE_URL +"api/accessory-issues/", {
+          headers: {
+            Authorization: "Bearer " + loginToken,
+          },
+        })
+        .then((response) => {
+          return response.data;
+        })
+        .then((data) => {
+          setaccessoryIssues(data);
+        })
+        .catch((error) => console.log(error));
+    }
     async function fetchAccessoryData() {
       axios
         .get( process.env.REACT_APP_BASE_URL +"api/accessories/", {
@@ -58,8 +76,23 @@ function StorageHistory() {
         })
         .catch((error) => console.log(error));
     }
+    async function fetchRRData() {
+      axios
+        .get(process.env.REACT_APP_BASE_URL + "api/repairedrequests", {
+          headers: {
+            Authorization: "Bearer " + loginToken,
+          },
+        })
+        .then((response) => {
+          //console.log(response.data);
+          setRRList(response.data);
+        })
+        .catch((error) => console.log(error));
+    }
     fetchAccessoryReceiptsData();
+    fetchAccessoryIssuesData();
     fetchAccessoryData();
+    fetchRRData();
   });
 
   return (
@@ -68,7 +101,7 @@ function StorageHistory() {
         {userAcc.role === "receptionist" ?
         <p>Bạn không có quyền truy cập</p> :
         <div className="content">
-        {( accessoryReceipts===null || accessories===null) ? (
+        {( accessoryReceipts===null || accessories===null || accessoryIssues===null) ? (
           <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
         ) : (
           <div className="content"> 
@@ -122,7 +155,6 @@ function StorageHistory() {
               </Row>
             </CardHeader>
           </Card>
-
           <TabContent activeTab={activeTab}>
             <TabPane tabId="1">
         <Row>
@@ -132,7 +164,7 @@ function StorageHistory() {
                 <CardTitle tag="h4">Danh sách phiếu nhập phụ tùng</CardTitle>
               </CardHeader>
               <CardBody>
-                <Table className="tablesorter" responsive>
+                <table class="table">
                   <thead className="text-primary">
                     <tr>
                       <th>STT</th>
@@ -144,8 +176,7 @@ function StorageHistory() {
                   <tbody>
                   {accessoryReceipts.map((data, index) => (
                             <tr key={index}
-                            onClick={() => {setARDetails(data.details)}
-                          
+                            onDoubleClick={() => {setARDetails(data.details)}
                           }
                             >
                               <th scope="row">{index + 1}</th>
@@ -153,24 +184,24 @@ function StorageHistory() {
                               <td>
                                 {data.creator.fullName}
                               </td>
-                              <td>{data.totalAmount}</td>
+                              <td>{data.totalAmount} VNĐ</td>
                             </tr>
                           ))}
                   </tbody>
-                </Table>
+                </table>
               </CardBody>
             </Card>
           </Col>
           <Col md="7">
             <Card>
             {( accessoryReceiptsDetails===null) ? (
-          <p>Chọn một phiếu để xem thông tin chi tiết ...</p>
+          <p>Chọn một phiếu để xem thông tin chi tiết</p>
         ) : ( <div>
               <CardHeader>
                 <CardTitle tag="h4">Chi tiết phiếu nhập phụ tùng</CardTitle>
               </CardHeader>
               <CardBody>
-                <Table className="tablesorter" responsive>
+                <table class="table">
                   <thead className="text-primary">
                     <tr>
                       <th>STT</th>
@@ -196,13 +227,13 @@ function StorageHistory() {
                   </td>
                   <td>{data.quantity}</td>
                   <td>{data.unit}</td>
-                  <td>{data.unitPrice}</td>
-                  <td>{data.unitPrice*data.quantity}</td>
+                  <td>{data.unitPrice}VNĐ</td>
+                  <td>{data.unitPrice*data.quantity} VNĐ</td>
                 </tr>
                 );
                 })}
                   </tbody>
-                </Table>
+                </table>
               </CardBody>
               </div>
         )}
@@ -218,76 +249,79 @@ function StorageHistory() {
                 <CardTitle tag="h4">Danh sách phiếu xuất phụ tùng</CardTitle>
               </CardHeader>
               <CardBody>
-                <Table className="tablesorter" responsive>
+                <table class="table">
                   <thead className="text-primary">
                     <tr>
                       <th>ID</th>
-                      <th>Mã hóa đơn</th>
+                      <th>Ngày lập</th>
                       <th>Nhân viên lập</th>
-                      <th>Thành tiền (VNĐ)</th>
+                      <th>Người tiếp nhận</th>
+                      <th>Chi phí thanh toán (VNĐ)</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <th className="text-center badge-danger" scope="row">1</th>
-                      <td>HD0001</td>
-                      <td>TBinh</td>
-                      <td>4.469.000</td>
-                    </tr>
-                    <tr>
-                      <th className="text-center badge-focus" scope="row">2</th>
-                      <td>HD1945</td>
-                      <td>TLung</td>
-                      <td>5.000.000</td>
-                    </tr>
-                    <tr>
-                      <th className="text-center badge-focus" scope="row">3</th>
-                      <td>HD1080</td>
-                      <td>TLinh</td>
-                      <td>15.000.000</td>
-                    </tr>
+                  {accessoryIssues.map((data, index) => (
+                            <tr key={index}
+                            onDoubleClick={() => {setAIDetails(RRList.find((RR) => RR.id === data.repairedRequestId).quotation.details)}
+                          }
+                            >
+                              <th scope="row">{index + 1}</th>
+                              <td>{data.createdDate}</td>
+                              <td>
+                                {data.creator.fullName}
+                              </td>
+                              <td>
+                                {data.receiver}
+                              </td>
+                              <td>
+                              { RRList.find((RR) => RR.id === data.repairedRequestId)?
+                                  RRList.find((RR) => RR.id === data.repairedRequestId).totalAmount: "-"} VNĐ
+                              </td>
+                            </tr>
+                          ))}
                   </tbody>
-                </Table>
+                </table>
               </CardBody>
             </Card>
           </Col>
           <Col md="7">
             <Card>
+            {( accessoryIssuesDetails===null) ? (
+          <p>Chọn một phiếu để xem thông tin chi tiết</p>
+        ) : ( <div>
               <CardHeader>
                 <CardTitle tag="h4">Chi tiết phiếu xuất phụ tùng</CardTitle>
               </CardHeader>
               <CardBody>
-                <Table className="tablesorter" responsive>
+                <table class="table">
                   <thead className="text-primary">
                     <tr>
                       <th>ID</th>
                       <th>Tên phụ tùng</th>
-                      <th>Thương hiệu</th>
-                      <th>Giá bán</th>
+                      <th>Số lượng</th>
+                      <th>Đơn giá</th>
+                      <th>Thành tiền</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <th scope="row">1</th>
-                      <td>Vỏ xe</td>
-                      <th>BMW</th>
-                      <td>4.000.000</td>
-                    </tr>
-                    <tr>
-                      <th scope="row">2</th>
-                      <td>Kính chiếu hậu</td>
-                      <th>Ford</th>
-                      <td>400.000</td>
-                    </tr>
-                    <tr>
-                      <th scope="row">3</th>
-                      <td>Sơn thùng</td>
-                      <th>MTP</th>
-                      <td>69.000</td>
-                    </tr>
+                  {accessoryIssuesDetails.map((data, index) => { 
+                  return (
+                  <tr key={index} >
+                  <th scope="row">{index + 1}</th>
+                  <td>{ accessories.find((accessory) => accessory.id === data.accessoryId).name?
+                  accessories.find((accessory) => accessory.id === data.accessoryId).name : "-"}
+                </td>
+                  <td>{data.quantity}</td>
+                  <td>{data.unitPrice} VNĐ</td>
+                  <td>{data.unitPrice*data.quantity} VNĐ</td>
+                </tr>
+                );
+                })}
                   </tbody>
-                </Table>
+                </table>
               </CardBody>
+              </div>
+        )}
             </Card>
           </Col>
         </Row>

@@ -464,7 +464,7 @@ function Accessories() {
 {!newAccessories ? ( <p>Chưa có dữ liệu...</p>) : (
 <Row>
   <Card style={{margin:25}}>
-    <Table className="tablesorter" responsive>
+    <table class="table">
       <thead className="text-primary">
         <tr>
           <th>Số thứ tự</th>
@@ -497,7 +497,7 @@ function Accessories() {
           </tr>
         ))}
       </tbody>
-    </Table>
+    </table>
     <Alert color="success"
                   isOpen={addSuccessNoti}
                   >
@@ -666,7 +666,7 @@ function Accessories() {
                       </Row>
                     </CardHeader>
                     <CardBody>
-                      <Table className="tablesorter" responsive>
+                      <table class="table">
                         <thead className="text-primary">
                           <tr>
                             <th>STT</th>
@@ -717,7 +717,7 @@ function Accessories() {
                             </tr>
                           ))}
                         </tbody>
-                      </Table>
+                      </table>
                     </CardBody>
                   </Card>
                 </Col>

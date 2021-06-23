@@ -15,18 +15,25 @@ import {
   FormGroup,
   Form,
   Input,
+  Alert
 } from "reactstrap";
+
 const axios = require("axios");
 const dateFormat = require("dateformat");
 
 function Quotations() {
-  const [onChange, setOnchange] = useState(false);
+  const [onChange] = useState(false);
   const [RRList, setRRList] = useState([]);
   const [confirmedRRList, setConfirmedRRList] = useState([]);
   const [listCar, setListCar] = useState([]);
   const [selectedRR, setSelectedRR] = useState(null);
   const [openQuotation, setOpenQuotation] = useState(false);
+  const [openExportForm, setExportModal] = useState(false);
+  const [receiver, setReceiver] = useState(null);
+  const [emptyReceiverAlert, setEmptyReceiverAlert] = useState(false);
   const [listAccessoryDB, setListAccessoryDB] = useState([]);
+
+
 
   //searchCombo-start
   const [searchTerm, setSearchTerm] = useState("");
@@ -47,6 +54,38 @@ function Quotations() {
     } else {
       setIsDateSearch(false);
     }
+  };
+  const ExportAccessoriesIssue = () => 
+  {
+    if (selectedRR)
+    {
+    if(!receiver){ setEmptyReceiverAlert(true)} else
+    {
+    setEmptyReceiverAlert(false);
+    let loginToken = localStorage.getItem("LoginToken");
+      const accessoryIssueData = { 
+        RepairedRequestId:selectedRR.id,
+        Receiver: receiver,
+      };
+      axios
+      .post(    
+        process.env.REACT_APP_BASE_URL + "api/accessory-issues/",
+        accessoryIssueData,
+        {
+          headers: {
+            "Content-Type":"application/json",
+            Authorization: "Bearer " + loginToken,
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response);
+        setExportModal(false);
+      })
+      .catch((error) => {
+        console.log(error.response);
+      });
+    }}
   };
 
   const filterBillByDate = (date) => {
@@ -198,6 +237,13 @@ function Quotations() {
     setOpenQuotation(false);
     setSelectedRR(null);
   };
+  const handleOpenEF = () => {
+    setExportModal(true);
+  };
+
+  const handleCloseEF = () => {
+    setExportModal(false);
+  };
 
   const calcTempQuotationTotal = () => {
     if (selectedRR === null) {
@@ -213,6 +259,18 @@ function Quotations() {
             Number(QD.quantity) * Number(QD.unitPrice) +
             Number(QD.laborCost);
         }
+      });
+      return total;
+    }
+  };
+
+  const calcTempTotal = () => {
+    if (selectedRR === null) {
+      return 0;
+    } else {
+      let total = 0;
+      selectedRR.quotation.details.map((QD) => {
+          total = Number(total) + Number(QD.quantity) * Number(QD.unitPrice);
       });
       return total;
     }
@@ -311,12 +369,118 @@ function Quotations() {
                   Hủy
                 </Button>
                 <Button
-                  //onClick={}
+                  onClick={handleOpenEF}
                   className="btn-fill"
                   color="primary"
                   type="submit"
                 >
                   Xuất phụ tùng
+                </Button>
+              </ModalFooter>
+            </Modal>
+            <Modal isOpen={openExportForm} size="lg">
+              <ModalHeader style={{ margin: 10, justifyContent: "center" }}>
+                <h3 className="title">Phiếu xuất phụ tùng</h3>
+              </ModalHeader>
+              <ModalBody  style={{ margin: 10}}>
+                <Row>
+                <Col className="pr-md-1" style={{ margin: 5 }}>
+                <FormGroup>
+                        <label>Người tiếp nhận phụ tùng</label>
+                        <Input
+                          type="text"
+                          onChange={(e) => {
+                            setReceiver(e.target.value);
+                          }}
+                          value={receiver ? receiver : ""}
+                        />
+                      </FormGroup>
+                      </Col>
+                </Row>
+                <Alert color="danger"
+                  isOpen={emptyReceiverAlert}
+                  >
+         Vui lòng nhập người tiếp nhận!
+        </Alert>
+                <Row>
+                <ColoredLine color="grey" />
+                  <Card>
+                  <CardTitle tag="h4">Danh sách phụ tùng</CardTitle>
+                  <ColoredLine color="grey" />
+                  <table class="table">
+                    <thead className="text-primary">
+                      <tr>
+                        <th>ID</th>
+                        <th>Phụ tùng</th>
+                        <th>Nhà cung cấp</th>
+                        <th>Số lượng</th>
+                        <th>Giá bán</th>
+                        <th>Thành tiền</th>
+                      </tr>
+                    </thead>
+                    {selectedRR !== null ? (
+                      <tbody>
+                        {selectedRR.quotation.details.map((QD, index) => (
+                          <tr key={index}>
+                            <th scope="row">{index + 1}</th>
+                            <td>
+                              {
+                                listAccessoryDB.find(
+                                  (acc) => acc.id === QD.accessoryId
+                                ).name
+                              }
+                            </td>
+                            <td>
+                              {
+                                listAccessoryDB.find(
+                                  (acc) => acc.id === QD.accessoryId
+                                ).provider.name
+                              }
+                            </td>
+                            <td>{QD.quantity}</td>
+                            <td>{QD.unitPrice} VNĐ</td>
+                            <td>
+                              { Number(QD.quantity) * Number(QD.unitPrice)}
+                              VNĐ
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    ) : (
+                      <tbody>
+                        
+                      </tbody>
+                    )}
+                  </table>
+                  </Card>
+                </Row>
+                <ColoredLine color="gray" />
+                <Row>
+                  <Col>
+                    <h4 className="title">Tổng cộng</h4>
+                  </Col>
+                  <Col md="auto">
+                    <h4 className="title">{calcTempTotal()} VNĐ</h4>
+                  </Col>
+                </Row>
+              </ModalBody>
+              <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
+                <Button
+                  onClick={handleCloseEF}
+                  className="btn-fill"
+                  color="primary"
+                  type="submit"
+                  style={{ marginRight: 25 }}
+                >
+                  Hủy
+                </Button>
+                <Button
+                  onClick={ExportAccessoriesIssue}
+                  className="btn-fill"
+                  color="primary"
+                  type="submit"
+                >
+                  Xuất
                 </Button>
               </ModalFooter>
             </Modal>

@@ -861,7 +861,6 @@ function RepairedRequestList() {
 
   const openRR = (RR) => {
     setSelectedRR(RR);
-
     setSelectedCustomer(listName.find((cus) => cus.id === RR.customerId));
     setSearch(listName.find((cus) => cus.id === RR.customerId).name);
     setSelectedCar(listCar.find((car) => car.id === RR.carId));
