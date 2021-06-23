@@ -4,6 +4,7 @@ using garaapi.Services.ReportService;
 using GaraApi.Entities.Form;
 using GaraApi.Entities.Identity;
 using GaraApi.Models;
+using GaraApi.Models.AccessoryReceiptModel;
 using GaraApi.Services;
 using GaraApi.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -108,6 +109,30 @@ namespace GaraApi.Controllers
             _accReceiptService.Remove(accReceipt.Id);
 
             return NoContent();
+        }
+
+        [HttpGet("details/{id:length(24)}")]
+        [Authorize("admin, manager, storekeeper")]
+        public ActionResult<List<ReceiptDetailsModel>> GetDetails(string id)
+        {
+            var result = new List<ReceiptDetailsModel>();
+            var details = _accReceiptService.GetDetails(id);
+            foreach (var detail in details)
+            {
+                var acc = _accessoryService.Get(detail.AccessoryId);
+                result.Add(new ReceiptDetailsModel()
+                {
+                    Name = acc.Name,
+                    Unit = detail.Unit,
+                    UnitPrice = detail.UnitPrice,
+                    DateExpired = detail.ExpiredTime,
+                    ProviderName = acc.Provider?.Name,
+                    TypeName = acc.AccessoryType?.Name,
+                    Quantity = detail.Quantity
+                });
+            }
+
+            return result;
         }
     }
 }

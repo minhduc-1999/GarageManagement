@@ -22,7 +22,7 @@ Content-Type: application/json
         "unit": "Thùng",
         "receiptPrice": 4000000,
         "expiredTime": "2030-01-30T17:16:40",
-        "providerId": "60bb97450325b6fff4b63067",
+        "providerId": "60bf9687a352eee743e6b3ee",
         "accessoryTypeId": "60c23193ea09602510dca3fd",
         "description": "Nhớt"
     },
@@ -32,8 +32,13 @@ Content-Type: application/json
         "unit": "Cái",
         "receiptPrice": 5000000,
         "expiredTime": "2025-02-28T00:00:00",
-        "providerId": "60bb97450325b6fff4b63067", 
+        "providerId": "60bf96a4a352eee743e6b3ef", 
         "accessoryTypeId": "60bf9781a352eee743e6b3f0",  
         "description": "Ắc quy 250V, dùng cho xe 16 chỗ"  
     }
 ]
+
+###
+//Get details
+GET http://localhost:5000/api/accessory-receipts/details/60d391990c695de19946aee7
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTg5MDcwMjAxZDJkZDg0NWI0ZGNiYiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjg3NjMwMywiZXhwIjoxNjI0OTQ5OTAzLCJpYXQiOjE2MjI4NzYzMDN9.mHKSKMO9cQkg2xQ20B9PUciqMqekijdtJRfjivWs3jE
