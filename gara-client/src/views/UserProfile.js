@@ -210,11 +210,10 @@ function UserProfile() {
                     <img
                       alt="..."
                       className="avatar"
-                      src={require("assets/img/emilyz.jpg").default}
+                      src={require("assets/img/deepLogo.png").default}
                     />
-                    <h5 className="title">Mike Andrew</h5>
                   </a>
-                  <p className="description">Ceo/Co-Founder</p>
+                  <p className="description">Garage's Founder</p>
                 </div>
                 <div className="card-description">
                   Do not be scared of the truth because we need to restart the
