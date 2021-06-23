@@ -277,9 +277,6 @@ function Accessories() {
   return (
     <>
       <div className="content">
-        {accessories === null || provider === null || accessoryType === null ? (
-          <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
-        ) : (
           <div>
             <Modal isOpen={openImportForm} size="lg">
               <ModalHeader>
@@ -388,11 +385,15 @@ function Accessories() {
                               <option value="DEFAULT" disabled>
                                 Loại phụ tùng
                               </option>
-                              {accessoryType.map((item) => (
+                              {
+                              accessoryType?
+                              accessoryType.map((item) => (
                                 <option key={item.id} value={item.id}>
                                   {item.name}
                                 </option>
-                              ))}
+                              ))
+                              : []
+                            }
                             </Input>
                           </FormGroup>
                         </Col>
@@ -425,11 +426,15 @@ function Accessories() {
                               <option value="DEFAULT" disabled>
                                 Nhà cung cấp
                               </option>
-                              {provider.map((item) => (
+                              
+                              {
+                              provider?
+                              provider.map((item) => (
                                 <option key={item.id} value={item.id}>
                                   {item.name}
                                 </option>
-                              ))}
+                              )) :[]
+                            }
                             </Input>
                           </FormGroup>
                         </Col>
@@ -469,7 +474,6 @@ function Accessories() {
                   Bạn chưa nhập đủ các trường!
                 </Alert>
                 <ColoredLine></ColoredLine>
-
                 {!newAccessories ? (
                   <p>Chưa có dữ liệu...</p>
                 ) : (
@@ -646,7 +650,6 @@ function Accessories() {
                 </Button>
               </ModalFooter>
             </Modal>
-
             <div className="content">
               <Row>
                 <Col md="12">
@@ -669,6 +672,9 @@ function Accessories() {
                         </Col>
                       </Row>
                     </CardHeader>
+        {accessories === null ? (
+          <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
+        ) : (
                     <CardBody>
                       <table className="table table-borderless table-hover">
                         <thead className="text-primary">
@@ -723,12 +729,12 @@ function Accessories() {
                         </tbody>
                       </table>
                     </CardBody>
+                            )}
                   </Card>
                 </Col>
               </Row>
             </div>
           </div>
-        )}
       </div>
     </>
   );

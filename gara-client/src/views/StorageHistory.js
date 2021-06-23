@@ -93,7 +93,7 @@ function StorageHistory() {
     fetchAccessoryIssuesData();
     fetchAccessoryData();
     fetchRRData();
-  });
+  },[]);
 
   return (
     <>
@@ -186,7 +186,7 @@ function StorageHistory() {
                               </td>
                               <td>{data.totalAmount} VNĐ</td>
                             </tr>
-                          ))}
+                  ))}
                   </tbody>
                 </table>
               </CardBody>
@@ -256,7 +256,6 @@ function StorageHistory() {
                       <th>Ngày lập</th>
                       <th>Nhân viên lập</th>
                       <th>Người tiếp nhận</th>
-                      <th>Chi phí thanh toán (VNĐ)</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -272,10 +271,6 @@ function StorageHistory() {
                               </td>
                               <td>
                                 {data.receiver}
-                              </td>
-                              <td>
-                              { RRList.find((RR) => RR.id === data.repairedRequestId)?
-                                  RRList.find((RR) => RR.id === data.repairedRequestId).totalAmount: "-"} VNĐ
                               </td>
                             </tr>
                           ))}
@@ -311,9 +306,9 @@ function StorageHistory() {
                   <td>{ accessories.find((accessory) => accessory.id === data.accessoryId).name?
                   accessories.find((accessory) => accessory.id === data.accessoryId).name : "-"}
                 </td>
-                  <td>{data.quantity}</td>
-                  <td>{data.unitPrice} VNĐ</td>
-                  <td>{data.unitPrice*data.quantity} VNĐ</td>
+                <td>{data.quantity}</td>
+                <td>{data.unitPrice} VNĐ</td>
+                <td>{data.unitPrice*data.quantity} VNĐ</td>
                 </tr>
                 );
                 })}
