@@ -17,16 +17,38 @@ namespace GaraApi.Controllers
     public class BillsController : ControllerBase
     {
         private readonly BillService _billService;
+        private readonly AccessoryService _accSer;
 
-        public BillsController(BillService billService)
+        public BillsController(BillService billService, AccessoryService accSer)
         {
             _billService = billService;
+            _accSer = accSer;
         }
 
         [HttpGet]
         [Authorize("admin, manager, receptionist")]
         public ActionResult<List<Bill>> Get() =>
             _billService.Get();
+
+        [HttpGet("all")]
+        [Authorize("admin, manager, receptionist")]
+        public ActionResult<object> GetFull()
+        {
+
+            var bills = _billService.Get();
+            var result = new List<object>();
+            Dictionary<string, string> accMap = new Dictionary<string, string>();
+            foreach (var bill in bills)
+            {
+                foreach (var detail in bill.Details)
+                {
+                    var accName = _accSer.Get(detail.AccessoryId).Name;
+                    accMap.Add(detail.AccessoryId, accName);
+                }
+            }
+            var obj = new { list = bills, attach = accMap };
+            return obj;
+        }
 
         [HttpGet("{id:length(24)}", Name = "GetBill")]
         [Authorize("admin, manager, receptionist")]

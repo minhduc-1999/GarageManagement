@@ -15,16 +15,42 @@ namespace GaraApi.Controllers
     public class RepairedRequestsController : ControllerBase
     {
         private readonly RepairedRequestService _repReqService;
+        private readonly AccessoryService _accSer;
 
-        public RepairedRequestsController(RepairedRequestService repReqService)
+        public RepairedRequestsController(RepairedRequestService repReqService, AccessoryService accSer)
         {
             _repReqService = repReqService;
+            _accSer = accSer;
         }
 
         [HttpGet]
         [Authorize("admin, manager, receptionist")]
         public ActionResult<List<RepairedRequest>> Get() =>
             _repReqService.Get();
+
+
+        //attach accessory name
+
+        [HttpGet("all")]
+        [Authorize("admin, manager, receptionist")]
+        public ActionResult<object> GetFull()
+        {
+
+            var rrList = _repReqService.Get();
+            var result = new List<object>();
+            Dictionary<string, string> accMap = new Dictionary<string, string>();
+            foreach (var rr in rrList)
+            {
+                foreach (var detail in rr.Quotation.Details)
+                {
+                    var accName = _accSer.Get(detail.AccessoryId).Name;
+                    accMap.Add(detail.AccessoryId, accName);
+                }
+            }
+            var obj = new { list = rrList, attach = accMap };
+            return obj;
+        }
+
 
         [HttpGet("{id:length(24)}", Name = "GetRepairedRequest")]
         [Authorize("admin, manager, receptionist")]
@@ -45,10 +71,10 @@ namespace GaraApi.Controllers
         public ActionResult<RepairedRequest> Create([FromBody] RepairedRequestModel repairedRequestModel)
         {
             var userId = (HttpContext.Items["User"] as User).Id;
-            var id = _repReqService.Create(userId,repairedRequestModel);
+            var id = _repReqService.Create(userId, repairedRequestModel);
 
-            return CreatedAtRoute("GetRepairedRequest", new { id = id}, id);
-            
+            return CreatedAtRoute("GetRepairedRequest", new { id = id }, id);
+
         }
 
         [HttpPut]
@@ -56,7 +82,7 @@ namespace GaraApi.Controllers
         public bool Update([FromBody] RepairedRequestUpdateModel repReqUpdateIn)
         {
             var repReq = _repReqService.Get(repReqUpdateIn.Id);
-            
+
             if (repReq == null)
             {
                 return false;
