@@ -378,6 +378,7 @@ function Quotations() {
                 </Button>
               </ModalFooter>
             </Modal>
+            
             <Modal isOpen={openExportForm} size="lg">
               <ModalHeader style={{ margin: 10, justifyContent: "center" }}>
                 <h3 className="title">Phiếu xuất phụ tùng</h3>

@@ -184,7 +184,7 @@ axios
                                 {data.creator.fullName}
                               </td>
                               <td>{data.totalAmount} VNĐ</td>
-                              <td>{data.createdDate}</td>
+                              <td>{new Date (data.createdDate).toLocaleString('vi-VI', { timeZone: 'UTC' })}</td>
                             </tr>
                   ))}
                   </tbody>
@@ -271,7 +271,7 @@ axios
                               <td>
                                 {data.receiver}
                               </td>
-                              <td>{data.createdDate}</td>
+                              <td>{new Date (data.createdDate).toLocaleString('vi-VI', { timeZone: 'UTC' })}</td>
                             </tr>
                           ))}
                   </tbody>
