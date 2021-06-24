@@ -33,8 +33,8 @@ function Accessories() {
   const [accessoryTypeId, setAccessoryTypeId] = useState(null);
   const [description, setDescription] = useState(null);
 
-  const [provider, setProvider] = useState(null);
-  const [accessoryType, setAccessoryType] = useState(null);
+  const [provider, setProvider] = useState([]);
+  const [accessoryType, setAccessoryType] = useState([]);
   const [typeName, setAccessoryTypeName] = useState(null);
   const [providerName, setProviderName] = useState(null);
   const [providerAddress, setProviderAdd] = useState(null);
@@ -43,7 +43,6 @@ function Accessories() {
   const [emptyFieldAlertProvider, setEmptyFieldAlertProvider] = useState(false);
   const [emptyFieldAlertType, setEmptyFieldAlertType] = useState(false);
 
-  const [addSuccessNoti, setAddSuccessNoti] = useState(false);
   const [emptyAlert, setEmptyAlert] = useState(false);
 
   useEffect(() => {
@@ -132,6 +131,7 @@ function Accessories() {
           console.log(response);
           setEmptyFieldAlertProvider(false);
           setOnchange(!onChange);
+          setOpenProviderModal(false);
         })
         .catch((error) => {
           console.log(error);
@@ -164,6 +164,7 @@ function Accessories() {
         console.log(response);
         setOnchange(!onChange);
         setEmptyFieldAlertType(false);
+        setOpenAddAccessoryTypeModal(false);
       })
       .catch((error) => {
         setEmptyFieldAlertType(true);
@@ -189,12 +190,11 @@ function Accessories() {
 
         .then((response) => {
           console.log(response);
-          setAddSuccessNoti(true);
           setEmptyAlert(false);
+          setOpenIFModal(false);
         })
         .catch((error) => {
           console.log(error.response);
-          setAddSuccessNoti(false);
           setEmptyAlert(true);
         });
       setNewAccessories([]);
@@ -243,7 +243,6 @@ function Accessories() {
 
   const handleClickOpenIF = () => {
     setEmptyFieldAlert(false);
-    setAddSuccessNoti(false);
     setEmptyAlert(false);
     setOpenIFModal(true);
   };
@@ -513,9 +512,6 @@ function Accessories() {
                           ))}
                         </tbody>
                       </table>
-                      <Alert color="success" isOpen={addSuccessNoti}>
-                        Nhập phụ tùng thành công!
-                      </Alert>
                       <Alert color="danger" isOpen={emptyAlert}>
                         Danh sách phụ tùng trống!
                       </Alert>

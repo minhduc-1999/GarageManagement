@@ -236,10 +236,12 @@ function Quotations() {
     setSelectedRR(null);
   };
   const handleOpenEF = () => {
+    setEmptyReceiverAlert(false);
     setExportModal(true);
   };
 
   const handleCloseEF = () => {
+    setEmptyReceiverAlert(false);
     setExportModal(false);
   };
 
