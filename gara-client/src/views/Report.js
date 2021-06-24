@@ -224,14 +224,6 @@ function Report() {
                               defaultValue={new Date().getFullYear()}
                             />
                           </Col>
-                          {/* <Col sm="3">
-                            <Button 
-                              onClick={showReport}
-                              color="primary"
-                              style={{marginTop: 0}}>
-                              Xem
-                            </Button>
-                          </Col> */}
                         </Row>
                       </Col>
                       <Col sm="6">
@@ -355,107 +347,100 @@ function Report() {
                             />
                           </Col>
                         </Row>
-                    </Col>
-                <Col sm="6">
-                  <ButtonGroup
-                    className="btn-group-toggle float-right"
-                    data-toggle="buttons"
-                  >
-                    <Button
-                      tag="label"
-                      className={classNames("btn-simple", {
-                        active: activeTab === "1",
-                      })}
-                      color="info"
-                      id="0"
-                      size="sm"
-                      onClick={() => setActiveTab("1")}
-                    >
-                      <span className="d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                        Báo cáo nhập
-                      </span>
-                      <span className="d-block d-sm-none">
-                        <i className="tim-icons icon-single-02" />
-                      </span>
-                    </Button>
-                    <Button
-                      color="info"
-                      id="1"
-                      size="sm"
-                      tag="label"
-                      className={classNames("btn-simple", {
-                        active: activeTab === "2",
-                      })}
-                      onClick={() => setActiveTab("2")}
-                    >
-                      <span className="d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                        Báo cáo xuất
-                      </span>
-                      <span className="d-block d-sm-none">
-                        <i className="tim-icons icon-gift-2" />
-                      </span>
-                    </Button>
-                  </ButtonGroup>
-                </Col>
-              </Row>
-            </CardHeader>
-                <CardBody>
-                <TabContent activeTab={activeTab}>
-            <TabPane tabId="1">
-                <table className="table table-borderless table-hover">
-                  <thead>
-                    <tr>
-                      <th className="text-center" width={50}>ID</th>
-                      <th>Ngày nhập</th>
-                      <th>Tên phụ tùng</th>
-                      <th>Nhà cung cấp</th>
-                      <th>Số lượng</th>
-                      <th>Đơn vị</th>
-                      <th>Giá nhập</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                  {receiptsRPData.map((data, index) => (
-                            <tr key={index}
-                            >
-                              <th scope="row">{index + 1}</th>
-                              <td>{new Date (data.createdDate).toLocaleDateString('vi-VI', { timeZone: 'UTC' })}</td>
-                              <td>
-                                {data.name}
-                              </td>
-                              <td>{data.providerName}</td>
-                              <td>{data.quantity}</td>
-                              <td>{data.unit}</td>
-                              <td>{data.unitPrice} VNĐ</td>
+                      </Col>
+                      <Col sm="6">
+                        <ButtonGroup
+                          className="btn-group-toggle float-right"
+                          data-toggle="buttons"
+                        >
+                          <Button
+                            tag="label"
+                            className={classNames("btn-simple", {
+                              active: activeTab === "1",
+                            })}
+                            color="info"
+                            id="0"
+                            size="sm"
+                            onClick={() => setActiveTab("1")}
+                          >
+                            <span className="d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                              Báo cáo nhập
+                            </span>
+                            <span className="d-block d-sm-none">
+                              <i className="tim-icons icon-single-02" />
+                            </span>
+                          </Button>
+                          <Button
+                            color="info"
+                            id="1"
+                            size="sm"
+                            tag="label"
+                            className={classNames("btn-simple", {
+                              active: activeTab === "2",
+                            })}
+                            onClick={() => setActiveTab("2")}
+                          >
+                            <span className="d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                              Báo cáo xuất
+                            </span>
+                            <span className="d-block d-sm-none">
+                              <i className="tim-icons icon-gift-2" />
+                            </span>
+                          </Button>
+                        </ButtonGroup>
+                      </Col>
+                    </Row>
+                  </CardHeader>
+                  <CardBody>
+                    <TabContent activeTab={activeTab}>
+                      <TabPane tabId="1">
+                        <table className="table table-borderless table-hover">
+                          <thead>
+                            <tr>
+                              <th className="text-center" width={50}>
+                                ID
+                              </th>
+                              <th>Ngày nhập</th>
+                              <th>Tên phụ tùng</th>
+                              <th>Nhà cung cấp</th>
+                              <th>Số lượng</th>
+                              <th>Đơn vị</th>
+                              <th>Giá nhập</th>
                             </tr>
-                  ))}
-                  </tbody>
-                </table>
-            </TabPane>
-            <TabPane tabId="2">
-            <table className="table table-borderless table-hover">
-                  <thead>
-                    <tr>
-                      <th className="text-center" width={50}>ID</th>
-                      <th>Ngày xuất</th>
-                      <th>Tên phụ tùng</th>
-                      <th>Nhà cung cấp</th>
-                      <th>Số lượng</th>
-                      <th>Giá bán</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                  {issuesRPData.map((data, index) => (
-                            <tr key={index}
-                            >
-                              <th scope="row">{index + 1}</th>
-                              <td>{new Date (data.createdDate).toLocaleDateString('vi-VI', { timeZone: 'UTC' })}</td>
-                              <td>
-                                {data.name}
-                              </td>
-                              <td>{data.providerName}</td>
-                              <td>{data.quantity}</td>
-                              <td>{data.issuePrice} VNĐ</td>
+                          </thead>
+                          <tbody>
+                            {receiptsRPData.map((data, index) => (
+                              <tr key={index}>
+                                <th scope="row">{index + 1}</th>
+                                <td>
+                                  {new Date(
+                                    data.createdDate
+                                  ).toLocaleDateString("vi-VI", {
+                                    timeZone: "UTC",
+                                  })}
+                                </td>
+                                <td>{data.name}</td>
+                                <td>{data.providerName}</td>
+                                <td>{data.quantity}</td>
+                                <td>{data.unit}</td>
+                                <td>{data.unitPrice} VNĐ</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </TabPane>
+                      <TabPane tabId="2">
+                        <table className="table table-borderless table-hover">
+                          <thead>
+                            <tr>
+                              <th className="text-center" width={50}>
+                                ID
+                              </th>
+                              <th>Ngày xuất</th>
+                              <th>Tên phụ tùng</th>
+                              <th>Nhà cung cấp</th>
+                              <th>Số lượng</th>
+                              <th>Giá bán</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -472,7 +457,7 @@ function Report() {
                                 <td>{data.name}</td>
                                 <td>{data.providerName}</td>
                                 <td>{data.quantity}</td>
-                                <td>{data.issuePrice}</td>
+                                <td>{data.issuePrice} VNĐ</td>
                               </tr>
                             ))}
                           </tbody>
