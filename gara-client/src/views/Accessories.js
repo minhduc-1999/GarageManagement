@@ -698,7 +698,7 @@ function Accessories() {
                               <td>
                                 {accessory.receiptPrice
                                   ? accessory.receiptPrice
-                                  : "-"}
+                                  : "-"} VNĐ
                               </td>
                               <td>
                                 {accessory.expiredDate

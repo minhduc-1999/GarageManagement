@@ -377,7 +377,7 @@ function Report() {
                               <td>{data.providerName}</td>
                               <td>{data.quantity}</td>
                               <td>{data.unit}</td>
-                              <td>{data.unitPrice}</td>
+                              <td>{data.unitPrice} VNĐ</td>
                             </tr>
                   ))}
                   </tbody>
@@ -406,7 +406,7 @@ function Report() {
                               </td>
                               <td>{data.providerName}</td>
                               <td>{data.quantity}</td>
-                              <td>{data.issuePrice}</td>
+                              <td>{data.issuePrice} VNĐ</td>
                             </tr>
                   ))}
                   </tbody>
