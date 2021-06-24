@@ -28,6 +28,8 @@ function UserProfile() {
   const [successAlert, setSuccessAlert] = useState(false);
   const [failAlert, setFailAlert] = useState(false);
 
+  const [isLoading, setLoading] = useState(true);
+
   useEffect(() => {
     let loginToken = localStorage.getItem("LoginToken");
     let userId = localStorage.getItem("UserId");
@@ -49,6 +51,7 @@ function UserProfile() {
           );
         }
         setPhoneNum(response.data.userClaims.phoneNumber);
+        setLoading(false);
       });
   }, [onChange]);
 
@@ -86,7 +89,7 @@ function UserProfile() {
   return (
     <>
       <div className="content">
-        {userAcc === null || localStorage.getItem("UserId") === null ? (
+        {isLoading ? (
           <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
         ) : (
           <Row>

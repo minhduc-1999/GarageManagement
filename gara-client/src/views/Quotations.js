@@ -270,7 +270,7 @@ function Quotations() {
       return 0;
     } else {
       let total = 0;
-      selectedRR.quotation.details.map((QD) => {
+      selectedRR.quotation.details.forEach((QD) => {
         total = Number(total) + Number(QD.quantity) * Number(QD.unitPrice);
       });
       return total;

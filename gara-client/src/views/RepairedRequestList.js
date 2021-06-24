@@ -1903,7 +1903,7 @@ function RepairedRequestList() {
                       Không tìm thấy phiếu tiếp nhận phù hợp
                     </p>
                   ) : (
-                    <table class="table">
+                    <table class="table table-borderless table-hover">
                       <thead>
                         <tr>
                           <th>ID</th>
