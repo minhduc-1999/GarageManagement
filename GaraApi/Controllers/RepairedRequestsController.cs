@@ -43,8 +43,11 @@ namespace GaraApi.Controllers
             {
                 foreach (var detail in rr.Quotation.Details)
                 {
-                    var accName = _accSer.Get(detail.AccessoryId).Name;
-                    accMap.Add(detail.AccessoryId, accName);
+                    if (!accMap.ContainsKey(detail.AccessoryId))
+                    {
+                        var accName = _accSer.Get(detail.AccessoryId).Name;
+                        accMap.Add(detail.AccessoryId, accName);
+                    }
                 }
             }
             var obj = new { list = rrList, attach = accMap };

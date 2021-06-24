@@ -125,9 +125,24 @@ function Bill() {
 
   useEffect(() => {
     let loginToken = localStorage.getItem("LoginToken");
-    async function fetchAccessoriesData() {
+    // async function fetchAccessoriesData() {
+    //   axios
+    //     .get(process.env.REACT_APP_BASE_URL + "api/accessories", {
+    //       headers: {
+    //         Authorization: "Bearer " + loginToken,
+    //       },
+    //     })
+    //     .then((response) => {
+    //       return response.data;
+    //     })
+    //     .then((data) => {
+    //       setListAccessoryDB(data);
+    //     })
+    //     .catch((error) => console.log(error));
+    // }
+    async function fetchBillData() {
       axios
-        .get(process.env.REACT_APP_BASE_URL + "api/accessories", {
+        .get(process.env.REACT_APP_BASE_URL + "api/bills/all", {
           headers: {
             Authorization: "Bearer " + loginToken,
           },
@@ -136,24 +151,13 @@ function Bill() {
           return response.data;
         })
         .then((data) => {
-          setListAccessoryDB(data);
-        })
-        .catch((error) => console.log(error));
-    }
-    async function fetchBillData() {
-      axios
-        .get(process.env.REACT_APP_BASE_URL + "api/bills", {
-          headers: {
-            Authorization: "Bearer " + loginToken,
-          },
-        })
-        .then((response) => {
-          setListBill(response.data);
+          setListBill(data.list);
+          setListAccessoryDB(data.attach);
         })
         .catch((error) => console.log(error));
     }
     fetchBillData();
-    fetchAccessoriesData();
+    //fetchAccessoriesData();
     // eslint-disable-next-line
   }, []);
 
@@ -293,13 +297,7 @@ function Bill() {
                                 <tbody>
                                   <tr key={index}>
                                     <th scope="row">{index + 1}</th>
-                                    <td>
-                                      {
-                                        listAccessoryDB.find(
-                                          (acc) => acc.id === QD.accessoryId
-                                        ).name
-                                      }
-                                    </td>
+                                    <td>{listAccessoryDB[QD.accessoryId]}</td>
                                     <td>{QD.quantity}</td>
                                     <td>{QD.unitPrice} VNĐ</td>
                                     <td>
