@@ -936,7 +936,7 @@ function RepairedRequestList() {
                             <label>Tên phụ tùng</label>
                             <Input
                               name="select"
-                              //id="exampleSelect"
+                              autocomplete="off"
                               type="search"
                               value={accessorySearch}
                               onChange={(e) => onAccessoriesChangeHandler(e)}
@@ -1374,6 +1374,7 @@ function RepairedRequestList() {
                           name="select"
                           id="exampleSelect"
                           type="search"
+                          autocomplete="off"
                           value={search}
                           onChange={(e) => onChangeHandler(e)}
                         ></Input>
