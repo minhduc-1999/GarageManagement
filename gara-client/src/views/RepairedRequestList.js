@@ -66,6 +66,7 @@ function RepairedRequestList() {
 
   const [selectedAccessory, setSelectedAccessory] = useState(null);
   const [listAccessoryDB, setListAccessoryDB] = useState(null);
+  const [listAccessoryAttach, setListAccessoryAttach] = useState([]);
   const [accessorySearch, setAccessorySearch] = useState("");
   const [accessoryList, setAccessoryList] = useState([]);
   const [quantity, setQuantity] = useState(0);
@@ -292,13 +293,17 @@ function RepairedRequestList() {
     }
     async function fetchRRData() {
       axios
-        .get(process.env.REACT_APP_BASE_URL + "api/repairedrequests", {
+        .get(process.env.REACT_APP_BASE_URL + "api/repairedrequests/all", {
           headers: {
             Authorization: "Bearer " + loginToken,
           },
         })
         .then((response) => {
-          setRRList(response.data);
+          return response.data;
+        })
+        .then((data) => {
+          setRRList(data.list);
+          setListAccessoryAttach(data.attach);
         })
         .catch((error) => console.log(error));
     }
@@ -596,7 +601,7 @@ function RepairedRequestList() {
       return 0;
     } else {
       let total = 0;
-      QDList.forEach(QD => {
+      QDList.forEach((QD) => {
         if (!QD.hasOwnProperty("laborCosts")) {
           total = Number(total) + Number(QD.quantity) * Number(QD.unitPrice);
         } else {
@@ -1111,11 +1116,12 @@ function RepairedRequestList() {
                         <tr key={index}>
                           <th scope="row">{index + 1}</th>
                           <td>
-                            {
-                              listAccessoryDB.find(
-                                (acc) => acc.id === QD.accessoryId
-                              ).name
-                            }
+                            {selectedRR !== null &&
+                            selectedRR.quotation.state === "confirmed"
+                              ? listAccessoryAttach[QD.accessoryId]
+                              : listAccessoryDB.find(
+                                  (acc) => acc.id === QD.accessoryId
+                                ).name}
                           </td>
                           <td>{QD.quantity}</td>
                           <td>{QD.unitPrice} VNĐ</td>
@@ -1281,11 +1287,7 @@ function RepairedRequestList() {
                                   <tr key={index}>
                                     <th scope="row">{index + 1}</th>
                                     <td>
-                                      {
-                                        listAccessoryDB.find(
-                                          (acc) => acc.id === QD.accessoryId
-                                        ).name
-                                      }
+                                      {listAccessoryAttach[QD.accessoryId]}
                                     </td>
                                     <td>{QD.quantity}</td>
                                     <td>{QD.unitPrice} VNĐ</td>

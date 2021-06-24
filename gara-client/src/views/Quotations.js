@@ -15,7 +15,7 @@ import {
   FormGroup,
   Form,
   Input,
-  Alert
+  Alert,
 } from "reactstrap";
 
 const axios = require("axios");
@@ -31,8 +31,6 @@ function Quotations() {
   const [receiver, setReceiver] = useState(null);
   const [emptyReceiverAlert, setEmptyReceiverAlert] = useState(false);
   const [listAccessoryDB, setListAccessoryDB] = useState([]);
-
-
 
   //searchCombo-start
   const [searchTerm, setSearchTerm] = useState("");
@@ -54,37 +52,37 @@ function Quotations() {
       setIsDateSearch(false);
     }
   };
-  const ExportAccessoriesIssue = () => 
-  {
-    if (selectedRR)
-    {
-    if(!receiver){ setEmptyReceiverAlert(true)} else
-    {
-    setEmptyReceiverAlert(false);
-    let loginToken = localStorage.getItem("LoginToken");
-      const accessoryIssueData = { 
-        RepairedRequestId:selectedRR.id,
-        Receiver: receiver,
-      };
-      axios
-      .post(    
-        process.env.REACT_APP_BASE_URL + "api/accessory-issues/",
-        accessoryIssueData,
-        {
-          headers: {
-            "Content-Type":"application/json",
-            Authorization: "Bearer " + loginToken,
-          },
-        }
-      )
-      .then((response) => {
-        console.log(response);
-        setExportModal(false);
-      })
-      .catch((error) => {
-        console.log(error.response);
-      });
-    }}
+  const ExportAccessoriesIssue = () => {
+    if (selectedRR) {
+      if (!receiver) {
+        setEmptyReceiverAlert(true);
+      } else {
+        setEmptyReceiverAlert(false);
+        let loginToken = localStorage.getItem("LoginToken");
+        const accessoryIssueData = {
+          RepairedRequestId: selectedRR.id,
+          Receiver: receiver,
+        };
+        axios
+          .post(
+            process.env.REACT_APP_BASE_URL + "api/accessory-issues/",
+            accessoryIssueData,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + loginToken,
+              },
+            }
+          )
+          .then((response) => {
+            console.log(response);
+            setExportModal(false);
+          })
+          .catch((error) => {
+            console.log(error.response);
+          });
+      }
+    }
   };
 
   const filterBillByDate = (date) => {
@@ -192,36 +190,39 @@ function Quotations() {
         })
         .catch((error) => console.log(error));
     }
-    async function fetchAccessoriesData() {
-      axios
-        .get(process.env.REACT_APP_BASE_URL + "api/accessories", {
-          headers: {
-            Authorization: "Bearer " + loginToken,
-          },
-        })
-        .then((response) => {
-          return response.data;
-        })
-        .then((data) => {
-          setListAccessoryDB(data);
-        })
-        .catch((error) => console.log(error));
-    }
+    // async function fetchAccessoriesData() {
+    //   axios
+    //     .get(process.env.REACT_APP_BASE_URL + "api/accessories", {
+    //       headers: {
+    //         Authorization: "Bearer " + loginToken,
+    //       },
+    //     })
+    //     .then((response) => {
+    //       return response.data;
+    //     })
+    //     .then((data) => {
+    //       setListAccessoryDB(data);
+    //     })
+    //     .catch((error) => console.log(error));
+    // }
     async function fetchRRData() {
       axios
-        .get(process.env.REACT_APP_BASE_URL + "api/repairedrequests", {
+        .get(process.env.REACT_APP_BASE_URL + "api/repairedrequests/all", {
           headers: {
             Authorization: "Bearer " + loginToken,
           },
         })
-        .then((response) => {
-          //console.log(response.data);
-          setRRList(response.data);
+        .then((res) => {
+          return res.data;
+        })
+        .then((data) => {
+          setListAccessoryDB(data.attach);
+          setRRList(data.list);
         })
         .catch((error) => console.log(error));
     }
     fetchCarData();
-    fetchAccessoriesData();
+    //fetchAccessoriesData();
     fetchRRData();
     // eslint-disable-next-line
   }, []);
@@ -270,7 +271,7 @@ function Quotations() {
     } else {
       let total = 0;
       selectedRR.quotation.details.map((QD) => {
-          total = Number(total) + Number(QD.quantity) * Number(QD.unitPrice);
+        total = Number(total) + Number(QD.quantity) * Number(QD.unitPrice);
       });
       return total;
     }
@@ -312,13 +313,7 @@ function Quotations() {
                         {selectedRR.quotation.details.map((QD, index) => (
                           <tr key={index}>
                             <th scope="row">{index + 1}</th>
-                            <td>
-                              {
-                                listAccessoryDB.find(
-                                  (acc) => acc.id === QD.accessoryId
-                                ).name
-                              }
-                            </td>
+                            <td>{listAccessoryDB[QD.accessoryId]}</td>
                             <td>{QD.quantity}</td>
                             <td>{QD.unitPrice} VNĐ</td>
                             <td>
@@ -382,76 +377,58 @@ function Quotations() {
               <ModalHeader style={{ margin: 10, justifyContent: "center" }}>
                 <h3 className="title">Phiếu xuất phụ tùng</h3>
               </ModalHeader>
-              <ModalBody  style={{ margin: 10}}>
+              <ModalBody style={{ margin: 10 }}>
                 <Row>
-                <Col className="pr-md-1" style={{ margin: 5 }}>
-                <FormGroup>
-                        <label>Người tiếp nhận phụ tùng</label>
-                        <Input
-                          type="text"
-                          onChange={(e) => {
-                            setReceiver(e.target.value);
-                          }}
-                          value={receiver ? receiver : ""}
-                        />
-                      </FormGroup>
-                      </Col>
+                  <Col className="pr-md-1" style={{ margin: 5 }}>
+                    <FormGroup>
+                      <label>Người tiếp nhận phụ tùng</label>
+                      <Input
+                        type="text"
+                        onChange={(e) => {
+                          setReceiver(e.target.value);
+                        }}
+                        value={receiver ? receiver : ""}
+                      />
+                    </FormGroup>
+                  </Col>
                 </Row>
-                <Alert color="danger"
-                  isOpen={emptyReceiverAlert}
-                  >
-         Vui lòng nhập người tiếp nhận!
-        </Alert>
+                <Alert color="danger" isOpen={emptyReceiverAlert}>
+                  Vui lòng nhập người tiếp nhận!
+                </Alert>
                 <Row>
-                <ColoredLine color="grey" />
-                  <Card>
-                  <CardTitle tag="h4">Danh sách phụ tùng</CardTitle>
                   <ColoredLine color="grey" />
-                  <table class="table">
-                    <thead className="text-primary">
-                      <tr>
-                        <th>ID</th>
-                        <th>Phụ tùng</th>
-                        <th>Nhà cung cấp</th>
-                        <th>Số lượng</th>
-                        <th>Giá bán</th>
-                        <th>Thành tiền</th>
-                      </tr>
-                    </thead>
-                    {selectedRR !== null ? (
-                      <tbody>
-                        {selectedRR.quotation.details.map((QD, index) => (
-                          <tr key={index}>
-                            <th scope="row">{index + 1}</th>
-                            <td>
-                              {
-                                listAccessoryDB.find(
-                                  (acc) => acc.id === QD.accessoryId
-                                ).name
-                              }
-                            </td>
-                            <td>
-                              {
-                                listAccessoryDB.find(
-                                  (acc) => acc.id === QD.accessoryId
-                                ).provider.name
-                              }
-                            </td>
-                            <td>{QD.quantity}</td>
-                            <td>{QD.unitPrice} VNĐ</td>
-                            <td>
-                              { Number(QD.quantity) * Number(QD.unitPrice)}
-                              VNĐ
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    ) : (
-                      <tbody>
-                        
-                      </tbody>
-                    )}
-                  </table>
+                  <Card>
+                    <CardTitle tag="h4">Danh sách phụ tùng</CardTitle>
+                    <ColoredLine color="grey" />
+                    <table class="table">
+                      <thead className="text-primary">
+                        <tr>
+                          <th>ID</th>
+                          <th>Phụ tùng</th>
+                          <th>Số lượng</th>
+                          <th>Giá bán</th>
+                          <th>Thành tiền</th>
+                        </tr>
+                      </thead>
+                      {selectedRR !== null ? (
+                        <tbody>
+                          {selectedRR.quotation.details.map((QD, index) => (
+                            <tr key={index}>
+                              <th scope="row">{index + 1}</th>
+                              <td>{listAccessoryDB[QD.accessoryId]}</td>
+                              <td>{QD.quantity}</td>
+                              <td>{QD.unitPrice} VNĐ</td>
+                              <td>
+                                {Number(QD.quantity) * Number(QD.unitPrice)}
+                                VNĐ
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      ) : (
+                        <tbody></tbody>
+                      )}
+                    </table>
                   </Card>
                 </Row>
                 <ColoredLine color="gray" />
