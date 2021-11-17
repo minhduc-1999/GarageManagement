@@ -1,0 +1,20 @@
+version: '3'
+services:
+  mongo:
+    image: mongo:latest
+    restart: always
+    env_file: .docker.env
+    ports:
+      - 27017:27017
+    volumes:
+      - gara-db:/data/db
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    env_file: .me-docker.env
+
+volumes:
+  gara-db:

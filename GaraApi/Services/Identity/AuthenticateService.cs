@@ -46,7 +46,7 @@ namespace GaraApi.Services.Identity
             return new Tuple<bool, object>(true, new AuthenticateResponse(user, token));
         }
 
-        private string generateJwtToken(User user)
+        public string generateJwtToken(User user)
         {
             // generate token that is valid for 1 days
             var tokenHandler = new JwtSecurityTokenHandler();
