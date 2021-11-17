@@ -6,7 +6,21 @@ using MongoDB.Driver;
 
 namespace GaraApi.Services.Identity
 {
-    public class UserService
+    public interface IUserService {
+        List<User> Get();
+        User Get(string id);
+        User GetUserByUsername(string username);
+        User Create(User user);
+        void Update(string id, User userIn);
+        void Remove(string id);
+        bool IsExisted(string id);
+        bool ResetPass(string id, string newPass);
+        bool UnLock(string id);
+        bool Lock(string id);
+        bool Update(string id, string field, object value);
+        UserClaim GetClaim(string id);
+    }
+    public class UserService : IUserService
     {
         private readonly IMongoCollection<User> _user;
         public UserService(IGaraDatabaseSettings settings)

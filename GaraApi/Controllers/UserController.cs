@@ -16,11 +16,11 @@ namespace GaraApi.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
         private readonly UserRoleService _roleService;
 
 
-        public UsersController(UserService userService, UserRoleService roleService)
+        public UsersController(IUserService userService, UserRoleService roleService)
         {
             _userService = userService;
             _roleService = roleService;

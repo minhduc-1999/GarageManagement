@@ -13,10 +13,10 @@ namespace GaraApi.Services.Identity
 {
     public class AuthenticateService : IAuthentication
     {
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
         private readonly AppSettings _appSettings;
-        public AuthenticateService(UserService userService, IOptions<AppSettings> appSettings)
+        public AuthenticateService(IUserService userService, IOptions<AppSettings> appSettings)
         {
             _userService = userService;
             _appSettings = appSettings.Value;
@@ -31,8 +31,6 @@ namespace GaraApi.Services.Identity
                 return new Tuple<bool, object>(false, "Tài khoản đã bị khoá");
             }
             var passHash = Helpers.Md5Hash(model.Password);
-            // var md5 = new MD5CryptoServiceProvider();
-            // var passHash = Encoding.ASCII.GetString(md5.ComputeHash(Encoding.ASCII.GetBytes(model.Password)));
             if (!user.PasswordHash.Equals(passHash))
             {
                 if (user.Role != "admin")
@@ -42,6 +40,7 @@ namespace GaraApi.Services.Identity
             }
 
             var token = generateJwtToken(user);
+
             _userService.Update(user.Id, "AccessFailCount", 0);
             return new Tuple<bool, object>(true, new AuthenticateResponse(user, token));
         }

@@ -11,9 +11,9 @@ namespace GaraApi.Services
     public class RepairedRequestService
     {
         private readonly IMongoCollection<RepairedRequest> _repairedRequest;
-        private readonly UserService _userSerivce;
+        private readonly IUserService _userSerivce;
 
-        public RepairedRequestService(IGaraDatabaseSettings settings, UserService userSerivce)
+        public RepairedRequestService(IGaraDatabaseSettings settings, IUserService userSerivce)
         {
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);

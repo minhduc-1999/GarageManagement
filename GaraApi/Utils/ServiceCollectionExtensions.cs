@@ -28,7 +28,7 @@ namespace GaraApi.Utils
             services.AddScoped<ProviderService>();
             services.AddScoped<ReferenceService>();
 
-            services.AddScoped<UserService>();
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<UserRoleService>();
 
             services.AddScoped<IAuthentication, AuthenticateService>();

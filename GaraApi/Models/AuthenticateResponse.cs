@@ -16,7 +16,7 @@ namespace GaraApi.Models
         public AuthenticateResponse(User user, string token)
         {
             Id = user.Id;
-            FullName = user.UserClaims.FullName;
+            FullName = user.UserClaims?.FullName;
             Username = user.Username;
             Token = token;
             Role = user.Role;

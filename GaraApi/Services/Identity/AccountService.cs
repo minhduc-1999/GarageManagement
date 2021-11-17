@@ -9,9 +9,9 @@ namespace GaraApi.Services.Identity
 {
     public class AccountService : IAccountService
     {
-        private readonly UserService _userService;
+        private readonly IUserService _userService;
 
-        public AccountService(UserService userService)
+        public AccountService(IUserService userService)
         {
             _userService = userService;
         }
