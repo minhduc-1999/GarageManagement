@@ -4,24 +4,6 @@ using GaraApi.Models;
 
 namespace garaapi_test.TestAuthenticationService
 {
-    class TestJwtCases : IEnumerable
-    {
-        public IEnumerator GetEnumerator()
-        {
-            yield return new User[]
-            {
-                new User
-                {
-                Id = "893109320",
-                Role = "manager",
-                AccessFailCount = 1,
-                IsLock = false,
-                PasswordHash = "21232f297a57a5a743894a0e4a801fc3",
-                Username = "manager1"
-                },
-            };
-        }
-    }
     class LoginWithWrongUsernameCases : IEnumerable
     {
         public IEnumerator GetEnumerator()
@@ -67,6 +49,41 @@ namespace garaapi_test.TestAuthenticationService
             };
 
 
+        }
+    }
+
+    class LoginToLockedAccountCases : IEnumerable
+    {
+        public IEnumerator GetEnumerator()
+        {
+            yield return new AuthenticateRequest
+            {
+                Username = "manager1",
+                Password = "manager"
+            };
+        }
+    }
+
+    class LoginToAdminAccoutWithWrongPasswordCases : IEnumerable
+    {
+        public IEnumerator GetEnumerator()
+        {
+            yield return new AuthenticateRequest
+            {
+                Username = "admin",
+                Password = "wrongpassword"
+            };
+        }
+    }
+    class LoginToAccountHasAccessFailCountEqual4Cases : IEnumerable
+    {
+        public IEnumerator GetEnumerator()
+        {
+            yield return new AuthenticateRequest
+            {
+                Username = "manager",
+                Password = "wrongpassword"
+            };
         }
     }
 }
