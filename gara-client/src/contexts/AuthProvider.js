@@ -1,13 +1,13 @@
-import React, {createContext, useState} from 'react';
+import React, { createContext, useState } from 'react';
 const axios = require('axios');
 
 export const AuthContext = createContext();
 
-const AuthProvider = ({children}) => {
+const AuthProvider = ({ children }) => {
   const [userAcc, setUserAcc] = useState(null);
 
   return (
-    <AuthContext.Provider 
+    <AuthContext.Provider
       value={{
         userAcc,
         setUserAcc,
@@ -31,9 +31,9 @@ const AuthProvider = ({children}) => {
             return false;
           }
         },
-        logout: async () => {
+        logout: () => {
           try {
-            await setUserAcc(null);
+            setUserAcc(null);
             localStorage.removeItem('UserId');
             localStorage.removeItem('LoginToken');
           } catch (error) {

@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { Form, FormGroup, Label, Input, Button, Alert } from "reactstrap";
-import "./Login.css";
+// import "./Login.css";
 import { AuthContext } from "../../contexts/AuthProvider";
 
 function Login() {
@@ -33,7 +33,7 @@ function Login() {
             type="text"
             name="user"
             id="user"
-            autocomplete="off"
+            autoComplete="off"
             placeholder="Tên tài khoản"
             onChange={(e) => {
               setUsername(e.target.value);
