@@ -20,7 +20,7 @@ namespace GaraApi.Utils
             services.AddScoped<BillService>();
             services.AddScoped<AccessoryIssueService>();
             services.AddScoped<AccessoryReceiptService>();
-            services.AddScoped<RepairedRequestService>();
+            services.AddScoped<IRepairedRequestService, RepairedRequestService>();
             services.AddScoped<CustomerService>();
             services.AddScoped<CarService>();
             services.AddScoped<AccessoryTypeService>();

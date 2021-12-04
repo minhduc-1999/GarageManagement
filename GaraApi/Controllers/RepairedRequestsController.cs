@@ -14,10 +14,10 @@ namespace GaraApi.Controllers
 
     public class RepairedRequestsController : ControllerBase
     {
-        private readonly RepairedRequestService _repReqService;
+        private readonly IRepairedRequestService _repReqService;
         private readonly AccessoryService _accSer;
 
-        public RepairedRequestsController(RepairedRequestService repReqService, AccessoryService accSer)
+        public RepairedRequestsController(IRepairedRequestService repReqService, AccessoryService accSer)
         {
             _repReqService = repReqService;
             _accSer = accSer;

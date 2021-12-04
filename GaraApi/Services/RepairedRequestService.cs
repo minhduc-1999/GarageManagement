@@ -8,9 +8,21 @@ using System.Linq;
 
 namespace GaraApi.Services
 {
-    public class RepairedRequestService
+    public interface IRepairedRequestService {
+        List<RepairedRequest> Get();
+        RepairedRequest Get(string id);
+        string Create(string userId, RepairedRequestModel repairedRequestModel);
+        bool Update(RepairedRequest repairedRequestIn, RepairedRequestUpdateModel repReqUpdateIn);
+        void Remove(RepairedRequest repairedRequestIn);
+        void Remove(string id);
+        List<QuotationDetail> GetQuotationDetails(string id);
+        Quotation.QuotationtState? GetQuotationtState(string id);
+        void SetRepairedRequest(IMongoCollection<RepairedRequest> repairedRequest);
+
+    }
+    public class RepairedRequestService : IRepairedRequestService
     {
-        private readonly IMongoCollection<RepairedRequest> _repairedRequest;
+        private IMongoCollection<RepairedRequest> _repairedRequest;
         private readonly IUserService _userSerivce;
 
         public RepairedRequestService(IGaraDatabaseSettings settings, IUserService userSerivce)
@@ -19,6 +31,10 @@ namespace GaraApi.Services
             var database = client.GetDatabase(settings.DatabaseName);
             _userSerivce = userSerivce;
             _repairedRequest = database.GetCollection<RepairedRequest>(settings.RepairedRequestCollectionName);
+        }
+
+        public void SetRepairedRequest(IMongoCollection<RepairedRequest> repairedRequest) {
+            this._repairedRequest = repairedRequest;
         }
 
         public List<RepairedRequest> Get() =>
