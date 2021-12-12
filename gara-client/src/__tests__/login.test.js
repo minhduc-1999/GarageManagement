@@ -7,8 +7,9 @@ import AuthContext from '../contexts/AuthProvider'
 // unmount and cleanup DOM after the test is finished.
 afterEach(cleanup);
 
-test('CheckboxWithLabel changes the text after click', () => {
+test('Check UI login screen', () => {
     render(<AuthContext><Login /></AuthContext>);
 
     expect(screen.getByText('Tài khoản').textContent).toMatch('Tài khoản')
+    expect(screen.getByText("Mật khẩu").textContent).toMatch('Mật khẩu')
 });
