@@ -1,0 +1,2 @@
+"_id","Username","PasswordHash","AccessFailCount","IsLock","Role","UserClaims.FullName","UserClaims.Email","UserClaims.AvatarUrl"
+"ObjectId(""61bb4d8cd83a7110d05899c6"")","admin","!#/)zW??C?J\u000eJ?\u001f?",0,false,"admin","admin","admin@admin.com","https://thumbs.dreamstime.com/b/admin-sign-laptop-icon-stock-vector-166205404.jpg"

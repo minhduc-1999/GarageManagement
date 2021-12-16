@@ -1,0 +1,5 @@
+"_id","RoleName"
+"ObjectId(""61bb4cddd83a7110d05899c4"")","admin"
+"ObjectId(""61bb4eefd83a7110d05899c8"")","manager"
+"ObjectId(""61bb4f03d83a7110d05899ca"")","receptionist"
+"ObjectId(""61bb4f1ad83a7110d05899cc"")","storekeeper"
