@@ -1,0 +1,2 @@
+"_id","Username","PasswordHash","AccessFailCount","IsLock","Role","UserClaims.PhoneNumber","UserClaims.Email","UserClaims.DateOB","UserClaims.FullName","UserClaims.Address"
+"ObjectId(""61bb4d8cd83a7110d05899c6"")","admin","!#/)zW??C?J\u000eJ?\u001f?",0,false,"admin","0938154196","admin@admin.com","2016-01-07T00:00:00.000Z","admin","TP HCM"
