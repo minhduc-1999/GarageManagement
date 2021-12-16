@@ -31,9 +31,8 @@ namespace GaraApi.Services.Identity
                 return new Tuple<bool, object>(false, "Tài khoản đã bị khoá");
             }
             var passHash = Helpers.Md5Hash(model.Password);
-            // var md5 = new MD5CryptoServiceProvider();
-            // var passHash = Encoding.ASCII.GetString(md5.ComputeHash(Encoding.ASCII.GetBytes(model.Password)));
-            if (!user.PasswordHash.Equals(passHash))
+
+            if (!(user.PasswordHash.Equals(passHash)))
             {
                 if (user.Role != "admin")
                     if (_userService.Lock(user.Id))
