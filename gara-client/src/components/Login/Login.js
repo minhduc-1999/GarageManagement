@@ -33,7 +33,7 @@ function Login() {
             type="text"
             name="user"
             id="user"
-            autocomplete="off"
+            autoComplete="off"
             placeholder="Tên tài khoản"
             onChange={(e) => {
               setUsername(e.target.value);
@@ -64,9 +64,7 @@ function Login() {
         color="warning"
         isOpen={alertVisible}
         toggle={onDismiss}
-      >
-        Tên tài khoản hoặc mật khẩu không đúng.
-      </Alert>
+      >Tên tài khoản hoặc mật khẩu không đúng.</Alert>
     </div>
   );
 }

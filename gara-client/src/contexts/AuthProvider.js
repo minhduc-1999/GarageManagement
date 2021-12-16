@@ -1,18 +1,19 @@
-import React, {createContext, useState} from 'react';
+import React, { createContext, useState } from 'react';
 const axios = require('axios');
 
 export const AuthContext = createContext();
 
-const AuthProvider = ({children}) => {
+const AuthProvider = ({ children }) => {
   const [userAcc, setUserAcc] = useState(null);
 
   return (
-    <AuthContext.Provider 
+    <AuthContext.Provider
       value={{
         userAcc,
         setUserAcc,
         login: (username, password) => {
           try {
+            console.log('here')
             let loginFormData = new FormData();
             loginFormData.append('Username', username);
             loginFormData.append('Password', password);
@@ -23,7 +24,7 @@ const AuthProvider = ({children}) => {
                 localStorage.setItem('LoginToken', response.data.token);
                 return true;
               }).catch(error => {
-                console.log(error.response.data);
+                console.log(error);
                 return false;
               });
           } catch (error) {
@@ -31,9 +32,9 @@ const AuthProvider = ({children}) => {
             return false;
           }
         },
-        logout: async () => {
+        logout: () => {
           try {
-            await setUserAcc(null);
+            setUserAcc(null);
             localStorage.removeItem('UserId');
             localStorage.removeItem('LoginToken');
           } catch (error) {
