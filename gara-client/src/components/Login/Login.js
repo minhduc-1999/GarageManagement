@@ -33,7 +33,7 @@ function Login() {
             type="text"
             name="user"
             id="user"
-            autocomplete="off"
+            autoComplete="off"
             placeholder="Tên tài khoản"
             onChange={(e) => {
               setUsername(e.target.value);
