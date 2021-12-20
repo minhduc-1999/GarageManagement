@@ -1,0 +1,36 @@
+//login
+POST http://localhost:5000/api/login/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwYTg5MDcwMjAxZDJkZDg0NWI0ZGNiYiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYyMjg3NjMwMywiZXhwIjoxNjI0OTQ5OTAzLCJpYXQiOjE2MjI4NzYzMDN9.mHKSKMO9cQkg2xQ20B9PUciqMqekijdtJRfjivWs3jE
+Content-Type: application/x-www-form-urlencoded
+
+username=admin
+&password=admin
+
+###
+GET http://localhost:5000/api/cars/61bb62895a2a846e19e6dab7
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxYmI0ZDhjZDgzYTcxMTBkMDU4OTljNiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYzOTg1MzMwMiwiZXhwIjoxNjQxOTI2OTAyLCJpYXQiOjE2Mzk4NTMzMDJ9.RH8zBKPUZpx3XHlw6HyxqAmha80gMNUf7ynCmYCh5D8
+Content-Type: application/x-www-form-urlencoded
+
+###
+GET http://localhost:5000/api/repairedrequests/61bb628a5a2a846e19e6dab8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxYmI0ZDhjZDgzYTcxMTBkMDU4OTljNiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYzOTg1MzMwMiwiZXhwIjoxNjQxOTI2OTAyLCJpYXQiOjE2Mzk4NTMzMDJ9.RH8zBKPUZpx3XHlw6HyxqAmha80gMNUf7ynCmYCh5D8
+Content-Type: application/x-www-form-urlencoded
+
+###
+GET http://localhost:5000/api/customers?q=duc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxYmI0ZDhjZDgzYTcxMTBkMDU4OTljNiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYzOTg1MzMwMiwiZXhwIjoxNjQxOTI2OTAyLCJpYXQiOjE2Mzk4NTMzMDJ9.RH8zBKPUZpx3XHlw6HyxqAmha80gMNUf7ynCmYCh5D8
+Content-Type: application/x-www-form-urlencoded
+
+###
+GET http://localhost:5000/api/accessories
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxYmI0ZDhjZDgzYTcxMTBkMDU4OTljNiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYzOTg1MzMwMiwiZXhwIjoxNjQxOTI2OTAyLCJpYXQiOjE2Mzk4NTMzMDJ9.RH8zBKPUZpx3XHlw6HyxqAmha80gMNUf7ynCmYCh5D8
+Content-Type: application/x-www-form-urlencoded
+
+###
+GET http://localhost:5000/api/laborcosts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYxYmI0ZDhjZDgzYTcxMTBkMDU4OTljNiIsInJvbGUiOiJhZG1pbiIsIm5iZiI6MTYzOTg1MzMwMiwiZXhwIjoxNjQxOTI2OTAyLCJpYXQiOjE2Mzk4NTMzMDJ9.RH8zBKPUZpx3XHlw6HyxqAmha80gMNUf7ynCmYCh5D8
+Content-Type: application/x-www-form-urlencoded
+
+###
+
+

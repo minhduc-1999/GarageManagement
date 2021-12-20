@@ -1,3 +1,4 @@
 **/*.env
-
 **/.vscode
+fe
+**/node_modules
