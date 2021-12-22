@@ -198,7 +198,7 @@ function Bill() {
                       Không tìm thấy hóa đơn phù hợp
                     </p>
                   ) : (
-                    <table class="table table-borderless table-hover">
+                    <table className="table table-borderless table-hover">
                       <thead className="text-primary">
                         <tr>
                           <th>ID</th>
@@ -258,7 +258,7 @@ function Bill() {
                           </Row>
                         </CardHeader>
                         <CardBody>
-                          <table class="table table-borderless table-hover">
+                          <table className="table table-borderless table-hover">
                             <thead className="text-primary">
                               <tr>
                                 <th>ID</th>

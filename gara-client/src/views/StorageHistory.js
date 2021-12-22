@@ -164,7 +164,7 @@ axios
                 <CardTitle tag="h4">Danh sách phiếu nhập phụ tùng</CardTitle>
               </CardHeader>
               <CardBody>
-                <table class="table">
+                <table className="table">
                   <thead className="text-primary">
                     <tr>
                       <th>STT</th>
@@ -201,7 +201,7 @@ axios
                 <CardTitle tag="h4">Chi tiết phiếu nhập phụ tùng</CardTitle>
               </CardHeader>
               <CardBody>
-                <table class="table">
+                <table className="table">
                   <thead className="text-primary">
                     <tr>
                       <th>STT</th>
@@ -249,7 +249,7 @@ axios
                 <CardTitle tag="h4">Danh sách phiếu xuất phụ tùng</CardTitle>
               </CardHeader>
               <CardBody>
-                <table class="table">
+                <table className="table">
                   <thead className="text-primary">
                     <tr>
                       <th>ID</th>
@@ -288,7 +288,7 @@ axios
                 <CardTitle tag="h4">Chi tiết phiếu xuất phụ tùng</CardTitle>
               </CardHeader>
               <CardBody>
-                <table class="table">
+                <table className="table">
                   <thead className="text-primary">
                     <tr>
                       <th>ID</th>
