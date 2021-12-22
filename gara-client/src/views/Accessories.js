@@ -108,6 +108,11 @@ function Accessories() {
     setAccessoryTypeId(null);
     setDescription(null);
   };
+  const onDismiss = () => setEmptyFieldAlert(!emptyFieldAlert);
+  const onDismissType = () => setEmptyFieldAlertType(!emptyFieldAlertType);
+  const onDismissProvider = () => setEmptyFieldAlertProvider(!emptyFieldAlertProvider);
+  const onDismissList = () => setEmptyAlert(!emptyAlert);
+
   const createNewProvider = () => {
     if (!providerName || !providerNum || !providerAddress) {
       return;
@@ -468,9 +473,10 @@ function Accessories() {
               >
                 Thêm phụ tùng
               </Button>
-              <Alert color="danger" isOpen={emptyFieldAlert}>
+              <Alert color="danger" isOpen={emptyFieldAlert} toggle={onDismiss}>
                 Bạn chưa nhập đủ các trường!
               </Alert>
+
               <ColoredLine></ColoredLine>
               {!newAccessories ? (
                 <p>Chưa có dữ liệu...</p>
@@ -511,7 +517,7 @@ function Accessories() {
                         ))}
                       </tbody>
                     </table>
-                    <Alert color="danger" isOpen={emptyAlert}>
+                    <Alert color="danger" isOpen={emptyAlert} toggle={onDismissList}>
                       Danh sách phụ tùng trống!
                     </Alert>
                   </Card>
@@ -558,7 +564,7 @@ function Accessories() {
                 </FormGroup>
               </Form>
             </ModalBody>
-            <Alert color="danger" isOpen={emptyFieldAlertType}>
+            <Alert color="danger" isOpen={emptyFieldAlertType} toggle={onDismissType}>
               Bạn chưa nhập đủ các trường hoặc loại phụ tùng đã tồn tại!
             </Alert>{" "}
             <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
@@ -622,7 +628,7 @@ function Accessories() {
                 </FormGroup>
               </Form>
             </ModalBody>
-            <Alert color="danger" isOpen={emptyFieldAlertProvider}>
+            <Alert color="danger" isOpen={emptyFieldAlertProvider} toggle={onDismissProvider}>
               Bạn chưa nhập đủ các trường hoặc nhà cung cấp đã tồn tại!
             </Alert>
             <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
