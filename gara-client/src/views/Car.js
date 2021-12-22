@@ -35,7 +35,6 @@ function Car() {
   const getSearchTerm = (e) => {
     setSearchTerm(e.target.value);
     if (e.target.value !== "") {
-      console.log(e.target.value);
       let newCarList = [];
       switch (searchField) {
         case "1":
@@ -64,19 +63,18 @@ function Car() {
               .includes(e.target.value.toLowerCase());
           });
           break;
-        case "5":
-          newCarList = cars.filter((car) => {
-            return (car.distanceTravelled + "").includes(e.target.value);
-          });
-          break;
         case "6":
           newCarList = cars.filter((car) => {
-            return (car.registerId + "").includes(e.target.value);
+            return (car.registerId + "")
+              .toLowerCase()
+              .includes(e.target.value.toLowerCase());
           });
           break;
         case "7":
           newCarList = cars.filter((car) => {
-            return (car.vin + "").includes(e.target.value);
+            return (car.vin + "")
+              .toLowerCase()
+              .includes(e.target.value.toLowerCase());
           });
           break;
         case "8":
@@ -100,13 +98,13 @@ function Car() {
   const renderCars = () =>
     (searchTerm.length < 1 ? cars : searchResult).map((car, index) => {
       return (
-        <tr key={index} onDoubleClick={() => selectCarToEdit(car)}>
+        <tr key={index} onClick={() => selectCarToEdit(car)}>
           <th scope="row">{index + 1}</th>
           <td>{car.numberPlate}</td>
           <td>{car.owner}</td>
           <td>{car.brand}</td>
           <td>{car.model}</td>
-          <td>{car.distanceTravelled} KM</td>
+          <td>{car.distanceTravelled} km</td>
           <td>{car.registerId}</td>
           <td>{car.vin}</td>
           <td>{car.color}</td>
@@ -132,6 +130,23 @@ function Car() {
   const [model, setModel] = useState(null);
   const [emptyFieldCarAlert, setEmptyFieldCarAlert] = useState(false);
 
+  useEffect(() => {
+    let loginToken = localStorage.getItem("LoginToken");
+    axios
+      .get(process.env.REACT_APP_BASE_URL + "api/cars", {
+        headers: {
+          Authorization: "Bearer " + loginToken,
+        },
+      })
+      .then((response) => {
+        return response.data;
+      })
+      .then((data) => {
+        setCars(data);
+      })
+      .catch((error) => console.log(error));
+  }, [onChange]);
+
   const closeEditCar = () => {
     setSelectedCar(null);
     setOpenEditCar(false);
@@ -152,29 +167,21 @@ function Car() {
     setOpenEditCar(true);
   };
 
-  const compareCar = (car) => {
-    if (
-      car.color !== color ||
-      car.owner !== owner ||
-      car.distanceTravelled !== distanceTravelled
-    ) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
   const updateCar = () => {
+    if (!color || !owner || !distanceTravelled) {
+      setEmptyFieldCarAlert(true);
+      return;
+    }
     let updatedCar = {
       id: selectedCar.id,
       color: color,
       owner: owner,
       distanceTravelled: distanceTravelled,
-      brand: selectedCar.brand,
-      model: selectedCar.model,
-      vin: selectedCar.vin,
-      registerId: selectedCar.registerId,
-      numberPlate: selectedCar.numberPlate,
+      brand: brand,
+      model: model,
+      vin: VIN,
+      registerId: registerId,
+      numberPlate: numberPlate,
     };
     let loginToken = localStorage.getItem("LoginToken");
     const headers = {
@@ -194,271 +201,195 @@ function Car() {
       });
   };
 
-  useEffect(() => {
-    let loginToken = localStorage.getItem("LoginToken");
-    async function fetchCarData() {
-      axios
-        .get(process.env.REACT_APP_BASE_URL + "api/cars", {
-          headers: {
-            Authorization: "Bearer " + loginToken,
-          },
-        })
-        .then((response) => {
-          return response.data;
-        })
-        .then((data) => {
-          setCars(data);
-        })
-        .catch((error) => console.log(error));
-    }
-    fetchCarData();
-  }, [onChange]);
+  const onDismiss = () => setEmptyFieldCarAlert(false);
 
   return (
-    <>
-      <div className="content">
-        {userAcc.role === "storekeeper" ? (
-          <p>Bạn không có quyền truy cập</p>
-        ) : cars === null ? (
-          <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
-        ) : (
-          <div className="content">
-            <Modal isOpen={openEditCar} size="lg">
-              <ModalHeader>
-                <p style={{ fontSize: 22 }} className="title">
-                  Thông tin xe
-                </p>
-              </ModalHeader>
-              <ModalBody>
-                <Form
-                // style={{
-                //   marginLeft: 10,
-                //   marginRight: 10,
-                // }}
-                >
-                  <Row>
-                    <Col>
-                      <FormGroup>
-                        <label>Biển số</label>
-                        <Input
-                          disabled="true"
-                          value={numberPlate}
-                          type="text"
-                          onChange={(e) => {
-                            setNumberPlate(e.target.value);
-                            setEmptyFieldCarAlert(false);
-                          }}
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col>
-                      <FormGroup>
-                        <label>VIN</label>
-                        <Input
-                          disabled="true"
-                          value={VIN}
-                          type="text"
-                          onChange={(e) => {
-                            setVIN(e.target.value);
-                            setEmptyFieldCarAlert(false);
-                          }}
-                        />
-                      </FormGroup>
-                    </Col>
+    <div className="content">
+      {userAcc.role === "storekeeper" ? (
+        <p>Bạn không có quyền truy cập</p>
+      ) : cars === null ? (
+        <p>Đang tải dữ liệu lên, vui lòng chờ trong giây lát...</p>
+      ) : (
+        <div className="content">
+          <Modal isOpen={openEditCar} size="lg">
+            <ModalHeader>
+              <p style={{ fontSize: 22 }} className="title">
+                Thông tin xe
+              </p>
+            </ModalHeader>
+            <ModalBody>
+              <Form>
+                <Row>
+                  <Col>
+                    <FormGroup>
+                      <label>Biển số</label>
+                      <Input disabled={true} value={numberPlate} type="text" />
+                    </FormGroup>
+                  </Col>
+                  <Col>
+                    <FormGroup>
+                      <label>VIN</label>
+                      <Input disabled={true} value={VIN} type="text" />
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col sm="6">
+                    <FormGroup>
+                      <label>Hãng xe</label>
+                      <Input disabled={true} type="text" value={brand} />
+                    </FormGroup>
+                  </Col>
+                  <Col sm="6">
+                    <FormGroup>
+                      <label>Model</label>
+                      <Input disabled={true} value={model} type="text" />
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col sm="6">
+                    <FormGroup>
+                      <label>Màu sắc</label>
+                      <Input
+                        value={color}
+                        type="text"
+                        onChange={(e) => {
+                          setColor(e.target.value);
+                        }}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col sm="6">
+                    <FormGroup>
+                      <label>Chủ xe</label>
+                      <Input
+                        value={owner}
+                        type="text"
+                        onChange={(e) => {
+                          setOwner(e.target.value);
+                        }}
+                      />
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col sm="6">
+                    <FormGroup>
+                      <label>Mã đăng kiểm</label>
+                      <Input disabled={true} value={registerId} type="text" />
+                    </FormGroup>
+                  </Col>
+                  <Col sm="6">
+                    <FormGroup>
+                      <label>Khoảng cách di chuyển (km)</label>
+                      <Input
+                        value={distanceTravelled}
+                        type="number"
+                        onChange={(e) => {
+                          setDistanceTravelled(
+                            e.target.value.replace(/\D/, "").replace(/^0+/, "")
+                          );
+                        }}
+                      />
+                    </FormGroup>
+                  </Col>
+                </Row>
+              </Form>
+              <Alert
+                style={{ width: 730, marginLeft: 10 }}
+                className="alert-error"
+                color="warning"
+                isOpen={emptyFieldCarAlert}
+                toggle={onDismiss}
+              >
+                Cập nhật không thành công.
+              </Alert>
+            </ModalBody>
+            <ModalFooter style={{ justifyContent: "flex-end" }}>
+              <Button
+                onClick={updateCar}
+                className="btn-fill"
+                color="primary"
+                type="submit"
+                style={{ marginRight: 25 }}
+              >
+                Cập nhật
+              </Button>
+              <Button
+                onClick={closeEditCar}
+                className="btn-fill"
+                color="primary"
+                type="submit"
+                style={{ marginRight: 10 }}
+              >
+                Đóng
+              </Button>
+            </ModalFooter>
+          </Modal>
+          <Row>
+            <Col md="12">
+              <Card>
+                <CardHeader>
+                  <Row style={{ margin: 0, justifyContent: "space-between" }}>
+                    <CardTitle tag="h4">Danh sách xe</CardTitle>
                   </Row>
                   <Row>
-                    <Col sm="6">
-                      <FormGroup>
-                        <label>Hãng xe</label>
-                        <Input
-                          disabled="true"
-                          type="text"
-                          value={brand}
-                          onChange={(e) => {
-                            setBrand(e.target.value);
-                            setEmptyFieldCarAlert(false);
-                          }}
-                        />
-                      </FormGroup>
+                    <Col md="2">
+                      <Input
+                        type="select"
+                        defaultValue={"1"}
+                        onChange={(e) => getSearchField(e)}
+                      >
+                        <option value="1">Biển số</option>
+                        <option value="2">Chủ xe</option>
+                        <option value="3">Hãng</option>
+                        <option value="4">Model</option>
+                        <option value="6">Mã đăng kiểm</option>
+                        <option value="7">VIN</option>
+                        <option value="8">Màu xe</option>
+                      </Input>
                     </Col>
-                    <Col sm="6">
-                      <FormGroup>
-                        <label>Model</label>
-                        <Input
-                          disabled="true"
-                          value={model}
-                          type="text"
-                          onChange={(e) => {
-                            setModel(e.target.value);
-                            setEmptyFieldCarAlert(false);
-                          }}
-                        />
-                      </FormGroup>
+                    <Col md="3">
+                      <Input
+                        value={searchTerm}
+                        type="text"
+                        placeholder="Tìm kiếm xe"
+                        onChange={(e) => getSearchTerm(e)}
+                      />
                     </Col>
                   </Row>
-                  <Row>
-                    <Col sm="6">
-                      <FormGroup>
-                        <label>Màu sắc</label>
-                        <Input
-                          value={color}
-                          type="text"
-                          onChange={(e) => {
-                            setColor(e.target.value);
-                            setEmptyFieldCarAlert(false);
-                          }}
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col sm="6">
-                      <FormGroup>
-                        <label>Chủ xe</label>
-                        <Input
-                          value={owner}
-                          type="text"
-                          onChange={(e) => {
-                            setOwner(e.target.value);
-                            setEmptyFieldCarAlert(false);
-                          }}
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col sm="6">
-                      <FormGroup>
-                        <label>Mã đăng kiểm</label>
-                        <Input
-                          disabled="true"
-                          value={registerId}
-                          type="text"
-                          onChange={(e) => {
-                            setRegisterId(e.target.value);
-                            setEmptyFieldCarAlert(false);
-                          }}
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col sm="6">
-                      <FormGroup>
-                        <label>Khoảng cách di chuyển (KM)</label>
-                        <Input
-                          value={distanceTravelled}
-                          type="text"
-                          onChange={(e) => {
-                            setDistanceTravelled(
-                              e.target.value
-                                .replace(/\D/, "")
-                                .replace(/^0+/, "")
-                            );
-                            setEmptyFieldCarAlert(false);
-                          }}
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                </Form>
-                <Alert
-                  style={{ width: 730, marginLeft: 10 }}
-                  className="alert-error"
-                  color="warning"
-                  isOpen={emptyFieldCarAlert}
-                >
-                  Thiếu thông tin xe.
-                </Alert>
-              </ModalBody>
-              <ModalFooter style={{ justifyContent: "flex-end" }}>
-                {selectedCar !== null && compareCar(selectedCar) === true ? (
-                  <Button
-                    onClick={updateCar}
-                    className="btn-fill"
-                    color="primary"
-                    type="submit"
-                    style={{ marginRight: 25 }}
-                  >
-                    Cập nhật
-                  </Button>
-                ) : (
-                  <div hidden="true"></div>
-                )}
-                <Button
-                  onClick={closeEditCar}
-                  className="btn-fill"
-                  color="primary"
-                  type="submit"
-                  style={{ marginRight: 10 }}
-                >
-                  Hủy
-                </Button>
-              </ModalFooter>
-            </Modal>
-            <Row>
-              <Col md="12">
-                <Card>
-                  <CardHeader>
-                    <Row style={{ margin: 0, justifyContent: "space-between" }}>
-                      <CardTitle tag="h4">Danh sách xe</CardTitle>
-                    </Row>
-                    <Row>
-                      <Col md="2">
-                        <Input
-                          type="select"
-                          defaultValue={"1"}
-                          onChange={(e) => getSearchField(e)}
-                        >
-                          <option value="1">Biển số</option>
-                          <option value="2">Chủ xe</option>
-                          <option value="3">Hãng</option>
-                          <option value="4">Model</option>
-                          <option value="5">Khoảng cách di chuyển</option>
-                          <option value="6">Mã đăng kiểm</option>
-                          <option value="7">VIN</option>
-                          <option value="8">Màu xe</option>
-                        </Input>
-                      </Col>
-                      <Col md="3">
-                        <Input
-                          value={searchTerm}
-                          type="text"
-                          placeholder="Tìm kiếm xe"
-                          onChange={(e) => getSearchTerm(e)}
-                        />
-                      </Col>
-                    </Row>
-                  </CardHeader>
-                  <CardBody>
-                    {renderCars().length <= 0 ? (
-                      <p style={{ fontSize: 20, marginLeft: 10 }}>
-                        Không tìm thấy xe phù hợp
-                      </p>
-                    ) : (
-                      <table class="table table-borderless table-hover">
-                        <thead>
-                          <tr>
-                            <th className="text-center" width={50}>
-                              ID
-                            </th>
-                            <th>Biển số</th>
-                            <th>Chủ xe</th>
-                            <th>Hãng</th>
-                            <th>Model</th>
-                            <th>Khoảng cách di chuyển</th>
-                            <th>Mã đăng kiểm</th>
-                            <th>VIN</th>
-                            <th>Màu xe</th>
-                          </tr>
-                        </thead>
-                        <tbody>{renderCars()}</tbody>
-                      </table>
-                    )}
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
-          </div>
-        )}
-      </div>
-    </>
+                </CardHeader>
+                <CardBody>
+                  {renderCars().length <= 0 ? (
+                    <p style={{ fontSize: 20, marginLeft: 10 }}>
+                      Không tìm thấy xe phù hợp
+                    </p>
+                  ) : (
+                    <table className="table table-borderless table-hover">
+                      <thead>
+                        <tr>
+                          <th width={50}>STT</th>
+                          <th>Biển số</th>
+                          <th>Chủ xe</th>
+                          <th>Hãng</th>
+                          <th>Model</th>
+                          <th>Khoảng cách di chuyển</th>
+                          <th>Mã đăng kiểm</th>
+                          <th>VIN</th>
+                          <th>Màu xe</th>
+                        </tr>
+                      </thead>
+                      <tbody>{renderCars()}</tbody>
+                    </table>
+                  )}
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+        </div>
+      )}
+    </div>
   );
 }
 

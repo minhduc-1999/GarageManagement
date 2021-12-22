@@ -21,6 +21,42 @@ import {
 const axios = require("axios");
 const dateFormat = require("dateformat");
 
+export function validateUser(user) {
+  var emailRegExp = new RegExp(
+    "^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+.[a-zA-Z]+"
+  );
+  var passwordRegExp = new RegExp(
+    "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[\\W]).{8,}$"
+  );
+
+  var phoneNumberRegExp = new RegExp(
+    "^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$"
+  );
+
+  var fullNameRegExp = new RegExp("^[a-zA-Z ]+$");
+
+  var usernameRegExp = new RegExp(
+    "^(?=.{5,20}$)(?![.])(?!.*[.]{2})[a-zA-Z0-9.]+(?<![.])$"
+  );
+
+  if (
+    user.roleId &&
+    user.roleId !== "" &&
+    passwordRegExp.test(user.password) &&
+    emailRegExp.test(user.email) &&
+    usernameRegExp.test(user.username) &&
+    phoneNumberRegExp.test(user.phoneNumber) &&
+    user.address &&
+    user.address !== "" &&
+    fullNameRegExp.test(user.fullName) &&
+    user.dateOB &&
+    user.dateOB !== ""
+  ) {
+    return true;
+  }
+  return false;
+}
+
 function Employee() {
   const { userAcc } = useContext(AuthContext);
   const [users, setUsers] = useState([]);
@@ -46,7 +82,7 @@ function Employee() {
   const [isDateSearch, setIsDateSearch] = useState(false);
   const [searchField, setSearchField] = useState("1");
   const [onConfirmDelete, setOnConfirmDelete] = useState(false);
-  const [alertDelete, setAlertDelete] = useState(false)
+  const [alertDelete, setAlertDelete] = useState(false);
   const [alertPasswordEmpty, setAlertPasswordEmpty] = useState(false);
 
   const getSearchField = (e) => {
@@ -103,8 +139,18 @@ function Employee() {
   }, [onChange]);
 
   const addNewUser = () => {
-    if (!roleId || !username || !password) {
-      console.log("Thiếu thông tin tạo tài khoản");
+    if (
+      !validateUser({
+        roleId: roleId,
+        email: email,
+        password: password,
+        username: username,
+        phoneNumber: phoneNum,
+        address: address,
+        fullName: fullName,
+        dateOB: dateOB,
+      })
+    ) {
       setEmptyFieldAlert(true);
       return;
     }
@@ -125,12 +171,10 @@ function Employee() {
         },
       })
       .then((response) => {
-        console.log(response);
         setOnchange(!onChange);
         setOnAddNewUser(!onAddNewUser);
       })
       .catch((error) => {
-        console.log(error);
         setAlertVisible(true);
       });
   };
@@ -152,7 +196,6 @@ function Employee() {
       })
       .then(() => {
         setOnchange(!onChange);
-        console.log("Doi pass thanh cong cho user " + onResetPassUser);
         setOnResetPass(false);
         setNewPass("");
       })
@@ -184,7 +227,6 @@ function Employee() {
   const getSearchTerm = (e) => {
     setSearchTerm(e.target.value);
     if (e.target.value !== "") {
-      console.log(e.target.value);
       let newUserList = [];
       switch (searchField) {
         case "1":
@@ -231,7 +273,7 @@ function Employee() {
         return (
           <tr
             key={index}
-            onDoubleClick={() => {
+            onClick={() => {
               setOnResetPassUser(user.id);
               setSelectUser(user.username);
               setOnResetPass(true);
@@ -250,11 +292,7 @@ function Employee() {
               {user.userClaims.phoneNumber ? user.userClaims.phoneNumber : "-"}
             </td>
             <td>{user.username}</td>
-            <td>
-              {
-                translateRoles[user.role]
-              }
-            </td>
+            <td>{translateRoles[user.role]}</td>
           </tr>
         );
       }
@@ -266,23 +304,24 @@ function Employee() {
       return;
     }
     setOnConfirmDelete(true);
-  }
+  };
 
   const handleDeleteUser = () => {
-    let loginToken = localStorage.getItem('LoginToken');
-    axios.delete(process.env.REACT_APP_BASE_URL + 'api/users/' + onResetPassUser, {
-      headers: {
-        Authorization: 'Bearer ' + loginToken,
-      },
-    })
-    .then(res => {
-      setOnConfirmDelete(false);
-      setOnResetPass(false);
-      setNewPass('');
-      setOnchange(!onChange);
-    })
-    .catch(err => console.log(err));
-  }
+    let loginToken = localStorage.getItem("LoginToken");
+    axios
+      .delete(process.env.REACT_APP_BASE_URL + "api/users/" + onResetPassUser, {
+        headers: {
+          Authorization: "Bearer " + loginToken,
+        },
+      })
+      .then((res) => {
+        setOnConfirmDelete(false);
+        setOnResetPass(false);
+        setNewPass("");
+        setOnchange(!onChange);
+      })
+      .catch((err) => console.log(err));
+  };
 
   const onDismissDeleteAlert = () => setAlertDelete(false);
   const onDismissEmptyAlert = () => setAlertPasswordEmpty(false);
@@ -438,7 +477,7 @@ function Employee() {
                     isOpen={emptyFiledAlert}
                     toggle={onDismissEmpty}
                   >
-                    Tên tài khoản và mật khẩu không được để trống.
+                    Tạo tài khoản không thành công.
                   </Alert>
                 </Form>
               </ModalBody>
@@ -481,7 +520,7 @@ function Employee() {
                   color="warning"
                   isOpen={alertDelete}
                   toggle={onDismissDeleteAlert}
-                  style={{width: 330}}
+                  style={{ width: 330 }}
                 >
                   Bạn không thể xóa chính mình
                 </Alert>
@@ -490,37 +529,41 @@ function Employee() {
                   color="warning"
                   isOpen={alertPasswordEmpty}
                   toggle={onDismissEmptyAlert}
-                  style={{width: 330}}
+                  style={{ width: 330 }}
                 >
                   Mật khẩu mới không được để trống
                 </Alert>
               </ModalBody>
               <ModalFooter>
-                    <Button
-                      style={{marginLeft: 7}}
-                      className="btn-fill"
-                      color="primary"
-                      onClick={checkUserDelete}
-                    >
-                      Xóa user
-                    </Button>
-                    <Button
-                      className="btn-fill"
-                      color="primary"
-                      type="submit"
-                      onClick={handleResetPass}
-                    >
-                      Xác nhận
-                    </Button>
-                    <Button
-                      style={{marginRight: 7}}
-                      className="btn-fill"
-                      color="secondary"
-                      type="submit"
-                      onClick={() => {setOnResetPass(false); setAlertDelete(false); setAlertPasswordEmpty(false)}}
-                    >
-                      Hủy
-                    </Button>
+                <Button
+                  style={{ marginLeft: 7 }}
+                  className="btn-fill"
+                  color="primary"
+                  onClick={checkUserDelete}
+                >
+                  Xóa user
+                </Button>
+                <Button
+                  className="btn-fill"
+                  color="primary"
+                  type="submit"
+                  onClick={handleResetPass}
+                >
+                  Xác nhận
+                </Button>
+                <Button
+                  style={{ marginRight: 7 }}
+                  className="btn-fill"
+                  color="secondary"
+                  type="submit"
+                  onClick={() => {
+                    setOnResetPass(false);
+                    setAlertDelete(false);
+                    setAlertPasswordEmpty(false);
+                  }}
+                >
+                  Hủy
+                </Button>
               </ModalFooter>
             </Modal>
 
