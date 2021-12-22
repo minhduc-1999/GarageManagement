@@ -29,9 +29,9 @@ function Customer() {
     if (e.target.value === "5") {
       var today = new Date();
       var currentDate = today.toISOString().substring(0, 10);
-      document.getElementById("searhDate").value = currentDate;
+      document.getElementById("searchDate").value = currentDate;
       setIsDateSearch(true);
-      filterCusByDate(document.getElementById("searhDate").value);
+      filterCusByDate(document.getElementById("searchDate").value);
     } else {
       setIsDateSearch(false);
     }
@@ -54,7 +54,6 @@ function Customer() {
   const getSearchTerm = (e) => {
     setSearchTerm(e.target.value);
     if (e.target.value !== "") {
-      console.log(e.target.value);
       let newCusList = [];
       switch (searchField) {
         case "1":
@@ -111,19 +110,16 @@ function Customer() {
 
   useEffect(() => {
     let loginToken = localStorage.getItem("LoginToken");
-    async function fetchCustomerData() {
-      axios
-        .get(process.env.REACT_APP_BASE_URL + "api/customers", {
-          headers: {
-            Authorization: "Bearer " + loginToken,
-          },
-        })
-        .then((response) => {
-          setCustomers(response.data);
-        })
-        .catch((error) => console.log(error));
-    }
-    fetchCustomerData();
+    axios
+      .get(process.env.REACT_APP_BASE_URL + "api/customers", {
+        headers: {
+          Authorization: "Bearer " + loginToken,
+        },
+      })
+      .then((response) => {
+        setCustomers(response.data);
+      })
+      .catch((error) => console.log(error));
   }, []);
 
   return (
@@ -143,6 +139,7 @@ function Customer() {
                     <Col md="2">
                       <Input
                         type="select"
+                        placeholder="Tiêu chí tìm kiếm"
                         defaultValue={"1"}
                         onChange={(e) => getSearchField(e)}
                       >
@@ -163,7 +160,8 @@ function Customer() {
                     </Col>
                     <Col md="3" hidden={!isDateSearch}>
                       <Input
-                        id="searhDate"
+                        placeholder="Tìm kiếm theo ngày đăng ký"
+                        id="searchDate"
                         type="date"
                         onChange={(e) => filterCusByDate(e.target.value)}
                       />
@@ -176,7 +174,7 @@ function Customer() {
                       Không tìm thấy khách hàng phù hợp
                     </p>
                   ) : (
-                    <table class="table table-borderless table-hover">
+                    <table className="table table-borderless table-hover">
                       <thead className="text-primary">
                         <tr>
                           <th>STT</th>
