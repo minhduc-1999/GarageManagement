@@ -11,9 +11,10 @@ describe("Validate username", () => {
         [false, "_username"],
         [false, ".username"],
         [false, "username."],
-        [false, "user_.name."],
-        [false, "user._name."],
-        [false, "user..name."],
+        [false, "user_.name"],
+        [false, "user._name"],
+        [false, "user..name"],
+        [false, "use$rname"],
     ])("Should return [%p] when enter [%s] as username", (expected, username) => {
         const result = ValidateUsername(username)
         expect(result).toEqual(expected)
