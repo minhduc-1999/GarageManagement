@@ -53,7 +53,7 @@ function Bill() {
     if (date !== null) {
       const newBillList = listBill.filter((bill) => {
         return (
-          dateFormat(Object.values(bill)[3].createdDate, "dd/mm/yyyy") ===
+          dateFormat(bill.createdDate, "dd/mm/yyyy") ===
           dateFormat(date, "dd/mm/yyyy")
         );
       });
@@ -66,8 +66,6 @@ function Bill() {
   const getSearchTerm = (e) => {
     setSearchTerm(e.target.value);
     if (e.target.value !== "") {
-      console.log(e.target.value);
-      listBill.map((bill) => console.log(bill.customer.name));
       let newBillList = [];
       switch (searchField) {
         case "1":
@@ -125,40 +123,20 @@ function Bill() {
 
   useEffect(() => {
     let loginToken = localStorage.getItem("LoginToken");
-    // async function fetchAccessoriesData() {
-    //   axios
-    //     .get(process.env.REACT_APP_BASE_URL + "api/accessories", {
-    //       headers: {
-    //         Authorization: "Bearer " + loginToken,
-    //       },
-    //     })
-    //     .then((response) => {
-    //       return response.data;
-    //     })
-    //     .then((data) => {
-    //       setListAccessoryDB(data);
-    //     })
-    //     .catch((error) => console.log(error));
-    // }
-    async function fetchBillData() {
-      axios
-        .get(process.env.REACT_APP_BASE_URL + "api/bills/all", {
-          headers: {
-            Authorization: "Bearer " + loginToken,
-          },
-        })
-        .then((response) => {
-          return response.data;
-        })
-        .then((data) => {
-          setListBill(data.list);
-          setListAccessoryDB(data.attach);
-        })
-        .catch((error) => console.log(error));
-    }
-    fetchBillData();
-    //fetchAccessoriesData();
-    // eslint-disable-next-line
+    axios
+      .get(process.env.REACT_APP_BASE_URL + "api/bills/all", {
+        headers: {
+          Authorization: "Bearer " + loginToken,
+        },
+      })
+      .then((response) => {
+        return response.data;
+      })
+      .then((data) => {
+        setListBill(data.list);
+        setListAccessoryDB(data.attach);
+      })
+      .catch((error) => console.log(error));
   }, []);
 
   const ColoredLine = ({ color }) => (
