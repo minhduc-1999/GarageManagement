@@ -78,7 +78,7 @@ describe("Repaired Request Module", () => {
         expect(await modalLabel.getAttribute('innerText')).toEqual("Phiếu tiếp nhận xe")
     });
 
-    test("Repaired request modal should disappear when click button [Thêm]", async () => {
+    test("Repaired request modal should disappear when click button [Huy]", async () => {
         const button = await driver.wait(
             until.elementLocated(
                 By.xpath(
@@ -190,4 +190,113 @@ describe("Repaired Request Module", () => {
         expect(await alert.getAttribute('innerText')).toEqual("Thiếu thông tin xe.")
     })
 
+    test.each([
+        {
+            customer: { name: "Josh", email: "email@gmail.com", phoneNum: "50991818313", address: "Sai gon" },
+            car: {
+                owner: "Josh",
+                numberPlate: "99A-112312",
+                brand: "YAMAHA",
+                model: "YAMAHA",
+                color: "Red",
+                registerID: "VN-1398F",
+                distance: "12",
+                VIN: "1238-DK-81D"
+            },
+        }
+    ])("Should create repaired request successfully when enter correct information", async ({ customer, car }) => {
+        await driver.sleep(1000)
+        const rows = await driver.findElements(By.xpath("/html/body/div/div/div[2]/div/div/div/div/div[2]/table/tbody/tr"));
+        const startRowNum = rows.length;
+        // create customer
+        const addRRButon = await driver.wait(
+            until.elementLocated(
+                By.xpath(
+                    "/html/body/div[1]/div/div[2]/div/div/div/div/div[1]/div[1]/div[2]/button"
+                )
+            )
+        );
+        await addRRButon.click();
+
+        // create customer
+        const addCustomer = driver.findElement(By.xpath("/html/body/div[2]/div/div[1]/div/div/div[2]/form/div[2]/div[2]/button"))
+        await addCustomer.click()
+        const cusInputs = await Promise.all(
+            [
+                driver.wait(until.elementLocated(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[2]/form/div[1]/input")), 1000),
+                driver.wait(until.elementLocated(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[2]/form/div[2]/input")), 1000),
+                driver.wait(until.elementLocated(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[2]/form/div[3]/input")), 1000),
+                driver.wait(until.elementLocated(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[2]/form/div[4]/input")), 1000),
+            ]
+        )
+        await cusInputs[0].sendKeys(customer.name)
+        await cusInputs[1].sendKeys(customer.email)
+        await cusInputs[2].sendKeys(customer.phoneNum)
+        await cusInputs[3].sendKeys(customer.address)
+        const saveBtn = driver.findElement(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[3]/button[1]"))
+        await saveBtn.click()
+
+        // create car
+        const addCar = driver.findElement(By.xpath("/html/body/div[2]/div/div[1]/div/div/div[2]/form/div[3]/div[2]/button"))
+        await addCar.click()
+        const carInputs = await Promise.all(
+            [
+                driver.wait(until.elementLocated(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[2]/form/div[2]/div[1]/div/input")), 1000),
+                driver.wait(until.elementLocated(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[2]/form/div[3]/div[1]/div/input")), 1000),
+                driver.wait(until.elementLocated(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[2]/form/div[3]/div[2]/div/input")), 1000),
+                driver.wait(until.elementLocated(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[2]/form/div[4]/div[1]/div/input")), 1000),
+                driver.wait(until.elementLocated(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[2]/form/div[4]/div[2]/div/input")), 1000),
+                driver.wait(until.elementLocated(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[2]/form/div[5]/div[1]/div/input")), 1000),
+                driver.wait(until.elementLocated(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[2]/form/div[5]/div[2]/div/input")), 1000),
+                driver.wait(until.elementLocated(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[2]/form/div[6]/input")), 1000),
+            ]
+        )
+        await carInputs[0].sendKeys(car.numberPlate)
+        await carInputs[1].sendKeys(car.brand)
+        await carInputs[2].sendKeys(car.model)
+        await carInputs[3].sendKeys(car.color)
+        await carInputs[4].sendKeys(car.owner)
+        await carInputs[5].sendKeys(car.registerID)
+        await carInputs[6].sendKeys(car.distance)
+        await carInputs[7].sendKeys(car.VIN)
+        const saveCarBtn = driver.findElement(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[3]/button[1]"))
+        await saveCarBtn.click()
+
+        // create quotation
+        const addQuotationBtn = driver.findElement(By.xpath("/html/body/div[2]/div/div[1]/div/div/div[3]/button[2]"))
+        await addQuotationBtn.click()
+        await driver.sleep(4000)
+        const input = await driver.wait(until.elementLocated(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[2]/form/div[1]/div[1]/div[1]/div/input")), 2000)
+        const input2 = await driver.wait(until.elementLocated(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[2]/form/div[1]/div[1]/div[2]/div/input")), 2000)
+        const input3 = await driver.wait(until.elementLocated(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[2]/form/div[1]/div[1]/div[3]/div/input")), 2000)
+        // const quotationInputs = await Promise.all(
+        //     [
+        //         driver.wait(until.elementLocated(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[2]/form/div[1]/div[1]/div[1]/div/input")), 2000),
+        //         driver.wait(until.elementLocated(By.xpath("/html/body/div[4]/div/div[1]/div/div/div[2]/form/div[1]/div[1]/div[2]/div/input")), 2000),
+        //         driver.wait(until.elementLocated(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[2]/form/div[1]/div[1]/div[3]/div/input")), 2000),
+        //     ]
+        // )
+        const addAccessoryBtn = driver.findElement(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[2]/form/div[1]/div[3]/div[4]/button"))
+
+        await input.sendKeys("b")
+
+        const option = await driver.wait(until.elementLocated(By.xpath('/html/body/div[3]/div/div[1]/div/div/div[2]/form/div[1]/div[1]/div[1]/div/div/p')), 2000)
+        await option.click();
+
+        await input2.sendKeys(15000000)
+        await input3.sendKeys(2)
+
+        await addAccessoryBtn.click()
+
+        const saveQuotationBtn = driver.findElement(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[3]/button[2]"))
+        await saveQuotationBtn.click()
+
+        const saveRRBtn = await driver.wait(until.elementLocated(By.xpath("/html/body/div[2]/div/div[1]/div/div/div[3]/button[3]")), 2000)
+        await saveRRBtn.click()
+
+        await driver.wait(until.elementIsNotVisible(saveRRBtn), 2000)
+        const updatedRows = await driver.findElements(By.xpath("/html/body/div/div/div[2]/div/div/div/div/div[2]/table/tbody/tr"));
+        const endRowNum = updatedRows.length;
+        expect(endRowNum).toEqual(startRowNum + 1)
+    })
 })

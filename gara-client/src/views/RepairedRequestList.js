@@ -24,6 +24,16 @@ import "../components/CustomDesign/SuggestList.css";
 const axios = require("axios");
 const dateFormat = require("dateformat");
 
+
+export function ValidateCustomer(customer) {
+  if (!customer.name || !customer.address || !customer.phoneNum || !customer.email) {
+    return false
+  }
+  return true
+}
+
+
+
 function RepairedRequestList() {
   const translateRRState = {
     init: "Đang sửa chữa",
@@ -79,6 +89,7 @@ function RepairedRequestList() {
   const [vat, setVAT] = useState(0);
   const [onBillCreated, setBillCreated] = useState(false);
   const [selectedBill, setSelectedBill] = useState(null);
+  const [alertQuotationVisible, setAlertQuotationVisible] = useState(false);
 
   const handleClickCreateInvoice = () => {
     setDiscount(0);
@@ -149,27 +160,35 @@ function RepairedRequestList() {
   }, [listBill]);
 
   const createTempCar = () => {
-    var newCar = {
-      id: "",
-      brand: brand,
-      numberPlate: numberPlate,
-      VIN: VIN,
-      distanceTravelled: distanceTravelled,
-      registerId: registerId,
-      owner: owner,
-      color: color,
-      model: model,
-    };
-    setSelectedCar(newCar);
-    handleCloseNewCar();
+    if (brand && numberPlate && VIN && distanceTravelled && registerId && owner && color && model) {
+      //setEmptyFieldCarAlert(true);
+
+      var newCar = {
+        id: "",
+        brand: brand,
+        numberPlate: numberPlate,
+        VIN: VIN,
+        distanceTravelled: distanceTravelled,
+        registerId: registerId,
+        owner: owner,
+        color: color,
+        model: model,
+      };
+      setSelectedCar(newCar);
+      handleCloseNewCar();
+    }
+    else {
+      setEmptyFieldCarAlert(true)
+      setTimeout(() => {
+        setEmptyFieldCarAlert(false)
+      }, 9000);
+    }
   };
+
 
   async function AddNewCar() {
     //const AddNewCar = () => {
-    if (selectedCar === null) {
-      //setEmptyFieldCarAlert(true);
-      return;
-    }
+
     let loginToken = localStorage.getItem("LoginToken");
     let createCar = new FormData();
     createCar.append("Brand", selectedCar.brand);
@@ -200,6 +219,13 @@ function RepairedRequestList() {
   const onDismissCarEmpty = () => setEmptyFieldAlert(!emptyFieldCarAlert);
 
   const createTempCustomer = () => {
+    if (!name || !address || !phoneNum || !email) {
+      setEmptyFieldAlert(true);
+      setTimeout(() => {
+        setEmptyFieldCarAlert(false)
+      }, 3000);
+      return;
+    }
     var newCustomer = {
       id: "",
       name: name,
@@ -214,12 +240,7 @@ function RepairedRequestList() {
     }
   };
 
-  async function AddNewCustomer() {
-    //const AddNewCustomer = () => {
-    if (!name || !address || !phoneNum || !email) {
-      setEmptyFieldAlert(true);
-      return;
-    }
+  function AddNewCustomer() {
     let loginToken = localStorage.getItem("LoginToken");
     let createCustomer = new FormData();
     createCustomer.append("Name", name);
@@ -522,6 +543,10 @@ function RepairedRequestList() {
   };
 
   const saveQuotationDetails = () => {
+    if (QDList.length === 0) {
+      setAlertQuotationVisible(true)
+      return
+    }
     QDList.forEach(function (dt) {
       delete dt.accessoryName;
     });
@@ -926,7 +951,7 @@ function RepairedRequestList() {
                 <Form>
                   {(selectedRR !== null &&
                     selectedRR.quotation.state === "confirmed") ||
-                  selectedQuotationState === "confirmed" ? (
+                    selectedQuotationState === "confirmed" ? (
                     <div hidden="true"></div>
                   ) : (
                     <div>
@@ -1099,7 +1124,7 @@ function RepairedRequestList() {
                     </div>
                   )}
                   <ColoredLine color="grey" />
-                  <table class="table table-borderless table-hover">
+                  <table className="table table-borderless table-hover">
                     <thead className="text-primary">
                       <tr>
                         <th>ID</th>
@@ -1117,11 +1142,11 @@ function RepairedRequestList() {
                           <th scope="row">{index + 1}</th>
                           <td>
                             {selectedRR !== null &&
-                            selectedRR.quotation.state === "confirmed"
+                              selectedRR.quotation.state === "confirmed"
                               ? listAccessoryAttach[QD.accessoryId]
                               : listAccessoryDB.find(
-                                  (acc) => acc.id === QD.accessoryId
-                                ).name}
+                                (acc) => acc.id === QD.accessoryId
+                              ).name}
                           </td>
                           <td>{QD.quantity}</td>
                           <td>{QD.unitPrice} VNĐ</td>
@@ -1132,12 +1157,12 @@ function RepairedRequestList() {
                           <td>
                             {QD.laborCost != null
                               ? Number(QD.quantity) * Number(QD.unitPrice) +
-                                Number(QD.laborCost)
+                              Number(QD.laborCost)
                               : Number(QD.quantity) * Number(QD.unitPrice)}
                             VNĐ
                           </td>
                           {selectedRR !== null &&
-                          selectedRR.quotation.state === "confirmed" ? (
+                            selectedRR.quotation.state === "confirmed" ? (
                             <td hidden="true"></td>
                           ) : (
                             <Fab
@@ -1189,6 +1214,16 @@ function RepairedRequestList() {
                     </Row>
                   </Row>
                 </Form>
+                <Alert
+                  className="alert-error"
+                  color="warning"
+                  isOpen={alertQuotationVisible}
+                  toggle={() => {
+                    setAlertQuotationVisible(!alertQuotationVisible)
+                  }}
+                >
+                  Phải nhập ít nhất một phụ tùng.
+                </Alert>
               </ModalBody>
               <ModalFooter style={{ margin: 10, justifyContent: "flex-end" }}>
                 <Button
@@ -1209,8 +1244,8 @@ function RepairedRequestList() {
                   Lưu
                 </Button>
                 {selectedRR === null ||
-                (selectedRR !== null &&
-                  selectedRR.quotation.state !== "confirmed") ? (
+                  (selectedRR !== null &&
+                    selectedRR.quotation.state !== "confirmed") ? (
                   <Button
                     onClick={confirmQuotation}
                     className="btn-fill"
@@ -1269,7 +1304,7 @@ function RepairedRequestList() {
                           </Row>
                         </CardHeader>
                         <CardBody>
-                          <table class="table table-borderless table-hover">
+                          <table className="table table-borderless table-hover">
                             <thead className="text-primary">
                               <tr>
                                 <th>ID</th>
@@ -1303,10 +1338,10 @@ function RepairedRequestList() {
                                     <td>
                                       {QD.laborCost != null
                                         ? Number(QD.quantity) *
-                                            Number(QD.unitPrice) +
-                                          Number(QD.laborCost)
+                                        Number(QD.unitPrice) +
+                                        Number(QD.laborCost)
                                         : Number(QD.quantity) *
-                                          Number(QD.unitPrice)}
+                                        Number(QD.unitPrice)}
                                       VNĐ
                                     </td>
                                   </tr>
@@ -1904,7 +1939,7 @@ function RepairedRequestList() {
                       Không tìm thấy phiếu tiếp nhận phù hợp
                     </p>
                   ) : (
-                    <table class="table table-borderless table-hover">
+                    <table className="table table-borderless table-hover">
                       <thead>
                         <tr>
                           <th>ID</th>
