@@ -93,30 +93,10 @@ describe("Repaired Request Module", () => {
         expect(await modal.isDisplayed()).toBeFalsy()
     })
 
-    test("Should show alert [Phải nhập ít nhất một phụ tùng] when empty any field in quotation modal", async () => {
-        const button = await driver.wait(
-            until.elementLocated(
-                By.xpath(
-                    "/html/body/div[1]/div/div[2]/div/div/div/div/div[1]/div[1]/div[2]/button"
-                )
-            )
-        );
-        await button.click();
-        const addQuotationBtn = driver.findElement(By.xpath("/html/body/div[2]/div/div[1]/div/div/div[3]/button[2]"))
-        await addQuotationBtn.click()
-        const saveBtn = driver.findElement(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[3]/button[2]"))
-        await saveBtn.click()
-        const alert = await driver.wait(until.elementLocated(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[2]/div")))
-        expect(await alert.getAttribute('innerText')).toEqual("Phải nhập ít nhất một phụ tùng.")
-
-    });
-    // { name: "Lucas", email: "email@gmail.com", phoneNum: "0993818313", address: "" },
     test.each([
         { name: "", email: "email@gmail.com", phoneNum: "0993818313", address: "Sai gon" },
-        { name: "Lucas", email: "", phoneNum: "0993818313", address: "Sai gon" },
         { name: "Lucas", email: "email@gmail.com", phoneNum: "", address: "Sai gon" },
-        { name: "Lucas", email: "email@gmail.com", phoneNum: "0993818313", address: "" },
-    ])("Should show alert [Thiếu thông tin khách hàng.] when empty any field in customer modal", async ({ name, email, phoneNum, address }) => {
+    ])("Should show alert [Thiếu thông tin khách hàng.] when empty required field in customer modal", async ({ name, email, phoneNum, address }) => {
         const button = await driver.wait(
             until.elementLocated(
                 By.xpath(
@@ -143,17 +123,32 @@ describe("Repaired Request Module", () => {
         expect(await alert.getAttribute('innerText')).toEqual("Thiếu thông tin khách hàng.")
     })
 
+    test("Should show alert [Phải nhập ít nhất một phụ tùng] when empty accessory list", async () => {
+        const button = await driver.wait(
+            until.elementLocated(
+                By.xpath(
+                    "/html/body/div[1]/div/div[2]/div/div/div/div/div[1]/div[1]/div[2]/button"
+                )
+            )
+        );
+        await button.click();
+        const addQuotationBtn = driver.findElement(By.xpath("/html/body/div[2]/div/div[1]/div/div/div[3]/button[2]"))
+        await addQuotationBtn.click()
+        const saveBtn = driver.findElement(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[3]/button[2]"))
+        await saveBtn.click()
+        const alert = await driver.wait(until.elementLocated(By.xpath("/html/body/div[3]/div/div[1]/div/div/div[2]/div")))
+        expect(await alert.getAttribute('innerText')).toEqual("Phải nhập ít nhất một phụ tùng.")
+
+    });
+    // { name: "Lucas", email: "email@gmail.com", phoneNum: "0993818313", address: "" }
+
     // { numberPlate: "99A-99999", brand: "YAMAHA", model: "YAMAHA", color: "Red", registerID: "VN-139LF", distance: 12, VIN: "1238-DK-8KD" },
     test.each([
-        { owner: "Josh", numberPlate: "", brand: "YAMAHA", model: "YAMAHA", color: "Red", registerID: "VN-139LF", distance: "12", VIN: "1238-DK-8KD" },
-        { owner: "Josh", numberPlate: "99A-99999", brand: "", model: "YAMAHA", color: "Red", registerID: "VN-139LF", distance: "12", VIN: "1238-DK-8KD" },
-        { owner: "Josh", numberPlate: "99A-99999", brand: "YAMAHA", model: "", color: "Red", registerID: "VN-139LF", distance: "12", VIN: "1238-DK-8KD" },
-        { owner: "Josh", numberPlate: "99A-99999", brand: "YAMAHA", model: "YAMAHA", color: "", registerID: "VN-139LF", distance: "12", VIN: "1238-DK-8KD" },
-        { owner: "Josh", numberPlate: "99A-99999", brand: "YAMAHA", model: "YAMAHA", color: "Red", registerID: "", distance: "12", VIN: "1238-DK-8KD" },
-        { owner: "Josh", numberPlate: "99A-99999", brand: "YAMAHA", model: "YAMAHA", color: "Red", registerID: "VN-139LF", distance: "", VIN: "1238-DK-8KD" },
-        { owner: "Josh", numberPlate: "99A-99999", brand: "YAMAHA", model: "YAMAHA", color: "Red", registerID: "VN-139LF", distance: "12", VIN: "" },
-        { owner: "", numberPlate: "99A-99999", brand: "YAMAHA", model: "YAMAHA", color: "Red", registerID: "VN-139LF", distance: "12", VIN: "1238-DK-8KD" },
-    ])("Should show alert [Thiếu thông tin xe.] when empty any field in car modal", async ({ owner, numberPlate, brand, model, color, registerID, distance, VIN }) => {
+        { owner: "Josh", numberPlate: "", brand: "YAMAHA", model: "YAMAHA", color: "Red", registerID: "ID09429423", distance: "12", VIN: "123G94JE95LRI452V" },
+        { owner: "Josh", numberPlate: "99A-99999", brand: "YAMAHA", model: "YAMAHA", color: "Red", registerID: "", distance: "12", VIN: "123G94JE95LRI452V" },
+        { owner: "Josh", numberPlate: "99A-99999", brand: "YAMAHA", model: "YAMAHA", color: "Red", registerID: "ID09429423", distance: "12", VIN: "" },
+        { owner: "", numberPlate: "99A-99999", brand: "YAMAHA", model: "YAMAHA", color: "Red", registerID: "ID09429423", distance: "12", VIN: "123G94JE95LRI452V" },
+    ])("Should show alert [Thiếu thông tin xe.] when empty required field in car modal", async ({ owner, numberPlate, brand, model, color, registerID, distance, VIN }) => {
         const button = await driver.wait(
             until.elementLocated(
                 By.xpath(
@@ -192,16 +187,16 @@ describe("Repaired Request Module", () => {
 
     test.each([
         {
-            customer: { name: "Josh", email: "email@gmail.com", phoneNum: "50991818313", address: "Sai gon" },
+            customer: { name: "Josh", email: "email@gmail.com", phoneNum: "0991818313", address: "Sai gon" },
             car: {
                 owner: "Josh",
-                numberPlate: "99A-112312",
+                numberPlate: "72A-11112",
                 brand: "YAMAHA",
                 model: "YAMAHA",
                 color: "Red",
-                registerID: "VN-1398F",
-                distance: "12",
-                VIN: "1238-DK-81D"
+                registerID: "ID123931",
+                distance: 12,
+                VIN: "1231238DK1312381D"
             },
         }
     ])("Should create repaired request successfully when enter correct information", async ({ customer, car }) => {

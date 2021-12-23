@@ -29,7 +29,7 @@ export function validateCustomerInformation(customer) {
     return false;
   }
   const phoneRegex = /^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$/g;
-  const nameRegex = /^[a-zA-Z]+$/g;
+  const nameRegex = /^[a-zA-Z\s]+$/g;
   return phoneRegex.test(customer.phoneNumber) && nameRegex.test(customer.name);
 }
 

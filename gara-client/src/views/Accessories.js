@@ -35,12 +35,11 @@ export function validateAccessories(accessory) {
     ) {
       return true;
     }
+    console.log(accessory);
     return false;
-
 }
 
 export function validateProvider(provider) {
-
   var phoneNumberRegExp = new RegExp(
     "^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$"
   );
@@ -255,11 +254,12 @@ function Accessories() {
       unit: unit,
       receiptPrice: receiptPrice,
       expiredTime: expiredTime,
-      providerId: providerId,
+      accessoryproviderId: providerId,
       accessoryTypeId: accessoryTypeId
     })) {
       setEmptyFieldAlert(true);
-    } else {
+      return;
+    }
       setNewAccessories([
         ...newAccessories,
         {
@@ -274,7 +274,6 @@ function Accessories() {
         },
       ]);
       clearIFFields();
-    }
   };
 
   const ColoredLine = ({ color }) => (
