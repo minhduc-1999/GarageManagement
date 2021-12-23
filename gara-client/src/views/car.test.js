@@ -7,6 +7,7 @@ describe("Validate car module", () => {
     [false, ".color_/", "owner", "0"],
     [false, "color", "", "0"],
     [false, "color", ".owner_/", "0"],
+    [false, "color", "owner", ""],
     [true, "color", "owner", "0.1"],
     [false, "color", "owner", "0.0000"],
     [false, "color", "owner", "09.1"],
