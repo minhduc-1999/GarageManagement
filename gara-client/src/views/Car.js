@@ -23,11 +23,11 @@ const axios = require("axios");
 export function validateCar(color, owner, distance) {
   const wordRegex = /^[a-zA-Z ]+$/u;
 
-  if (!color || color.length > 20 || !wordRegex.test(color)) {
+  if (!color || !wordRegex.test(color)) {
     return false;
   }
 
-  if (!owner || owner.length > 20 || !wordRegex.test(owner)) {
+  if (!owner || !wordRegex.test(owner)) {
     return false;
   }
 
