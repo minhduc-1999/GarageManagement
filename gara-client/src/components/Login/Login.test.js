@@ -5,6 +5,7 @@ describe("Validate username", () => {
         [true, "username1"],
         [false, "user"],
         [false, ""],
+        [false, null],
         [false, "usernameusernamelong1"],
         [false, "user name"],
         [false, "username_"],
@@ -14,6 +15,7 @@ describe("Validate username", () => {
         [false, "user_.name"],
         [false, "user._name"],
         [false, "user..name"],
+        [false, "user__name"],
         [false, "use$rname"],
     ])("Should return [%p] when enter [%s] as username", (expected, username) => {
         const result = ValidateUsername(username)
