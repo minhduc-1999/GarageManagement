@@ -21,6 +21,42 @@ import { Tooltip, Fab, TextField } from "@material-ui/core";
 import dateFormat from "dateformat";
 const axios = require("axios");
 
+export function validateAccessories(accessory) {
+    var quantityRegExp = new RegExp("^[0-9]+$");
+    var receiptPriceRegExp = new RegExp("^[0-9]+$");
+
+    if (accessory.name && accessory.name !=="" &&
+    quantityRegExp.test(accessory.quantity) &&
+    accessory.unit && accessory.unit!=="" &&
+    receiptPriceRegExp.test(accessory.receiptPrice) &&
+    accessory.expiredTime && accessory.expiredTime !=="" &&
+    accessory.accessoryproviderId && accessory.accessoryproviderId !=="" &&
+    accessory.accessoryTypeId && accessory.accessoryTypeId !==""
+    ) {
+      return true;
+    }
+    return false;
+
+}
+
+export function validateProvider(provider) {
+
+  var phoneNumberRegExp = new RegExp(
+    "^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$"
+  );
+
+  if (
+    provider.providerName &&
+    provider.providerName !== "" &&
+    phoneNumberRegExp.test(provider.providerNum) &&
+    provider.address &&
+    provider.address !== ""
+  ) {
+    return true;
+  }
+  return false;
+}
+
 function Accessories() {
   const [onChange, setOnchange] = useState(false);
   const [accessories, setAccessories] = useState(null);
@@ -108,8 +144,18 @@ function Accessories() {
     setAccessoryTypeId(null);
     setDescription(null);
   };
+  const onDismiss = () => setEmptyFieldAlert(!emptyFieldAlert);
+  const onDismissType = () => setEmptyFieldAlertType(!emptyFieldAlertType);
+  const onDismissProvider = () => setEmptyFieldAlertProvider(!emptyFieldAlertProvider);
+  const onDismissList = () => setEmptyAlert(!emptyAlert);
+
   const createNewProvider = () => {
-    if (!providerName || !providerNum || !providerAddress) {
+    if (!validateProvider({
+      providerName: providerName,
+      providerNum: providerNum,
+      address: providerAddress
+    })
+    ) {
       return;
     }
     {
@@ -203,15 +249,15 @@ function Accessories() {
     }
   };
   const addNewAccessory = () => {
-    if (
-      !name ||
-      !quantity ||
-      !unit ||
-      !receiptPrice ||
-      !expiredTime ||
-      !providerId ||
-      !accessoryTypeId
-    ) {
+    if ( !validateAccessories({
+      name: name,
+      quantity: quantity,
+      unit: unit,
+      receiptPrice: receiptPrice,
+      expiredTime: expiredTime,
+      providerId: providerId,
+      accessoryTypeId: accessoryTypeId
+    })) {
       setEmptyFieldAlert(true);
     } else {
       setNewAccessories([
@@ -468,9 +514,10 @@ function Accessories() {
               >
                 Thêm phụ tùng
               </Button>
-              <Alert color="danger" isOpen={emptyFieldAlert}>
+              <Alert color="danger" isOpen={emptyFieldAlert} toggle={onDismiss}>
                 Bạn chưa nhập đủ các trường!
               </Alert>
+
               <ColoredLine></ColoredLine>
               {!newAccessories ? (
                 <p>Chưa có dữ liệu...</p>
@@ -511,7 +558,7 @@ function Accessories() {
                         ))}
                       </tbody>
                     </table>
-                    <Alert color="danger" isOpen={emptyAlert}>
+                    <Alert color="danger" isOpen={emptyAlert} toggle={onDismissList}>
                       Danh sách phụ tùng trống!
                     </Alert>
                   </Card>
@@ -558,7 +605,7 @@ function Accessories() {
                 </FormGroup>
               </Form>
             </ModalBody>
-            <Alert color="danger" isOpen={emptyFieldAlertType}>
+            <Alert color="danger" isOpen={emptyFieldAlertType} toggle={onDismissType}>
               Bạn chưa nhập đủ các trường hoặc loại phụ tùng đã tồn tại!
             </Alert>{" "}
             <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
@@ -622,7 +669,7 @@ function Accessories() {
                 </FormGroup>
               </Form>
             </ModalBody>
-            <Alert color="danger" isOpen={emptyFieldAlertProvider}>
+            <Alert color="danger" isOpen={emptyFieldAlertProvider} toggle={onDismissProvider}>
               Bạn chưa nhập đủ các trường hoặc nhà cung cấp đã tồn tại!
             </Alert>
             <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
