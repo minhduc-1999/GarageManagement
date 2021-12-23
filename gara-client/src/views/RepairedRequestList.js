@@ -30,7 +30,7 @@ export function validateCustomerInformation(customer) {
     return false
   }
   const phoneRegex = /^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$/g
-  const nameRegex = /^[a-zA-Z]+$/g
+  const nameRegex = /^[a-zA-Z\s]+$/g
   return phoneRegex.test(customer.phoneNumber) && nameRegex.test(customer.name)
 }
 
@@ -187,7 +187,7 @@ function RepairedRequestList() {
       color: color,
       model: model,
     };
-    if (!ValidateCarInfo(newCar)) {
+    if (!validateCarInformation(newCar)) {
       setEmptyFieldCarAlert(true)
       setTimeout(() => {
         setEmptyFieldCarAlert(false)
@@ -239,7 +239,7 @@ function RepairedRequestList() {
       phoneNumber: phoneNum,
       email: email,
     };
-    if (!ValidateCustomerInfo(newCustomer)) {
+    if (!validateCustomerInformation(newCustomer)) {
       setEmptyFieldAlert(true);
       setTimeout(() => {
         setEmptyFieldCarAlert(false)
