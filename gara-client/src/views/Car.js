@@ -31,7 +31,7 @@ export function validateCar(color, owner, distance) {
     return false;
   }
 
-  const numberRegex = /^[\+\-]?\d*\.?\d+(?:[Ee][\+\-]?\d+)?$/g;
+  const numberRegex = /^[\\+\\-]?\d*\.?\d+(?:[Ee][\\+\\-]?\d+)?$/g;
 
   return numberRegex.test(distance);
 }

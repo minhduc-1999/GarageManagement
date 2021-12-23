@@ -24,31 +24,30 @@ import "../components/CustomDesign/SuggestList.css";
 const axios = require("axios");
 const dateFormat = require("dateformat");
 
-
 export function validateCustomerInformation(customer) {
   if (!customer.name || !customer.phoneNumber) {
-    return false
+    return false;
   }
-  const phoneRegex = /^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$/g
-  const nameRegex = /^[a-zA-Z]+$/g
-  return phoneRegex.test(customer.phoneNumber) && nameRegex.test(customer.name)
+  const phoneRegex = /^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$/g;
+  const nameRegex = /^[a-zA-Z]+$/g;
+  return phoneRegex.test(customer.phoneNumber) && nameRegex.test(customer.name);
 }
-
 
 export function validateCarInformation(car) {
   if (!car.numberPlate || !car.VIN || !car.registerId || !car.owner)
-    return false
+    return false;
 
-  const numberPlateRegex = /^\d{1,2}[A-Z]-\d{4,5}$/g
-  const vinRegex = /^[0-9A-Z]{17}$/g
-  const registerIdRegex = /^[0-9A-Za-z]+$/g
-  const ownerIdRegex = /^[A-Za-z]+$/g
-  return numberPlateRegex.test(car.numberPlate)
-    && vinRegex.test(car.VIN)
-    && registerIdRegex.test(car.registerId)
-    && ownerIdRegex.test(car.owner)
+  const numberPlateRegex = /^\d{1,2}[A-Z]-\d{4,5}$/g;
+  const vinRegex = /^[0-9A-Z]{17}$/g;
+  const registerIdRegex = /^[0-9A-Za-z]+$/g;
+  const ownerIdRegex = /^[A-Za-z]+$/g;
+  return (
+    numberPlateRegex.test(car.numberPlate) &&
+    vinRegex.test(car.VIN) &&
+    registerIdRegex.test(car.registerId) &&
+    ownerIdRegex.test(car.owner)
+  );
 }
-
 
 function RepairedRequestList() {
   const translateRRState = {
@@ -187,17 +186,16 @@ function RepairedRequestList() {
       color: color,
       model: model,
     };
-    if (!ValidateCarInfo(newCar)) {
-      setEmptyFieldCarAlert(true)
+    if (!validateCarInformation(newCar)) {
+      setEmptyFieldCarAlert(true);
       setTimeout(() => {
-        setEmptyFieldCarAlert(false)
+        setEmptyFieldCarAlert(false);
       }, 3000);
-      return
+      return;
     }
     setSelectedCar(newCar);
     handleCloseNewCar();
   };
-
 
   async function AddNewCar() {
     //const AddNewCar = () => {
@@ -239,10 +237,10 @@ function RepairedRequestList() {
       phoneNumber: phoneNum,
       email: email,
     };
-    if (!ValidateCustomerInfo(newCustomer)) {
+    if (!validateCustomerInformation(newCustomer)) {
       setEmptyFieldAlert(true);
       setTimeout(() => {
-        setEmptyFieldCarAlert(false)
+        setEmptyFieldCarAlert(false);
       }, 3000);
       return;
     }
@@ -558,8 +556,8 @@ function RepairedRequestList() {
 
   const saveQuotationDetails = () => {
     if (QDList.length === 0) {
-      setAlertQuotationVisible(true)
-      return
+      setAlertQuotationVisible(true);
+      return;
     }
     QDList.forEach(function (dt) {
       delete dt.accessoryName;
@@ -965,7 +963,7 @@ function RepairedRequestList() {
                 <Form>
                   {(selectedRR !== null &&
                     selectedRR.quotation.state === "confirmed") ||
-                    selectedQuotationState === "confirmed" ? (
+                  selectedQuotationState === "confirmed" ? (
                     <div hidden="true"></div>
                   ) : (
                     <div>
@@ -1156,11 +1154,11 @@ function RepairedRequestList() {
                           <th scope="row">{index + 1}</th>
                           <td>
                             {selectedRR !== null &&
-                              selectedRR.quotation.state === "confirmed"
+                            selectedRR.quotation.state === "confirmed"
                               ? listAccessoryAttach[QD.accessoryId]
                               : listAccessoryDB.find(
-                                (acc) => acc.id === QD.accessoryId
-                              ).name}
+                                  (acc) => acc.id === QD.accessoryId
+                                ).name}
                           </td>
                           <td>{QD.quantity}</td>
                           <td>{QD.unitPrice} VNĐ</td>
@@ -1171,12 +1169,12 @@ function RepairedRequestList() {
                           <td>
                             {QD.laborCost != null
                               ? Number(QD.quantity) * Number(QD.unitPrice) +
-                              Number(QD.laborCost)
+                                Number(QD.laborCost)
                               : Number(QD.quantity) * Number(QD.unitPrice)}
                             VNĐ
                           </td>
                           {selectedRR !== null &&
-                            selectedRR.quotation.state === "confirmed" ? (
+                          selectedRR.quotation.state === "confirmed" ? (
                             <td hidden="true"></td>
                           ) : (
                             <Fab
@@ -1233,7 +1231,7 @@ function RepairedRequestList() {
                   color="warning"
                   isOpen={alertQuotationVisible}
                   toggle={() => {
-                    setAlertQuotationVisible(!alertQuotationVisible)
+                    setAlertQuotationVisible(!alertQuotationVisible);
                   }}
                 >
                   Phải nhập ít nhất một phụ tùng.
@@ -1258,8 +1256,8 @@ function RepairedRequestList() {
                   Lưu
                 </Button>
                 {selectedRR === null ||
-                  (selectedRR !== null &&
-                    selectedRR.quotation.state !== "confirmed") ? (
+                (selectedRR !== null &&
+                  selectedRR.quotation.state !== "confirmed") ? (
                   <Button
                     onClick={confirmQuotation}
                     className="btn-fill"
@@ -1352,10 +1350,10 @@ function RepairedRequestList() {
                                     <td>
                                       {QD.laborCost != null
                                         ? Number(QD.quantity) *
-                                        Number(QD.unitPrice) +
-                                        Number(QD.laborCost)
+                                            Number(QD.unitPrice) +
+                                          Number(QD.laborCost)
                                         : Number(QD.quantity) *
-                                        Number(QD.unitPrice)}
+                                          Number(QD.unitPrice)}
                                       VNĐ
                                     </td>
                                   </tr>
