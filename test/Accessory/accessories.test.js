@@ -36,6 +36,9 @@ describe("Accessories Module", () => {
         });
     });
 
+    afterAll(async () => {
+        await driver.quit();
+      });
 
     test("Should Accessories screen display correctly", async () => {
 
@@ -530,8 +533,8 @@ describe("Accessories Module", () => {
 
          const listedAccessory = driver.findElement(By.xpath(`/html/body/div[2]/div/div[1]/div/div/div[2]/div[2]/div/table/tbody/tr[0]`));
          expect(listedAccessory.isDisplayed());
-         await driver.quit();
     });
+
 })
 
 

@@ -22,7 +22,7 @@ const axios = require("axios");
 export function validateYear(year) {
   if (!year)
     return false
-
+    
   const yearRegex = /^(19|20)\d{2}$/
   return yearRegex.test(year)
 }
