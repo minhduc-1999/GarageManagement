@@ -20,6 +20,22 @@ import {
 
 const axios = require("axios");
 
+export function validateCar(color, owner, distance) {
+  const wordRegex = /^[a-zA-Z ]+$/u;
+
+  if (!color || color.length > 20 || !wordRegex.test(color)) {
+    return false;
+  }
+
+  if (!owner || owner.length > 20 || !wordRegex.test(owner)) {
+    return false;
+  }
+
+  const numberRegex = /^[\+\-]?\d*\.?\d+(?:[Ee][\+\-]?\d+)?$/g;
+
+  return numberRegex.test(distance);
+}
+
 function Car() {
   //searchCombo-start
   const [searchTerm, setSearchTerm] = useState("");
@@ -168,7 +184,7 @@ function Car() {
   };
 
   const updateCar = () => {
-    if (!color || !owner || !distanceTravelled) {
+    if (!validateCar(color, owner, distanceTravelled)) {
       setEmptyFieldCarAlert(true);
       return;
     }
