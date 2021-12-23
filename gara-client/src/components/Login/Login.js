@@ -3,18 +3,32 @@ import { Form, FormGroup, Label, Input, Button, Alert } from "reactstrap";
 import "./Login.css";
 import { AuthContext } from "../../contexts/AuthProvider";
 
+export function ValidateUsername(username) {
+  if (!username) return false
+  const regex = /^(?=.{5,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$/g
+  return regex.test(username)
+}
+
 function Login() {
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
   const [alertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+
 
   const { login } = useContext(AuthContext);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!ValidateUsername(username)) {
+      setAlertMessage('Tên tài khoản không hợp lệ')
+      setAlertVisible(true)
+      return
+    }
     login(username, password).then((res) => {
       if (!res) {
         setAlertVisible(true);
+        setAlertMessage('Tên tài khoản hoặc mật khẩu không đúng.')
       }
     });
   };
@@ -37,7 +51,7 @@ function Login() {
             placeholder="Tên tài khoản"
             onChange={(e) => {
               setUsername(e.target.value);
-              setAlertVisible(false);
+              setAlertVisible(false)
             }}
           />
         </FormGroup>
@@ -64,8 +78,8 @@ function Login() {
         color="warning"
         isOpen={alertVisible}
         toggle={onDismiss}
-      >
-        Tên tài khoản hoặc mật khẩu không đúng.
+      > {alertMessage}
+
       </Alert>
     </div>
   );

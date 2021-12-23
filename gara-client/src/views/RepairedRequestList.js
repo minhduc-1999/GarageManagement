@@ -25,13 +25,22 @@ const axios = require("axios");
 const dateFormat = require("dateformat");
 
 
-export function ValidateCustomer(customer) {
-  if (!customer.name || !customer.address || !customer.phoneNum || !customer.email) {
+export function ValidateCustomerInfo(customer) {
+  if (!customer.name || !customer.phoneNumber) {
     return false
   }
-  return true
+  const phoneRegex = /^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$/g
+  return phoneRegex.test(customer.phoneNumber)
 }
 
+
+export function ValidateCarInfo(car) {
+  if (!car.numberPlate || !car.VIN || !car.registerId || !car.owner)
+    return false
+
+  const numberPlateRegex = /^\d{1,2}[A-Z]-\d{4,5}$/g
+  return numberPlateRegex.test(car.numberPlate)
+}
 
 
 function RepairedRequestList() {
@@ -160,29 +169,26 @@ function RepairedRequestList() {
   }, [listBill]);
 
   const createTempCar = () => {
-    if (brand && numberPlate && VIN && distanceTravelled && registerId && owner && color && model) {
-      //setEmptyFieldCarAlert(true);
-
-      var newCar = {
-        id: "",
-        brand: brand,
-        numberPlate: numberPlate,
-        VIN: VIN,
-        distanceTravelled: distanceTravelled,
-        registerId: registerId,
-        owner: owner,
-        color: color,
-        model: model,
-      };
-      setSelectedCar(newCar);
-      handleCloseNewCar();
-    }
-    else {
+    var newCar = {
+      id: "",
+      brand: brand,
+      numberPlate: numberPlate,
+      VIN: VIN,
+      distanceTravelled: distanceTravelled,
+      registerId: registerId,
+      owner: owner,
+      color: color,
+      model: model,
+    };
+    if (!ValidateCarInfo(newCar)) {
       setEmptyFieldCarAlert(true)
       setTimeout(() => {
         setEmptyFieldCarAlert(false)
-      }, 9000);
+      }, 3000);
+      return
     }
+    setSelectedCar(newCar);
+    handleCloseNewCar();
   };
 
 
@@ -219,13 +225,6 @@ function RepairedRequestList() {
   const onDismissCarEmpty = () => setEmptyFieldAlert(!emptyFieldCarAlert);
 
   const createTempCustomer = () => {
-    if (!name || !address || !phoneNum || !email) {
-      setEmptyFieldAlert(true);
-      setTimeout(() => {
-        setEmptyFieldCarAlert(false)
-      }, 3000);
-      return;
-    }
     var newCustomer = {
       id: "",
       name: name,
@@ -233,6 +232,14 @@ function RepairedRequestList() {
       phoneNumber: phoneNum,
       email: email,
     };
+    if (!ValidateCustomerInfo(newCustomer)) {
+      setEmptyFieldAlert(true);
+      setTimeout(() => {
+        setEmptyFieldCarAlert(false)
+      }, 3000);
+      return;
+    }
+
     setSelectedCustomer(newCustomer);
     if (openNewCustomer) {
       setSearch(newCustomer.name);

@@ -19,6 +19,14 @@ import {
 } from "reactstrap";
 const axios = require("axios");
 
+export function validateYear(year) {
+  if (!year)
+    return false
+
+  const yearRegex = /^(19|20)\d{2}$/
+  return yearRegex.test(year)
+}
+
 function Report() {
   const { userAcc } = useContext(AuthContext);
   const [reportOption, setReportOption] = useState("revenue");
@@ -30,7 +38,7 @@ function Report() {
 
   const [receiptsRPData, setReceiptsRPData] = useState([]);
   const [issuesRPData, setIssuesRPData] = useState([]);
-  const [acessoryReportType, setAReportType] = useState("monthly");
+  const [accessoryReportType, setAReportType] = useState("monthly");
   const [selectAMonth, setSelectAMonth] = useState(new Date().getMonth());
   const [selectAYear, setSelectAYear] = useState(new Date().getFullYear());
 
@@ -40,9 +48,9 @@ function Report() {
       axios
         .get(process.env.REACT_APP_BASE_URL + "api/report/accessory-receipt/", {
           params: {
-            option: acessoryReportType,
+            option: accessoryReportType,
             year: selectAYear,
-            ...(acessoryReportType === "monthly"
+            ...(accessoryReportType === "monthly"
               ? { month: selectAMonth }
               : {}),
           },
@@ -64,9 +72,9 @@ function Report() {
       axios
         .get(process.env.REACT_APP_BASE_URL + "api/report/accessory-issue/", {
           params: {
-            option: acessoryReportType,
+            option: accessoryReportType,
             year: selectAYear,
-            ...(acessoryReportType === "monthly"
+            ...(accessoryReportType === "monthly"
               ? { month: selectAMonth }
               : {}),
           },
@@ -84,7 +92,7 @@ function Report() {
     }
     fetchAccessoryReceiptsReportData();
     fetchAccessoryIssuesReportData();
-  }, [acessoryReportType, selectAYear, selectAMonth]);
+  }, [accessoryReportType, selectAYear, selectAMonth]);
 
   useEffect(() => {
     const showReport = () => {
@@ -275,13 +283,18 @@ function Report() {
                   </CardHeader>
                   <CardBody>
                     <div className="chart-area">
-                      {!dataChart ? (
+                      {!validateYear(selectYear) ? (      
+                      <p style={{ marginLeft: 10, fontSize: 20 }}>
+                          Năm không hợp lệ
+                        </p>):(
+                      !dataChart ? (
                         <p style={{ marginLeft: 10, fontSize: 20 }}>
                           Không có dữ liệu
                         </p>
                       ) : (
                         <Line redraw data={dataChart} options={optionsChart} />
-                      )}
+                      ))
+                      }
                     </div>
                   </CardBody>
                 </Card>
@@ -309,7 +322,7 @@ function Report() {
                               <option value="annual">Năm</option>
                             </Input>
                           </Col>
-                          <Col sm="2" hidden={acessoryReportType === "annual"}>
+                          <Col sm="2" hidden={accessoryReportType === "annual"}>
                             <Input
                               onChange={(e) => setSelectAMonth(e.target.value)}
                               type="select"
@@ -334,7 +347,7 @@ function Report() {
                           </Col>
                           <Col
                             sm="1.5"
-                            hidden={acessoryReportType === "annual"}
+                            hidden={accessoryReportType === "annual"}
                           >
                             <h4 style={{ marginTop: 5 }}>Năm</h4>
                           </Col>
@@ -394,6 +407,10 @@ function Report() {
                   <CardBody>
                     <TabContent activeTab={activeTab}>
                       <TabPane tabId="1">
+                      {!validateYear(selectAYear) ? (      
+                              <p style={{ marginLeft: 10, fontSize: 20 }}>
+                                  Năm không hợp lệ
+                                </p>):(
                         <table className="table table-borderless table-hover">
                           <thead>
                             <tr>
@@ -409,7 +426,8 @@ function Report() {
                             </tr>
                           </thead>
                           <tbody>
-                            {receiptsRPData.map((data, index) => (
+                            {
+                            receiptsRPData.map((data, index) => (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
                                 <td>
@@ -427,9 +445,13 @@ function Report() {
                               </tr>
                             ))}
                           </tbody>
-                        </table>
+                        </table>)}
                       </TabPane>
                       <TabPane tabId="2">
+                        {!validateYear(selectAYear) ? (      
+                              <p style={{ marginLeft: 10, fontSize: 20 }}>
+                                  Năm không hợp lệ
+                                </p>):(
                         <table className="table table-borderless table-hover">
                           <thead>
                             <tr>
@@ -444,7 +466,8 @@ function Report() {
                             </tr>
                           </thead>
                           <tbody>
-                            {issuesRPData.map((data, index) => (
+                            {
+                            issuesRPData.map((data, index) => (
                               <tr key={index}>
                                 <th scope="row">{index + 1}</th>
                                 <td>
@@ -461,7 +484,7 @@ function Report() {
                               </tr>
                             ))}
                           </tbody>
-                        </table>
+                        </table>)}
                       </TabPane>
                     </TabContent>
                   </CardBody>
