@@ -22,21 +22,26 @@ import dateFormat from "dateformat";
 const axios = require("axios");
 
 export function validateAccessories(accessory) {
-    var quantityRegExp = new RegExp("^[0-9]+$");
-    var receiptPriceRegExp = new RegExp("^[0-9]+$");
+  var quantityRegExp = new RegExp("^[0-9]+$");
+  var receiptPriceRegExp = new RegExp("^[0-9]+$");
 
-    if (accessory.name && accessory.name !=="" &&
+  if (
+    accessory.name &&
+    accessory.name !== "" &&
     quantityRegExp.test(accessory.quantity) &&
-    accessory.unit && accessory.unit!=="" &&
+    accessory.unit &&
+    accessory.unit !== "" &&
     receiptPriceRegExp.test(accessory.receiptPrice) &&
-    accessory.expiredTime && accessory.expiredTime !=="" &&
-    accessory.accessoryproviderId && accessory.accessoryproviderId !=="" &&
-    accessory.accessoryTypeId && accessory.accessoryTypeId !==""
-    ) {
-      return true;
-    }
-    console.log(accessory);
-    return false;
+    accessory.expiredTime &&
+    accessory.expiredTime !== "" &&
+    accessory.accessoryproviderId &&
+    accessory.accessoryproviderId !== "" &&
+    accessory.accessoryTypeId &&
+    accessory.accessoryTypeId !== ""
+  ) {
+    return true;
+  }
+  return false;
 }
 
 export function validateProvider(provider) {
@@ -145,15 +150,17 @@ function Accessories() {
   };
   const onDismiss = () => setEmptyFieldAlert(!emptyFieldAlert);
   const onDismissType = () => setEmptyFieldAlertType(!emptyFieldAlertType);
-  const onDismissProvider = () => setEmptyFieldAlertProvider(!emptyFieldAlertProvider);
+  const onDismissProvider = () =>
+    setEmptyFieldAlertProvider(!emptyFieldAlertProvider);
   const onDismissList = () => setEmptyAlert(!emptyAlert);
 
   const createNewProvider = () => {
-    if (!validateProvider({
-      providerName: providerName,
-      providerNum: providerNum,
-      address: providerAddress
-    })
+    if (
+      !validateProvider({
+        providerName: providerName,
+        providerNum: providerNum,
+        address: providerAddress,
+      })
     ) {
       return;
     }
@@ -248,32 +255,34 @@ function Accessories() {
     }
   };
   const addNewAccessory = () => {
-    if ( !validateAccessories({
-      name: name,
-      quantity: quantity,
-      unit: unit,
-      receiptPrice: receiptPrice,
-      expiredTime: expiredTime,
-      accessoryproviderId: providerId,
-      accessoryTypeId: accessoryTypeId
-    })) {
+    if (
+      !validateAccessories({
+        name: name,
+        quantity: quantity,
+        unit: unit,
+        receiptPrice: receiptPrice,
+        expiredTime: expiredTime,
+        accessoryproviderId: providerId,
+        accessoryTypeId: accessoryTypeId,
+      })
+    ) {
       setEmptyFieldAlert(true);
       return;
     }
-      setNewAccessories([
-        ...newAccessories,
-        {
-          Name: name,
-          Quantity: quantity,
-          Unit: unit,
-          ReceiptPrice: receiptPrice,
-          expiredTime: expiredTime,
-          ProviderId: providerId,
-          AccessoryTypeId: accessoryTypeId,
-          Description: description,
-        },
-      ]);
-      clearIFFields();
+    setNewAccessories([
+      ...newAccessories,
+      {
+        Name: name,
+        Quantity: quantity,
+        Unit: unit,
+        ReceiptPrice: receiptPrice,
+        expiredTime: expiredTime,
+        ProviderId: providerId,
+        AccessoryTypeId: accessoryTypeId,
+        Description: description,
+      },
+    ]);
+    clearIFFields();
   };
 
   const ColoredLine = ({ color }) => (
@@ -557,7 +566,11 @@ function Accessories() {
                         ))}
                       </tbody>
                     </table>
-                    <Alert color="danger" isOpen={emptyAlert} toggle={onDismissList}>
+                    <Alert
+                      color="danger"
+                      isOpen={emptyAlert}
+                      toggle={onDismissList}
+                    >
                       Danh sách phụ tùng trống!
                     </Alert>
                   </Card>
@@ -604,7 +617,11 @@ function Accessories() {
                 </FormGroup>
               </Form>
             </ModalBody>
-            <Alert color="danger" isOpen={emptyFieldAlertType} toggle={onDismissType}>
+            <Alert
+              color="danger"
+              isOpen={emptyFieldAlertType}
+              toggle={onDismissType}
+            >
               Bạn chưa nhập đủ các trường hoặc loại phụ tùng đã tồn tại!
             </Alert>{" "}
             <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
@@ -668,7 +685,11 @@ function Accessories() {
                 </FormGroup>
               </Form>
             </ModalBody>
-            <Alert color="danger" isOpen={emptyFieldAlertProvider} toggle={onDismissProvider}>
+            <Alert
+              color="danger"
+              isOpen={emptyFieldAlertProvider}
+              toggle={onDismissProvider}
+            >
               Bạn chưa nhập đủ các trường hoặc nhà cung cấp đã tồn tại!
             </Alert>
             <ModalFooter style={{ margin: 25, justifyContent: "flex-end" }}>
@@ -743,7 +764,8 @@ function Accessories() {
                               <td>
                                 {accessory.receiptPrice
                                   ? accessory.receiptPrice
-                                  : "-"} VNĐ
+                                  : "-"}{" "}
+                                VNĐ
                               </td>
                               <td>
                                 {accessory.expiredDate
