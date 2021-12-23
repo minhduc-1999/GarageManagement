@@ -25,21 +25,28 @@ const axios = require("axios");
 const dateFormat = require("dateformat");
 
 
-export function ValidateCustomerInfo(customer) {
+export function validateCustomerInformation(customer) {
   if (!customer.name || !customer.phoneNumber) {
     return false
   }
   const phoneRegex = /^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$/g
-  return phoneRegex.test(customer.phoneNumber)
+  const nameRegex = /^[a-zA-Z]+$/g
+  return phoneRegex.test(customer.phoneNumber) && nameRegex.test(customer.name)
 }
 
 
-export function ValidateCarInfo(car) {
+export function validateCarInformation(car) {
   if (!car.numberPlate || !car.VIN || !car.registerId || !car.owner)
     return false
 
   const numberPlateRegex = /^\d{1,2}[A-Z]-\d{4,5}$/g
+  const vinRegex = /^[0-9A-Z]{17}$/g
+  const registerIdRegex = /^[0-9A-Za-z]+$/g
+  const ownerIdRegex = /^[A-Za-z]+$/g
   return numberPlateRegex.test(car.numberPlate)
+    && vinRegex.test(car.VIN)
+    && registerIdRegex.test(car.registerId)
+    && ownerIdRegex.test(car.owner)
 }
 
 
